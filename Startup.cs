@@ -24,6 +24,7 @@ namespace Diatrack
         public void ConfigureServices(IServiceCollection services)
         {
             // Add services, available via DI
+            services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ElasticDataProvider>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

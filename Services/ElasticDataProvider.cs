@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Diatrack.Configuration;
 using Diatrack.Models;
 using Elasticsearch.Net;
@@ -13,7 +10,7 @@ namespace Diatrack.Services
 {
     public class ElasticDataProvider
     {
-        private ElasticConfiguration _elasticConfig;
+        private readonly ElasticConfiguration _elasticConfig;
         public ElasticClient NestClient { get; set; }
         public IElasticLowLevelClient LowLevelClient => NestClient.LowLevel;
 

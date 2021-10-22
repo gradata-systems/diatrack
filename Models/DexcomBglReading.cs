@@ -15,6 +15,9 @@ namespace Diatrack.Models
         [Date(Name = "@timestamp")]
         public DateTime Timestamp { get; set; }
 
+        [Date(Name = "@received")]
+        public DateTime Received { get; set; }
+
         public int TrendId { get; set; }
 
         [StringEnum]
@@ -45,8 +48,11 @@ namespace Diatrack.Models
         {
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException("Expected StartObject token");
-            
-            DexcomBglReading reading = new();
+
+            DexcomBglReading reading = new()
+            {
+                Received = DateTime.UtcNow
+            };
 
             while (reader.Read())
             {

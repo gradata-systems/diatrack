@@ -1,7 +1,6 @@
-﻿using Diatrack.Utilities;
+﻿using Nest;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace Diatrack.Models
 {
@@ -16,6 +15,7 @@ namespace Diatrack.Models
         [Required]
         public string EmailAddress { get; set; }
 
+        [Date(Name = "@created")]
         public DateTime Created { get; set; }
 
         public UserPreferences Preferences { get; set; }

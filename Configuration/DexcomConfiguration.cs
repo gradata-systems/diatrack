@@ -27,29 +27,24 @@ namespace Diatrack.Configuration
         public int MaxAccountQuerySize { get; set; }
 
         /// <summary>
-        /// How often to query BGL data from all accounts
-        /// </summary>
-        public int BglQueryFrequencySeconds { get; set; }
-
-        /// <summary>
         /// Maximum amount of time for all CGM data queries to complete, before being aborted
         /// </summary>
         public int MaxQueryPeriodSeconds { get; set; }
 
         /// <summary>
-        /// Sleep for the specified number of milliseconds between requests, to avoid spamming the Dexcom servers
+        /// How often to query BGL data from all accounts
         /// </summary>
-        public int RequestSleepInterval { get; set; }
+        public int BglQueryFrequencySeconds { get; set; }
 
         /// <summary>
         /// Query up to this number of minutes worth of readings for a given account ID
         /// </summary>
-        public int CgmMaxWindowMinutes { get; set; }
+        public int BglMaxWindowMinutes { get; set; }
 
         /// <summary>
         /// Maximum number of readings to return at once
         /// </summary>
-        public int CgmMaxReadings { get; set; }
+        public int BglMaxReadings { get; set; }
 
         /// <summary>
         /// Dexcom API endpoints, as relative URIs

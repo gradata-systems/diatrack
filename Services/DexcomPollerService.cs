@@ -83,7 +83,7 @@ namespace Diatrack.Services
                 {
                     try
                     {
-                        BulkResponse response = await _elasticClient.BulkAsync(b => b.IndexMany(readings), cancellationToken);
+                        BulkResponse response = await _elasticClient.BulkAsync(b => b.CreateMany(readings), cancellationToken);
 
                         if (!response.Errors)
                         {
@@ -113,7 +113,7 @@ namespace Diatrack.Services
 
             if (!string.IsNullOrEmpty(account.Id))
             {
-                int queryWindowMins = _dexConfig.CgmMaxWindowMinutes;
+                int queryWindowMins = _dexConfig.BglMaxWindowMinutes;
                 int queryMaxCount = _dexConfig.MaxAccountQuerySize;
 
                 // Get the last sensor data timestamp

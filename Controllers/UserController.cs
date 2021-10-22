@@ -4,6 +4,8 @@ using Diatrack.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
+using Serilog;
+using System;
 using System.Threading.Tasks;
 
 namespace Diatrack.Controllers
@@ -47,6 +49,18 @@ namespace Diatrack.Controllers
             account.CryptoKey = Crypto.GenerateKey();
             account.CryptoIv = Crypto.GenerateIv();
             account.Password = Crypto.EncryptString(account.Password, account.CryptoKey, account.CryptoIv);
+
+            try
+            {
+                // Query the account ID
+                account.Id = await _userService.GetAccountId(account);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to query the account ID for {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+
+                return Problem("Dexcom account ID could not be retrieved");
+            }
 
             object partialUser = new
             {

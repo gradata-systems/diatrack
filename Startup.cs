@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 namespace Diatrack
 {
@@ -26,11 +27,19 @@ namespace Diatrack
             // Add services, available via DI
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ElasticDataProvider>();
+            services.AddHostedService<DexcomPollerService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAdB2C"));
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(opts =>
+                {
+                    // Serialise enums as strings, instead as numbers (default)
+                    JsonStringEnumConverter enumConverter = new();
+                    opts.JsonSerializerOptions.Converters.Add(enumConverter);
+                });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "diatrack", Version = "v1" });

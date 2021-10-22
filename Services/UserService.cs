@@ -1,11 +1,17 @@
-﻿using Diatrack.Models;
+﻿using Diatrack.Configuration;
+using Diatrack.Models;
 using Diatrack.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Nest;
 using Serilog;
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Diatrack.Services
@@ -14,17 +20,24 @@ namespace Diatrack.Services
     {
         public UserClaims GetUserClaims();
         public Task<User> GetUser();
+        public Task<string> GetAccountId(DexcomAccount account);
     }
 
     public class UserService : IUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ElasticClient _elasticClient;
+        private readonly DexcomConfiguration _dexConfig;
 
-        public UserService(IHttpContextAccessor httpContextAccessor, ElasticDataProvider elasticProvider)
+        private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
+
+        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<DexcomConfiguration> dexConfig)
         {
             _httpContextAccessor = httpContextAccessor;
+            _httpClientFactory = httpClientFactory;
             _elasticClient = elasticProvider.NestClient;
+            _dexConfig = dexConfig.Value;
         }
 
         /// <summary>
@@ -40,6 +53,7 @@ namespace Diatrack.Services
                 var principalClaims = identity.Claims.ToDictionary(c => c.Type);
                 UserClaims userClaims = new();
 
+                // Unique ID of the principal
                 if (principalClaims.TryGetValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", out Claim idClaim))
                 {
                     userClaims.Id = idClaim.Value;
@@ -96,6 +110,43 @@ namespace Diatrack.Services
             }
 
             return user;
+        }
+
+        /// <summary>
+        /// Retrieve the account ID for a given user's linked Dexcom account
+        /// </summary>
+        public async Task<string> GetAccountId(DexcomAccount account)
+        {
+            // Not cached, so query the Dexcom API for the account ID
+            HttpRequestMessage request = new(HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
+            request.Content = JsonContent.Create(new
+            {
+                ApplicationId = _dexConfig.ApplicationId,
+                AccountName = account.LoginId,
+                Password = account.GetPlainTextPassword()
+            });
+
+            using (HttpClient httpClient = _httpClientFactory.CreateClient())
+            {
+                HttpResponseMessage response = await httpClient.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string rawAccountId = await response.Content.ReadAsStringAsync();
+                    Match accountIdMatch = _quotedPattern.Match(rawAccountId);
+                    if (accountIdMatch.Success)
+                    {
+                        return accountIdMatch.Groups[1].Value;
+                    }
+                    else
+                    {
+                        throw new Exception($"Unexpected account ID {rawAccountId} returned");
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Status code: {response.StatusCode}. Reason: {response.ReasonPhrase}");
+                }
+            }
         }
     }
 

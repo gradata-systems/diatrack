@@ -1,0 +1,13 @@
+<div class="status-bar-container">
+  <div class="status-bar">
+    <span>BGL 5.0</span>
+<!--    <p>App config: {{(appConfigService.appConfig$ | async)?.publicOidcEndpoint}}</p>-->
+  </div>
+</div>
+<div class="account-container">
+  <p>Account</p>
+  <button mat-raised-button (click)="appAuthService.loginPopup()">Login</button>
+  <button mat-raised-button (click)="appAuthService.logout(true)">Logout</button>
+  <a mat-raised-button [routerLink]="['profile']">Profile</a>
+  <p>Name: {{user?.name}}</p>
+</div>

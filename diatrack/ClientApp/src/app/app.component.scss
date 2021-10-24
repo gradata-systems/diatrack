@@ -1,0 +1,33 @@
+@use '~@angular/material' as mat;
+@import 'theme';
+
+@include mat.all-component-themes($diatrack-theme);
+
+$navbar-max-width: 220px;
+
+.page {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 100%;
+
+  .nav-container {
+    height: 100%;
+
+    &.expanded {
+      width: $navbar-max-width;
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .main {
+      flex-grow: 1;
+      position: relative;
+      background-color: #888;
+    }
+  }
+}

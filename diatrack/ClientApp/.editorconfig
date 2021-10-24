@@ -3,14 +3,20 @@ root = true
 
 [*]
 charset = utf-8
-indent_style = space
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-[*.ts]
-quote_type = single
+end_of_line=crlf
+insert_final_newline=false
+trim_trailing_whitespace=true
+indent_style=space
+indent_size=4
+max_line_length=200
 
 [*.md]
 max_line_length = off
 trim_trailing_whitespace = false
+
+[{*.ts,*.js,*.scss}]
+insert_final_newline=true
+
+[{*.json,*.yml,*.yaml,*.tpl,*.html}]
+indent_size=2
+insert_final_newline=true

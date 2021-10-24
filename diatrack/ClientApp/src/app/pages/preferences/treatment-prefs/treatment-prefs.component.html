@@ -1,0 +1,34 @@
+<form [formGroup]="settingsForm">
+  <div class="field">
+    <div class="label">
+      <label>Blood glucose unit</label>
+      <mat-icon>help_outline</mat-icon>
+    </div>
+    <mat-radio-group formControlName="bglUnit">
+      <mat-radio-button [value]="bglUnit.MmolL">mmol/L</mat-radio-button>
+      <mat-radio-button [value]="bglUnit.MgDl">mg/dL</mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <div class="field">
+    <div class="label">
+      <label>Time format</label>
+      <mat-icon>help_outline</mat-icon>
+    </div>
+    <mat-radio-group formControlName="timeFormat">
+      <mat-radio-button [value]="timeFormat.TwelveHour">12-hour</mat-radio-button>
+      <mat-radio-button [value]="timeFormat.TwentyFourHour">24-hour</mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <div class="field range" formGroupName="targetBglRange">
+    <div class="label">
+      <label>Target blood glucose range</label>
+      <mat-icon>help_outline</mat-icon>
+    </div>
+    <mat-form-field>
+      <input matInput placeholder="Low" type="number" formControlName="min">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="High" type="number" formControlName="max">
+    </mat-form-field>
+  </div>
+</form>

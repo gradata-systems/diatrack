@@ -1,2 +1,52 @@
 @import '../page-styles';
 
+.dashboard {
+    height: 100%;
+    position: relative;
+    padding: 20px;
+}
+
+button.options {
+    float: right;
+
+    .caption {
+      margin-left: 10px;
+    }
+}
+
+.form-container {
+    padding-top: 5px;
+    padding-right: 20px;
+
+    .field {
+        padding: 10px 15px 10px 15px;
+
+        .label {
+            label {
+                padding-bottom: 5px;
+                display: inline-block;
+                color: #ffb3b3;
+            }
+
+            mat-icon {
+                display: inline-block;
+                font-size: 12px;
+                margin-left: 5px;
+                color: #e37670;
+            }
+        }
+
+        mat-radio-button {
+            padding: 4px 8px;
+        }
+
+        &.range {
+            mat-form-field {
+                display: inline-block;
+                width: 50px;
+                padding: 10px 10px;
+                height: 35px;
+            }
+        }
+    }
+}

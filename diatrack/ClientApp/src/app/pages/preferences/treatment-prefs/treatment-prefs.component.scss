@@ -1,0 +1,36 @@
+@use '~@angular/material' as mat;
+@import '../../../theme';
+@import '../../page-styles';
+
+@include mat.all-component-themes($diatrack-theme);
+
+.field {
+    padding: 10px 0 10px 0;
+
+    .label {
+        label {
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        mat-icon {
+            display: inline-block;
+            font-size: 12px;
+            margin-left: 5px;
+            color: #e37670;
+        }
+    }
+
+    mat-radio-button {
+        padding: 4px 8px;
+    }
+
+    &.range {
+        mat-form-field {
+            display: inline-block;
+            width: 50px;
+            padding: 10px 10px;
+            height: 35px;
+        }
+    }
+}

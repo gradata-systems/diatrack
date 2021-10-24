@@ -1,0 +1,20 @@
+<ul class="data-source">
+  <li *ngFor="let dataSource of dataSourceService.dataSources$ | async">
+    <mat-icon class="person">person</mat-icon>
+    <div class="details">
+      <div class="account-id" matLine>{{dataSource.name}}</div>
+      <div class="account-type" matLine><span>{{dataSource.loginId}} @ {{dataSource.type}} ({{dataSource.regionId}})</span></div>
+    </div>
+    <button mat-icon-button [matMenuTriggerFor]="contextMenu"><mat-icon>more_vert</mat-icon></button>
+    <mat-menu #contextMenu="matMenu">
+      <button mat-menu-item (click)="onDeleteClicked(dataSource)">
+        <mat-icon>delete</mat-icon>
+        <span>Remove data source</span>
+      </button>
+    </mat-menu>
+  </li>
+</ul>
+<ng-container *ngIf="(dataSourceService.dataSources$ | async)?.length == 0">
+  <p>No data sources created yet</p>
+</ng-container>
+<button mat-raised-button class="add" color="accent" (click)="onCreateNewClicked()">Connect Data Source</button>

@@ -13,7 +13,7 @@
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
 $diatrack-primary: mat.define-palette(mat.$gray-palette, 400);
-$diatrack-accent: mat.define-palette(mat.$red-palette, 600);
+$diatrack-accent: mat.define-palette(mat.$yellow-palette, 700);
 
 // The warn palette is optional (defaults to red).
 $diatrack-warn: mat.define-palette(mat.$yellow-palette, 600);

@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {BASE_PATH} from "./variables";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {User} from "./models/User";
-import {Observable, of} from "rxjs";
+import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
 import {map, mergeMap} from "rxjs/operators";
 
@@ -10,7 +10,11 @@ import {map, mergeMap} from "rxjs/operators";
     providedIn: 'root'
 })
 export class UserService {
-    activeUser$: Observable<User | undefined>;
+    // Fires when the logged-on user changes
+    readonly activeUser$: Observable<User | undefined>;
+
+    // Fires when the user profile changes (like when a data source is added)
+    readonly userProfile$ = new BehaviorSubject<User | undefined>(undefined);
 
     private _loggedIn = false;
     get loggedIn(): boolean { return this._loggedIn; }
@@ -25,6 +29,7 @@ export class UserService {
                 return this.getUser().pipe(map(response => {
                     if (response.ok && response.body) {
                         this._loggedIn = true;
+                        this.userProfile$.next(response.body);
                         return response.body;
                     } else {
                         this._loggedIn = false;
@@ -38,9 +43,20 @@ export class UserService {
         }));
     }
 
-    getUser(): Observable<HttpResponse<User>> {
+    private getUser(): Observable<HttpResponse<User>> {
         return this.httpClient.get<User>(`${this.basePath}/User`, {
             observe: 'response'
+        });
+    }
+
+    /**
+     * Trigger a refresh of the user profile
+     */
+    refreshUserProfile() {
+        this.getUser().subscribe(response => {
+            if (response.ok && response.body) {
+                this.userProfile$.next(response.body);
+            }
         });
     }
 }

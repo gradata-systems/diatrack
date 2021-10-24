@@ -1,1 +1,22 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
+    <mat-icon>settings</mat-icon>
+    <span class="caption">Options</span>
+  </button>
+  <mat-menu #optionsMenu="matMenu">
+    <div class="form-container" (click)="$event.stopPropagation()">
+      <form [formGroup]="settingsForm">
+        <div class="field">
+          <div class="label">
+            <label>Plot colour</label>
+            <mat-icon>help_outline</mat-icon>
+          </div>
+          <mat-radio-group formControlName="plotColour">
+            <mat-radio-button [value]="plotColour.Uniform">Uniform</mat-radio-button>
+            <mat-radio-button [value]="plotColour.Temperature">Temperature</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </form>
+    </div>
+  </mat-menu>
+</div>

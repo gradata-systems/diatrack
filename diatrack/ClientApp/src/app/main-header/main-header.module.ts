@@ -4,21 +4,21 @@ import { MainHeaderComponent } from './main-header.component';
 import {MatButtonModule} from "@angular/material/button";
 import {AppRoutingModule} from "../app-routing.module";
 import {MatIconModule} from "@angular/material/icon";
+import {AppCoreModule} from "../app-core.module";
 
 
 
 @NgModule({
-    declarations: [
-        MainHeaderComponent
+    imports: [
+        CommonModule,
+        AppCoreModule,
+        AppRoutingModule
     ],
     exports: [
         MainHeaderComponent
     ],
-    imports: [
-        CommonModule,
-        MatButtonModule,
-        AppRoutingModule,
-        MatIconModule
+    declarations: [
+        MainHeaderComponent
     ]
 })
 export class MainHeaderModule { }

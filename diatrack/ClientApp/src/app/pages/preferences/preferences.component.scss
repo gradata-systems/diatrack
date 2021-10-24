@@ -1,2 +1,47 @@
+@use '~@angular/material' as mat;
+@import '../../theme';
 @import '../page-styles';
 
+@include mat.all-component-themes($diatrack-theme);
+
+.body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 30px;
+
+    mat-card {
+        padding: 20px;
+
+        .header {
+            display: flex;
+            align-items: center;
+
+            mat-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 30px;
+                color: #ffc800;
+                margin-right: 15px;
+            }
+
+            .title {
+                font-size: 1.5em;
+            }
+
+            mat-icon.help {
+                width: 12px;
+                height: 12px;
+                font-size: 12px;
+                margin-left: 5px;
+                color: #e37670;
+                position: relative;
+                top: -3px;
+            }
+        }
+
+        .content {
+            padding-top: 20px;
+        }
+    }
+}

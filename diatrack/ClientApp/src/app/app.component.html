@@ -1,14 +1,11 @@
-<div class="page">
-  <div class="nav-container" [class.expanded]="mainNavService.expanded">
-    <app-main-nav></app-main-nav>
+<div class="nav-container" [class.expanded]="mainNavService.expanded">
+  <app-main-nav></app-main-nav>
+</div>
+<div class="content">
+  <div class="header">
+    <app-main-header></app-main-header>
   </div>
-  <div class="content">
-    <div class="header">
-      <app-main-header></app-main-header>
-    </div>
-    <div class="main">
-      Router outlet
-      <router-outlet></router-outlet>
-    </div>
+  <div class="page-container">
+    <router-outlet></router-outlet>
   </div>
 </div>

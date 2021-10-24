@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserService} from "../api/user.service";
 import {User} from "../api/models/User";
 import {AppAuthService} from "../auth/app-auth.service";
@@ -8,22 +8,20 @@ import {AppAuthService} from "../auth/app-auth.service";
     templateUrl: './main-header.component.html',
     styleUrls: ['./main-header.component.scss']
 })
-export class MainHeaderComponent implements OnInit, OnDestroy {
+export class MainHeaderComponent implements OnInit {
     user?: User;
+    loggedIn = false;
 
     constructor(
-        public appAuthService: AppAuthService,
+        public authService: AppAuthService,
         public userService: UserService
     ) { }
 
     ngOnInit(): void {
         this.userService.activeUser$.subscribe(user => {
-            console.log(`Logged in user: ${user}`);
+            console.log(`Logged in user: ${user?.emailAddress}`);
             this.user = user
+            this.loggedIn = user != null;
         });
-    }
-
-    ngOnDestroy() {
-        this.userService.activeUser$.complete();
     }
 }

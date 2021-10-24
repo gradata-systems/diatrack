@@ -10,8 +10,6 @@ import {AppConfig} from "../api/models/AppConfig";
     providedIn: 'root'
 })
 export class AppAuthService {
-    loginDisplay = false;
-
     // Fired when the user's account changes
     activeAccount$ = new BehaviorSubject<AccountInfo | null>(null);
 
@@ -26,7 +24,6 @@ export class AppAuthService {
     }
 
     configure() {
-        this.setLoginDisplay();
         this.msalService.instance.enableAccountStorageEvents();
 
         this.msalBroadcastService.msalSubject$
@@ -37,8 +34,6 @@ export class AppAuthService {
                 if (this.msalService.instance.getAllAccounts().length === 0) {
                     window.location.pathname = "/";
                     this.notifyActiveAccountChanged(null);
-                } else {
-                    this.setLoginDisplay();
                 }
             });
 
@@ -48,13 +43,8 @@ export class AppAuthService {
                 takeUntil(this.destroying$)
             )
             .subscribe(() => {
-                this.setLoginDisplay();
                 this.checkAndSetActiveAccount();
             })
-    }
-
-    setLoginDisplay() {
-        this.loginDisplay = this.msalService.instance.getAllAccounts().length > 0;
     }
 
     checkAndSetActiveAccount() {
@@ -82,7 +72,7 @@ export class AppAuthService {
         this.activeAccount$.next(account);
     }
 
-    loginPopup() {
+    logIn() {
         if (this.msalGuardConfig.authRequest) {
             this.msalService.loginPopup({...this.msalGuardConfig.authRequest} as PopupRequest)
                 .subscribe((response: AuthenticationResult) => {
@@ -96,7 +86,7 @@ export class AppAuthService {
         }
     }
 
-    logout(popup?: boolean) {
+    logOut() {
         this.msalService.logoutPopup({
             mainWindowRedirectUri: this.appConfig.redirectUri
         });

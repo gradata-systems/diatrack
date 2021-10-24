@@ -23,6 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.authService.configure();
+        this.authService.checkAndSetActiveAccount();
     }
 
     ngOnDestroy()

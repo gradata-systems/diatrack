@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {MsalBroadcastService, MsalService} from "@azure/msal-angular";
-import {AuthenticationResult, EventMessage, EventType, InteractionStatus} from "@azure/msal-browser";
-import {filter} from "rxjs/operators";
+import {AppAuthService} from "../../auth/app-auth.service";
+import {UserService} from "../../api/user.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -9,34 +8,13 @@ import {filter} from "rxjs/operators";
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-    loginDisplay = false;
 
     constructor(
-        private authService: MsalService,
-        private msalBroadcastService: MsalBroadcastService
+        private authService: AppAuthService,
+        private userService: UserService
     ) { }
 
     ngOnInit(): void {
-        this.msalBroadcastService.msalSubject$
-            .pipe(
-                filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
-            )
-            .subscribe((result: EventMessage) => {
-                console.log(result);
-                const payload = result.payload as AuthenticationResult;
-                this.authService.instance.setActiveAccount(payload.account);
-            });
 
-        this.msalBroadcastService.inProgress$
-            .pipe(
-                filter((status: InteractionStatus) => status === InteractionStatus.None)
-            )
-            .subscribe(() => {
-                this.setLoginDisplay();
-            });
-    }
-
-    setLoginDisplay() {
-        this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
     }
 }

@@ -5,29 +5,29 @@
 
 $navbar-max-width: 220px;
 
-.page {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  width: 100%;
+:host {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
 
-  .nav-container {
+.nav-container {
     height: 100%;
 
     &.expanded {
-      width: $navbar-max-width;
+        width: $navbar-max-width;
     }
-  }
+}
 
-  .content {
+.content {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 
-    .main {
-      flex-grow: 1;
-      position: relative;
-      background-color: #888;
+    .page-container {
+        flex-grow: 1;
+        position: relative;
+        background-color: #888;
     }
-  }
 }

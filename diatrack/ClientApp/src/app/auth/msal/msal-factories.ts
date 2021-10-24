@@ -17,7 +17,7 @@ export function MSALInstanceFactory(appConfig: AppConfig): IPublicClientApplicat
             navigateToLoginRequestUrl: true
         },
         cache: {
-            cacheLocation: BrowserCacheLocation.LocalStorage,
+            cacheLocation: BrowserCacheLocation.LocalStorage
         },
         system: {
             loggerOptions: {

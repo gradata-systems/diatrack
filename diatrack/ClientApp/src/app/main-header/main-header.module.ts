@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MainHeaderComponent } from './main-header.component';
 import {MatButtonModule} from "@angular/material/button";
 import {AppRoutingModule} from "../app-routing.module";
+import {MatIconModule} from "@angular/material/icon";
 
 
 
@@ -16,7 +17,8 @@ import {AppRoutingModule} from "../app-routing.module";
     imports: [
         CommonModule,
         MatButtonModule,
-        AppRoutingModule
+        AppRoutingModule,
+        MatIconModule
     ]
 })
 export class MainHeaderModule { }

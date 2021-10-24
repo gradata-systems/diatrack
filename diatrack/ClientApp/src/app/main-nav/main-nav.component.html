@@ -1,26 +1,29 @@
 <div class="container">
   <div class="navbar" [class.expanded]="mainNavService.expanded">
     <div class="toggle-button-container">
-      <button class="toggle" mat-icon-button aria-label="Expand or collapse the side menu" color="primary" (click)="toggleNavExpanded()" matTooltip="Expand menu" [matTooltipDisabled]="mainNavService.expanded">
+      <button class="toggle" mat-icon-button aria-label="Expand or collapse the side menu" color="primary" (click)="toggleNavExpanded()" matTooltip="Expand menu"
+              [matTooltipDisabled]="mainNavService.expanded">
         <mat-icon>{{ mainNavService.expanded ? "chevron_left" : "menu" }}</mat-icon>
       </button>
     </div>
     <div class="buttons">
       <div class="menu-buttons">
-        <button mat-button aria-label="Dashboard button" matTooltip="Dashboard" [matTooltipDisabled]="mainNavService.expanded">
-          <mat-icon>trending_up</mat-icon>
-          <span class="caption">Dashboard</span>
-        </button>
-        <button mat-button aria-label="Options button" matTooltip="User preferences" [matTooltipDisabled]="mainNavService.expanded">
-          <mat-icon>manage_accounts</mat-icon>
-          <span class="caption">Preferences</span>
-        </button>
+        <ng-container *ngIf="userService.loggedIn">
+          <a class="menu-button" mat-flat-button [routerLink]="['dashboard']" [routerLinkActive]="['active']" aria-label="Dashboard button" matTooltip="Dashboard" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>ssid_chart</mat-icon>
+            <span class="caption">Dashboard</span>
+          </a>
+          <a class="menu-button" mat-flat-button [routerLink]="['preferences']" [routerLinkActive]="['active']" aria-label="User preferences button" matTooltip="User preferences" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>manage_accounts</mat-icon>
+            <span class="caption">Preferences</span>
+          </a>
+        </ng-container>
       </div>
       <div class="footer-buttons">
-        <button mat-button aria-label="About button" matTooltip="About" [matTooltipDisabled]="mainNavService.expanded">
+        <a class="menu-button" mat-flat-button [routerLink]="['about']" [routerLinkActive]="['active']" aria-label="About button" matTooltip="About" [matTooltipDisabled]="mainNavService.expanded">
           <mat-icon>info</mat-icon>
           <span class="caption">About</span>
-        </button>
+        </a>
       </div>
     </div>
   </div>

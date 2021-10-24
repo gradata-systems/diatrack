@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MainNavService} from "./main-nav.service";
+import {UserService} from "../api/user.service";
 
 @Component({
   selector: 'app-main-nav',
@@ -9,7 +10,8 @@ import {MainNavService} from "./main-nav.service";
 export class MainNavComponent implements OnInit {
 
   constructor(
-    public mainNavService: MainNavService
+    public mainNavService: MainNavService,
+    public userService: UserService
   ) { }
 
   ngOnInit(): void {

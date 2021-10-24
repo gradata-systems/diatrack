@@ -5,9 +5,17 @@
   </div>
 </div>
 <div class="account-container">
-  <p>Account</p>
-  <button mat-raised-button (click)="appAuthService.loginPopup()">Login</button>
-  <button mat-raised-button (click)="appAuthService.logout(true)">Logout</button>
-  <a mat-raised-button [routerLink]="['profile']">Profile</a>
-  <p>Name: {{user?.name}}</p>
+  <div class="account">
+    <ng-container *ngIf="user">
+      <mat-icon>account_circle</mat-icon>
+      <div class="info">
+        <div class="name">{{user.name}}</div>
+        <div class="email">{{user.emailAddress}}</div>
+        <a href="#" (click)="authService.logOut()">Sign out</a>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!user">
+      <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
+    </ng-container>
+  </div>
 </div>

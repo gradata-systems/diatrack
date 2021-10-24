@@ -15,7 +15,8 @@ import {APP_CONFIG, BASE_PATH} from "./api/variables";
 import {ApiModule} from "./api/api.module";
 import {MainHeaderModule} from "./main-header/main-header.module";
 import {AppAuthModule} from "./auth/app-auth.module";
-import {ProfileComponent} from './pages/profile/profile.component';
+import {PreferencesComponent} from './pages/preferences/preferences.component';
+import {AboutComponent} from './pages/about/about.component';
 
 @NgModule({
     imports: [
@@ -25,8 +26,8 @@ import {ProfileComponent} from './pages/profile/profile.component';
         MatButtonToggleModule,
         MatButtonModule,
         MatIconModule,
-        FormsModule,
         MatTooltipModule,
+        FormsModule,
         ApiModule,
         AppAuthModule,
         MainHeaderModule,
@@ -38,7 +39,8 @@ import {ProfileComponent} from './pages/profile/profile.component';
     declarations: [
         AppComponent,
         MainNavComponent,
-        ProfileComponent
+        PreferencesComponent,
+        AboutComponent
     ],
     bootstrap: [AppComponent]
 })

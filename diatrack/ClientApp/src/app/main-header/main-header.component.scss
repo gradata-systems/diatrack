@@ -4,29 +4,71 @@
 @include mat.all-component-themes($diatrack-theme);
 
 $status-bar-height: 100px;
+$avatar-size: 50px;
+$max-account-info-width: 150px;
 
 :host {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 .status-bar-container {
-  height: $status-bar-height;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  background-color: mat.get-color-from-palette($diatrack-primary, 700);
-
-  .status-bar {
+    height: $status-bar-height;
     width: 100%;
-  }
+    text-align: center;
+    position: relative;
+    background-color: mat.get-color-from-palette($diatrack-primary, 800);
+
+    .status-bar {
+        width: 100%;
+    }
 }
 
 .account-container {
-  position: absolute;
-  top: 0;
-  right: 0;
+    position: absolute;
+    right: 0;
+    margin-right: 30px;
+
+    .account {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 100%;
+
+        mat-icon {
+            font-size: $avatar-size;
+            width: $avatar-size;
+            height: $avatar-size;
+            margin-right: 15px;
+            cursor: default;
+        }
+
+        .info {
+            max-width: $max-account-info-width;
+
+            .name {
+                font-size: 1.1em;
+                font-weight: 500;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            .email {
+                font-size: 0.9em;
+                opacity: 0.8;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            a {
+                display: block;
+                margin-top: 2px;
+            }
+        }
+    }
 }

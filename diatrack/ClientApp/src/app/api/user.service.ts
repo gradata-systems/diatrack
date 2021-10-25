@@ -5,6 +5,7 @@ import {User} from "./models/User";
 import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
 import {catchError, map, mergeMap} from "rxjs/operators";
+import {UserPreferences} from "./models/UserPreferences";
 
 @Injectable({
     providedIn: 'root'
@@ -49,9 +50,20 @@ export class UserService {
     }
 
     private getUser(): Observable<HttpResponse<User>> {
-        return this.httpClient.get<User>(`${this.basePath}/User`, {
+        return this.httpClient.get<User>(`${this.basePath}/user`, {
             observe: 'response'
         });
+    }
+
+    /**
+     * Update the user preferences and trigger a user profile update
+     */
+    updatePreferences(preferences: UserPreferences): Observable<void> {
+        return this.httpClient.post<UserPreferences>(`${this.basePath}/user/preferences`, preferences, {
+            observe: 'response'
+        }).pipe(map(response => {
+            this.refreshUserProfile();
+        }));
     }
 
     /**
@@ -62,6 +74,8 @@ export class UserService {
             if (response.ok && response.body) {
                 this.userProfile$.next(response.body);
             }
+        }, error => {
+            console.error(error);
         });
     }
 }

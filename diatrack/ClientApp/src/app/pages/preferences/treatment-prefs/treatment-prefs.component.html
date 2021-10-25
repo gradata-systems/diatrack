@@ -25,10 +25,12 @@
       <mat-icon class="context-help">help_outline</mat-icon>
     </div>
     <mat-form-field>
-      <input matInput placeholder="Low" type="number" formControlName="min">
+      <input matInput placeholder="Low" type="number" formControlName="min" min="3" required>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="High" type="number" formControlName="max">
+      <input matInput placeholder="High" type="number" formControlName="max" max="15" required>
     </mat-form-field>
+    <mat-error *ngIf="targetBglRangeMin.errors">Invalid low range value</mat-error>
+    <mat-error *ngIf="targetBglRangeMax.errors">Invalid high range value</mat-error>
   </div>
 </form>

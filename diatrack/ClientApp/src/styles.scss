@@ -1,6 +1,5 @@
 @use '~@angular/material' as mat;
 @import './app/theme';
-@import './nouislider';
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
@@ -35,4 +34,32 @@ a {
     &:visited {
         color: $hyperlink-color;
     }
+}
+
+// Position progress spinners in the bottom right-hand corner of the dialog.
+// Spinner diameter should be `25`
+.mat-dialog-actions {
+    mat-progress-spinner {
+        margin-left: auto;
+    }
+}
+
+// Override default MatTooltip style
+.mat-tooltip {
+    font-size: 0.9em !important;
+    background-color: white;
+    color: #333 !important;
+    box-shadow: 0 0 25px 1px rgba(0, 0, 0, 0.3);
+}
+
+// A small icon that can be hover over to trigger a helpful tooltip
+mat-icon.context-help {
+    width: 12px;
+    height: 12px;
+    font-size: 12px;
+    margin-left: 5px;
+    color: #e37670;
+    position: relative;
+    top: -3px;
+    cursor: pointer;
 }

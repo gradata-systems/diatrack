@@ -1,10 +1,10 @@
 export interface DataSource {
     id?: string;
     type: DataSourceType;
-    name: string;
-    loginId: string;
     regionId: string;
+    loginId: string;
     password?: string;
+    name: string;
 }
 
 export enum DataSourceType {

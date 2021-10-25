@@ -1,3 +1,37 @@
-<p>Hi there</p>
-
-<button mat-raised-button>Create</button>
+<h2 mat-dialog-title>Connect Data Source</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <mat-label>Display name</mat-label>
+      <input matInput type="text" formControlName="name" placeholder="Nickname for the account, e.g. Ash" required>
+    </mat-form-field>
+    <h3>Account details</h3>
+    <mat-form-field>
+      <mat-label>Data provider</mat-label>
+      <mat-select formControlName="type" required>
+        <mat-option [value]="dataSourceType.Dexcom">Dexcom</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Geographic region</mat-label>
+      <mat-select formControlName="regionId" required>
+        <mat-option value="EU">EU (all users outside USA)</mat-option>
+        <mat-option value="US">US</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Login Id</mat-label>
+      <input matInput type="text" formControlName="loginId" placeholder="Dexcom account name" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" required>
+    </mat-form-field>
+  </form>
+  <mat-error *ngIf="error">{{error}}</mat-error>
+</mat-dialog-content>
+<div mat-dialog-actions>
+  <button mat-raised-button color="accent" (click)="onSubmit()">Connect</button>
+  <button mat-button (click)="dialogRef.close()">Cancel</button>
+  <mat-progress-spinner mode="indeterminate" *ngIf="inProgress" diameter="25"></mat-progress-spinner>
+</div>

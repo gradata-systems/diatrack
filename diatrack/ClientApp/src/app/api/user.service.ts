@@ -4,7 +4,7 @@ import {HttpClient, HttpResponse} from "@angular/common/http";
 import {User} from "./models/User";
 import {BehaviorSubject, Observable, of, Subject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
-import {map, mergeMap} from "rxjs/operators";
+import {catchError, map, mergeMap} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +14,7 @@ export class UserService {
     readonly activeUser$: Observable<User | undefined>;
 
     // Fires when the user profile changes (like when a data source is added)
+    readonly userProfileLoading$ = new BehaviorSubject<boolean>(false);
     readonly userProfile$ = new BehaviorSubject<User | undefined>(undefined);
 
     private _loggedIn = false;
@@ -26,16 +27,20 @@ export class UserService {
     ) {
         this.activeUser$ = this.authService.activeAccount$.pipe(mergeMap(account => {
             if (account) {
-                return this.getUser().pipe(map(response => {
-                    if (response.ok && response.body) {
-                        this._loggedIn = true;
-                        this.userProfile$.next(response.body);
-                        return response.body;
-                    } else {
-                        this._loggedIn = false;
-                        return undefined;
-                    }
-                }));
+                this.userProfileLoading$.next(true);
+                return this.getUser().pipe(
+                    map(response => {
+                        this.userProfileLoading$.next(false);
+                        if (response.ok && response.body) {
+                            this._loggedIn = true;
+                            this.userProfile$.next(response.body);
+                            return response.body;
+                        } else {
+                            this._loggedIn = false;
+                            return undefined;
+                        }
+                    }),
+                    catchError(error => of(undefined)));
             } else {
                 this._loggedIn = false;
                 return of(undefined);

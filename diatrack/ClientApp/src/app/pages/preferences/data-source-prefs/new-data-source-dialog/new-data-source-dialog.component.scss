@@ -1,0 +1,16 @@
+@use '~@angular/material' as mat;
+@import '../../../../theme';
+
+@include mat.all-component-themes($diatrack-theme);
+
+mat-form-field {
+    width: 100%;
+}
+
+h3 {
+    color: $heading-2-color;
+}
+
+mat-error {
+    font-size: 0.9em;
+}

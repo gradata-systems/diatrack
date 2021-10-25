@@ -14,7 +14,7 @@ import {DEFAULTS} from "../../../defaults";
 })
 export class TreatmentPrefsComponent implements OnInit {
 
-    settingsForm: FormGroup;
+    readonly settingsForm: FormGroup;
 
     // Enum constants
     readonly bglUnit = BglUnit;

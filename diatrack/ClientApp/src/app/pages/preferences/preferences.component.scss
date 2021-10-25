@@ -17,7 +17,7 @@
             display: flex;
             align-items: center;
 
-            mat-icon {
+            mat-icon.avatar {
                 width: 30px;
                 height: 30px;
                 font-size: 30px;
@@ -27,16 +27,6 @@
 
             .title {
                 font-size: 1.5em;
-            }
-
-            mat-icon.help {
-                width: 12px;
-                height: 12px;
-                font-size: 12px;
-                margin-left: 5px;
-                color: #e37670;
-                position: relative;
-                top: -3px;
             }
         }
 

@@ -14,6 +14,7 @@ import {AboutComponent} from './pages/about/about.component';
 import {DashboardModule} from "./pages/dashboard/dashboard.module";
 import {AppCoreModule} from "./app-core.module";
 import {PreferencesModule} from "./pages/preferences/preferences.module";
+import {CommonDialogModule} from "./common-dialog/common-dialog.module";
 
 @NgModule({
     imports: [
@@ -25,7 +26,8 @@ import {PreferencesModule} from "./pages/preferences/preferences.module";
         AppAuthModule,
         MainHeaderModule,
         DashboardModule,
-        PreferencesModule
+        PreferencesModule,
+        CommonDialogModule
     ],
     providers: [
         {provide: BASE_PATH, useValue: environment.apiBasePath},

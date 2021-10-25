@@ -7,12 +7,12 @@
     padding: 20px 20px;
 
     & > h1 {
-        color: #e37670;
+        color: $heading-1-color;
     }
 }
 
 form {
-    label {
-        color: mat.get-color-from-palette($diatrack-accent, 800);
+    label, mat-label {
+        color: $heading-2-color;
     }
 }

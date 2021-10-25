@@ -29,7 +29,7 @@ export class DataSourceService {
     }
 
     addDataSource(dataSource: DataSource): Observable<HttpResponse<any>> {
-        return this.httpClient.put(`${BASE_PATH}/user/dataSource`, dataSource, {
+        return this.httpClient.put(`${this.basePath}/user/dataSource`, dataSource, {
             observe: 'response'
         }).pipe(map(response => {
             this.userService.refreshUserProfile();
@@ -38,7 +38,7 @@ export class DataSourceService {
     }
 
     removeDataSource(dataSource: DataSource): Observable<HttpResponse<any>> {
-        return this.httpClient.delete(`${BASE_PATH}/user/dataSource`, {
+        return this.httpClient.delete(`${this.basePath}/user/dataSource`, {
             observe: 'response',
             body: dataSource
         }).pipe(map(response => {

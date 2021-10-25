@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ConfirmationDialogComponent} from './confirmation-dialog/confirmation-dialog.component';
 import {AppCoreModule} from "../app-core.module";
+import {NotificationDialogComponent} from './notification-dialog/notification-dialog.component';
 
 @NgModule({
     imports: [
@@ -9,7 +9,7 @@ import {AppCoreModule} from "../app-core.module";
         AppCoreModule
     ],
     declarations: [
-        ConfirmationDialogComponent
+        NotificationDialogComponent
     ]
 })
 export class CommonDialogModule {

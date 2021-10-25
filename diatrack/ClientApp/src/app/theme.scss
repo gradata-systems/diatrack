@@ -14,8 +14,6 @@
 // hue. Available color palettes: https://material.io/design/color/
 $diatrack-primary: mat.define-palette(mat.$gray-palette, 400);
 $diatrack-accent: mat.define-palette(mat.$yellow-palette, 700);
-
-// The warn palette is optional (defaults to red).
 $diatrack-warn: mat.define-palette(mat.$yellow-palette, 600);
 
 $diatrack-hyperlink: mat.define-palette(mat.$blue-palette);
@@ -29,3 +27,6 @@ $diatrack-theme: mat.define-dark-theme((
     warn: $diatrack-warn,
   )
 ));
+
+$heading-1-color: #e37670;
+$heading-2-color: mat.get-color-from-palette($diatrack-accent, 800);

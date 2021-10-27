@@ -3,6 +3,8 @@ export interface BglReading {
     timestamp: Date;
     received: Date;
     trend: BglTrend;
+    trendId: number;
+    value: number;
 }
 
 export enum BglTrend {

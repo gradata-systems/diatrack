@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
 
 @Component({
     selector: 'app-profile',
@@ -8,9 +7,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class PreferencesComponent implements OnInit {
 
-    constructor(
-        private httpClient: HttpClient,
-    ) { }
+    constructor() { }
 
     ngOnInit() {
     }

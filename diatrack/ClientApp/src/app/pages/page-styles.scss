@@ -12,7 +12,12 @@
 }
 
 form {
-    label, mat-label {
-        color: $heading-2-color;
+    .label {
+        padding-bottom: 8px;
+
+        label, mat-label {
+            color: $heading-2-color;
+            margin-bottom: 15px;
+        }
     }
 }

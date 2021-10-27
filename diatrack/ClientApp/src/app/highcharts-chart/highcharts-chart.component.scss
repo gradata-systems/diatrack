@@ -1,0 +1,36 @@
+@use '~@angular/material' as mat;
+@import '~highcharts/css/highcharts';
+@import '../theme';
+
+@include mat.all-component-themes($diatrack-theme);
+
+.highcharts-chart {
+    width: 100%;
+    height: 100%;
+}
+
+::ng-deep .chart-tooltip {
+    padding: 2px 3px;
+
+    th {
+        padding-bottom: 10px;
+        font-size: 1.2em;
+        font-weight: 500;
+        color: mat.get-color-from-palette($diatrack-accent);
+
+        &:first-of-type {
+            font-weight: normal;
+        }
+    }
+
+    td {
+        padding: 2px 2px 2px 0;
+        font-size: 1.1em;
+        color: #DDD;
+
+        &:first-of-type {
+            font-weight: 500;
+            padding-right: 15px;
+        }
+    }
+}

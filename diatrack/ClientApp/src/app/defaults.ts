@@ -3,8 +3,12 @@ import {BglUnit, PlotColour, TimeFormat, UserPreferences} from "./api/models/Use
 export var DEFAULTS = {
     userPreferences: {
         dashboard: {
-            plotColour: PlotColour.Temperature,
-            timeRangeMinutes: 0
+            bglStatsHistogram: {
+                timeRangeHours: 2,
+                plotColour: PlotColour.Temperature,
+                dataLabels: false,
+                buckets: 1000
+            }
         },
         treatment: {
             bglUnit: BglUnit.MmolL,
@@ -12,6 +16,7 @@ export var DEFAULTS = {
                 min: 3.5,
                 max: 8
             },
+            bglLowThreshold: 3,
             timeFormat: TimeFormat.TwelveHour
         }
     } as UserPreferences

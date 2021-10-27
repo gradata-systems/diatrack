@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BglUnit, TimeFormat, TreatmentPreferences} from "../../../api/models/UserPreferences";
+import {BglUnit, TimeFormat, TreatmentPreferences, UserPreferences} from "../../../api/models/UserPreferences";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {UserService} from "../../../api/user.service";
 import {User} from "../../../api/models/User";
@@ -31,11 +31,11 @@ export class TreatmentPrefsComponent implements OnInit {
         const defaults = DEFAULTS.userPreferences.treatment!;
 
         this.targetBglRangeMin = fb.control(defaults.targetBglRange.min, [
-            Validators.min(3),
+            Validators.required,
             this.rangeValidator()
         ]);
         this.targetBglRangeMax = fb.control(defaults.targetBglRange.max, [
-            Validators.max(15),
+            Validators.required,
             this.rangeValidator()
         ]);
 
@@ -45,7 +45,8 @@ export class TreatmentPrefsComponent implements OnInit {
             targetBglRange: fb.group({
                 min: this.targetBglRangeMin,
                 max: this.targetBglRangeMax
-            })
+            }),
+            bglLowThreshold: fb.control(defaults.bglLowThreshold, Validators.required)
         });
     }
 
@@ -70,25 +71,28 @@ export class TreatmentPrefsComponent implements OnInit {
 
     ngOnInit(): void {
         // Update the form if the user profile updates
-        this.userService.userProfile$.pipe(takeUntil(this.destroying$)).subscribe(user => {
-            if (user) {
-                this.updateSettingsForm(user);
+        this.userService.userPreferences$.pipe(
+            takeUntil(this.destroying$)
+        ).subscribe(prefs => {
+            if (prefs) {
+                this.updateSettingsForm(prefs);
             }
         });
 
         // Update the user profile on change
-        this.settingsForm.valueChanges
-            .pipe(debounceTime(1000))
-            .subscribe((value: TreatmentPreferences) => {
-                this.userService.updatePreferences({
-                    treatment: value
-                }).subscribe();
-            })
+        this.settingsForm.valueChanges.pipe(
+            debounceTime(250),
+            takeUntil(this.destroying$)
+        ).subscribe((value: TreatmentPreferences) => {
+            this.userService.savePreferences({
+                treatment: value
+            }).subscribe();
+        })
     }
 
-    private updateSettingsForm(user: User) {
-        if (user.preferences?.treatment) {
-            this.settingsForm.patchValue(user.preferences.treatment, {
+    private updateSettingsForm(prefs: UserPreferences) {
+        if (prefs.treatment) {
+            this.settingsForm.patchValue(prefs.treatment, {
                 emitEvent: false
             });
         }

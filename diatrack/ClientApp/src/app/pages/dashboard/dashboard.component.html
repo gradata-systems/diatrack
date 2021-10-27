@@ -1,4 +1,5 @@
-<div class="dashboard">
+<div class="dashboard-container">
+  <mat-progress-bar mode="indeterminate" color="accent" *ngIf="loading"></mat-progress-bar>
   <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
     <mat-icon>settings</mat-icon>
     <span class="caption">Options</span>
@@ -6,17 +7,49 @@
   <mat-menu #optionsMenu="matMenu">
     <div class="form-container" (click)="$event.stopPropagation()">
       <form [formGroup]="settingsForm">
-        <div class="field">
-          <div class="label">
-            <label>Plot colour</label>
-            <mat-icon>help_outline</mat-icon>
+        <div formGroupName="bglStatsHistogram">
+          <div class="field">
+            <div class="label">
+              <mat-label>Time range</mat-label>
+              <mat-icon class="context-help" matTooltip="Period of time to include in the plot">help_outline</mat-icon>
+            </div>
+            <mat-form-field>
+              <mat-select formControlName="timeRangeHours">
+                <mat-option [value]="1">1 hour</mat-option>
+                <mat-option [value]="2">2 hours</mat-option>
+                <mat-option [value]="3">3 hours</mat-option>
+                <mat-option [value]="6">6 hours</mat-option>
+                <mat-option [value]="12">12 hours</mat-option>
+                <mat-option [value]="24">1 day</mat-option>
+                <mat-option [value]="24*7">1 week</mat-option>
+                <mat-option [value]="24*14">2 weeks</mat-option>
+                <mat-option [value]="24*30">30 days</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
-          <mat-radio-group formControlName="plotColour">
-            <mat-radio-button [value]="plotColour.Uniform">Uniform</mat-radio-button>
-            <mat-radio-button [value]="plotColour.Temperature">Temperature</mat-radio-button>
-          </mat-radio-group>
+          <div class="field">
+            <div class="label">
+              <mat-label>Plot colour</mat-label>
+            </div>
+            <mat-radio-group formControlName="plotColour">
+              <mat-radio-button [value]="plotColour.Uniform">Uniform</mat-radio-button>
+              <mat-radio-button [value]="plotColour.Temperature">Temperature</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="field">
+            <div class="label">
+              <mat-label>Plot options</mat-label>
+            </div>
+            <mat-checkbox formControlName="dataLabels">Data labels</mat-checkbox>
+          </div>
         </div>
       </form>
     </div>
   </mat-menu>
+  <div class="chart-container">
+    <highcharts-chart [options]="bglHistogramChartOptions"></highcharts-chart>
+  </div>
+  <div class="activity-log-container">
+
+  </div>
 </div>

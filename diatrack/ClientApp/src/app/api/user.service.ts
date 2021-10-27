@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
 import {BASE_PATH} from "./variables";
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {User} from "./models/User";
-import {BehaviorSubject, Observable, of, Subject} from "rxjs";
+import {BehaviorSubject, Observable, of, ReplaySubject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
 import {catchError, map, mergeMap} from "rxjs/operators";
 import {UserPreferences} from "./models/UserPreferences";
@@ -16,7 +16,9 @@ export class UserService {
 
     // Fires when the user profile changes (like when a data source is added)
     readonly userProfileLoading$ = new BehaviorSubject<boolean>(false);
-    readonly userProfile$ = new BehaviorSubject<User | undefined>(undefined);
+
+    readonly userProfile$ = new ReplaySubject<User>(1);
+    readonly userPreferences$ = new ReplaySubject<UserPreferences | undefined>(1);
 
     private _loggedIn = false;
     get loggedIn(): boolean { return this._loggedIn; }
@@ -31,17 +33,17 @@ export class UserService {
                 this.userProfileLoading$.next(true);
                 return this.getUser().pipe(
                     map(response => {
+                        this._loggedIn = true;
                         this.userProfileLoading$.next(false);
-                        if (response.ok && response.body) {
-                            this._loggedIn = true;
-                            this.userProfile$.next(response.body);
-                            return response.body;
-                        } else {
-                            this._loggedIn = false;
-                            return undefined;
-                        }
+                        this.userProfile$.next(response);
+                        this.userPreferences$.next(response.preferences);
+                        return response;
                     }),
-                    catchError(error => of(undefined)));
+                    catchError(error => {
+                        this._loggedIn = false;
+                        return of(undefined);
+                    })
+                );
             } else {
                 this._loggedIn = false;
                 return of(undefined);
@@ -49,33 +51,36 @@ export class UserService {
         }));
     }
 
-    private getUser(): Observable<HttpResponse<User>> {
-        return this.httpClient.get<User>(`${this.basePath}/user`, {
-            observe: 'response'
-        });
+    /**
+     * Retrieve the user profile
+     */
+    private getUser(): Observable<User> {
+        return this.httpClient.get<User>(`${this.basePath}/user`);
     }
 
     /**
-     * Update the user preferences and trigger a user profile update
+     * Reload the user profile from the server
      */
-    updatePreferences(preferences: UserPreferences): Observable<void> {
-        return this.httpClient.post<UserPreferences>(`${this.basePath}/user/preferences`, preferences, {
-            observe: 'response'
-        }).pipe(map(response => {
-            this.refreshUserProfile();
-        }));
-    }
-
-    /**
-     * Trigger a refresh of the user profile
-     */
-    refreshUserProfile() {
+    reloadUser() {
         this.getUser().subscribe(response => {
-            if (response.ok && response.body) {
-                this.userProfile$.next(response.body);
-            }
+            this.userProfile$.next(response);
+            this.userPreferences$.next(response.preferences);
         }, error => {
             console.error(error);
         });
+    }
+
+    /**
+     * Store the user preferences and trigger subscribers to update
+     */
+    savePreferences(preferences: UserPreferences): Observable<UserPreferences> {
+        return this.httpClient.post<UserPreferences>(`${this.basePath}/user/preferences`, preferences).pipe(map(response => {
+            if (response) {
+                console.log('Preferences saved');
+                this.userPreferences$.next(response);
+            }
+
+            return response;
+        }));
     }
 }

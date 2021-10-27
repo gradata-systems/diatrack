@@ -33,4 +33,15 @@
     <mat-error *ngIf="targetBglRangeMin.errors">Invalid low range value</mat-error>
     <mat-error *ngIf="targetBglRangeMax.errors">Invalid high range value</mat-error>
   </div>
+  <div class="field">
+    <div class="label">
+      <mat-label>Low blood glucose threshold</mat-label>
+      <mat-icon class="context-help" matTooltip="Affects the display of low BGL indicators">help_outline</mat-icon>
+    </div>
+    <mat-form-field class="bgl">
+      <input matInput type="number" formControlName="bglLowThreshold" min="1" autocomplete="none" required>
+    </mat-form-field>
+    <mat-error *ngIf="targetBglRangeMin.errors">Invalid low range value</mat-error>
+    <mat-error *ngIf="targetBglRangeMax.errors">Invalid high range value</mat-error>
+  </div>
 </form>

@@ -33,4 +33,12 @@
             height: 35px;
         }
     }
+
+    mat-form-field {
+        padding-left: 10px;
+    }
+
+    mat-form-field.bgl {
+        width: 50px;
+    }
 }

@@ -11,6 +11,7 @@ $navbar-icon-size: 1.2em;
     height: 100%;
     overflow: hidden;
     background-color: mat.get-color-from-palette($diatrack-primary, 900);
+    border-right: solid 1px black;
 
     .navbar {
         display: flex;

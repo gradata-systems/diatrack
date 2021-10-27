@@ -32,7 +32,7 @@ export class DataSourceService {
         return this.httpClient.put(`${this.basePath}/user/dataSource`, dataSource, {
             observe: 'response'
         }).pipe(map(response => {
-            this.userService.refreshUserProfile();
+            this.userService.reloadUser();
             return response;
         }));
     }
@@ -42,7 +42,7 @@ export class DataSourceService {
             observe: 'response',
             body: dataSource
         }).pipe(map(response => {
-            this.userService.refreshUserProfile();
+            this.userService.reloadUser();
             return response;
         }));
     }

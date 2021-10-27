@@ -10,16 +10,30 @@ export interface TreatmentPreferences {
         min: number;
         max: number;
     };
+    bglLowThreshold: number;
 }
 
 export interface DashboardPreferences {
-    plotColour: PlotColour;
-    timeRangeMinutes: number;
+    bglStatsHistogram: {
+        plotColour: PlotColour;
+        timeRangeHours: number;
+        buckets: number;
+        dataLabels: boolean;
+    }
 }
 
 export enum BglUnit {
     MgDl = "MgDl",
     MmolL = "MmolL"
+}
+
+export function getBglUnitDisplayValue(bglUnit: BglUnit) {
+    switch (bglUnit) {
+        case BglUnit.MmolL:
+            return 'mmol/L';
+        case BglUnit.MgDl:
+            return 'mg/dL';
+    }
 }
 
 export enum TimeFormat {

@@ -12,7 +12,7 @@ import {UserService} from "../../../api/user.service";
     templateUrl: './data-source-prefs.component.html',
     styleUrls: ['./data-source-prefs.component.scss']
 })
-export class DataSourcePrefsComponent implements OnInit {
+export class DataSourcePrefsComponent {
 
     constructor(
         public dataSourceService: DataSourceService,
@@ -20,12 +20,7 @@ export class DataSourcePrefsComponent implements OnInit {
         private dialogService: DialogService,
         public dialog: MatDialog,
         public snackBar: MatSnackBar
-    ) {
-    }
-
-    ngOnInit() {
-
-    }
+    ) { }
 
     onCreateNewClicked() {
         const dialogRef = this.dialog.open(NewDataSourceDialogComponent, {
@@ -37,7 +32,6 @@ export class DataSourcePrefsComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((dataSource?: DataSource) => {
             if (dataSource) {
-                this.userService.refreshUserProfile();
                 this.snackBar.open(`Data source '${dataSource.name}' created`);
             }
         })
@@ -52,9 +46,7 @@ export class DataSourcePrefsComponent implements OnInit {
             cancel: 'Cancel'
         }).subscribe(result => {
             if (result) {
-                this.userService.refreshUserProfile();
                 this.dataSourceService.removeDataSource(dataSource).subscribe(result => {
-                    this.userService.refreshUserProfile();
                     this.snackBar.open('Data source removed');
                 }, error => {
                     this.dialogService.error('Remove data source', [

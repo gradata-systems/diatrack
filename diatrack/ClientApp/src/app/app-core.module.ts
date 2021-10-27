@@ -5,9 +5,8 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatLineModule, MatOptionModule} from "@angular/material/core";
+import {MatLineModule, MatOptionModule} from "@angular/material/core";
 import {MatMenuModule} from "@angular/material/menu";
-import {NouisliderModule} from "ng2-nouislider";
 import {MatCardModule} from "@angular/material/card";
 import {MatListModule} from "@angular/material/list";
 import {MatDialogModule} from "@angular/material/dialog";
@@ -17,6 +16,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatSelectModule} from "@angular/material/select";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
     imports: [
@@ -38,7 +39,9 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
         MatInputModule,
         MatSelectModule,
         MatOptionModule,
+        MatCheckboxModule,
         MatProgressSpinnerModule,
+        MatProgressBarModule,
         FormsModule,
         ReactiveFormsModule
     ],

@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Subject} from "rxjs";
+import {BehaviorSubject, ReplaySubject, Subject} from "rxjs";
 import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest} from "@azure/msal-browser";
 import {filter, takeUntil} from "rxjs/operators";
@@ -11,7 +11,7 @@ import {AppConfig} from "../api/models/AppConfig";
 })
 export class AppAuthService {
     // Fired when the user's account changes
-    activeAccount$ = new BehaviorSubject<AccountInfo | null>(null);
+    activeAccount$ = new ReplaySubject<AccountInfo | null>(1);
 
     private readonly destroying$ = new Subject<void>();
 

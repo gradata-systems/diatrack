@@ -14,8 +14,7 @@ const routes: Routes = [
     },
     {
         path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [MsalGuard]
+        component: DashboardComponent
     },
     {
         path: 'preferences',

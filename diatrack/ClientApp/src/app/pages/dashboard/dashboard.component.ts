@@ -87,13 +87,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private updateView(): Observable<void> {
         this.loading = true;
-        return this.dashboardService.getBglHistogramChartOptions()
-            .pipe(
-                take(1),
-                map(chartData => {
-                    this.loading = false;
-                    this.bglHistogramChartOptions = chartData;
-                }));
+        return this.dashboardService.getBglHistogramChartOptions().pipe(
+            take(1),
+            map(chartData => {
+                this.loading = false;
+                this.bglHistogramChartOptions = chartData;
+            }));
     }
 
     ngOnDestroy() {

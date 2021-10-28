@@ -6,8 +6,10 @@ import {HttpClient} from "@angular/common/http";
     providedIn: 'root'
 })
 export class AppConfigService {
+    readonly autoRefreshEnabled = false;
+    readonly refreshInterval = 5000;
+
     constructor(
-        @Inject(BASE_PATH) private basePath: string,
-        private httpClient: HttpClient
+        @Inject(BASE_PATH) private basePath: string
     ) { }
 }

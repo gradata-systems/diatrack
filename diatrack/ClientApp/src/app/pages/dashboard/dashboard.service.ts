@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Observable, of, Subject, timer} from "rxjs";
+import {interval, Observable, of, Subject, timer} from "rxjs";
 import {DashboardPreferences, getBglUnitDisplayValue} from "../../api/models/UserPreferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {map, mergeMap, take, takeWhile} from "rxjs/operators";
+import {filter, map, mergeMap, repeatWhen, take, takeWhile} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point} from "highcharts";
 import {BglDataPoint} from "../../api/models/BglDataPoint";
+import {AppConfigService} from "../../api/app-config.service";
 
 @Injectable({
     providedIn: 'root'
@@ -17,20 +18,14 @@ export class DashboardService {
     dashboardSettings?: DashboardPreferences;
 
     // How often (in milliseconds) to check for new data
-    private readonly refreshInterval = 5000;
-    autoRefreshEnabled = true;
     readonly refresh$ = new Subject<void>();
 
     constructor(
+        private appConfigService: AppConfigService,
         private userService: UserService,
         private bglStatsService: BglStatsService
     ) {
-        // Trigger refresh on timer
-        timer(this.refreshInterval, this.refreshInterval)
-            .pipe(takeWhile(x => this.autoRefreshEnabled))
-            .subscribe(x => this.refresh$.next());
-
-        // Also refresh when a user logs on
+        // Refresh when a user logs on
         this.userService.activeUser$.subscribe(user => {
             this.refresh$.next();
         });
@@ -38,6 +33,11 @@ export class DashboardService {
         this.userService.userPreferences$.subscribe(prefs => {
             this.dashboardSettings = prefs?.dashboard;
         })
+
+        // Trigger refresh on timer
+        interval(this.appConfigService.refreshInterval).pipe(
+            filter(x => this.appConfigService.autoRefreshEnabled)
+        ).subscribe(x => this.refresh$.next());
     }
 
     refresh() {
@@ -46,7 +46,7 @@ export class DashboardService {
 
     getBglHistogramChartOptions(): Observable<Options | undefined> {
         return this.userService.userPreferences$.pipe(mergeMap(userPreferences => {
-            const histogramSettings = this.dashboardSettings?.bglStatsHistogram;
+            const histogramSettings = userPreferences?.dashboard?.bglStatsHistogram;
             const bglUnit = userPreferences?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
             const defaults = DEFAULTS.userPreferences.dashboard!.bglStatsHistogram;
             const fromTime: DateTime = DateTime.now().minus({ hours: histogramSettings?.timeRangeHours || defaults.timeRangeHours });
@@ -62,11 +62,6 @@ export class DashboardService {
                 let previousStat: BglDataPoint | undefined = undefined;
 
                 const data = response[accountId].stats.map(stat => {
-                    // Ignore empty date buckets
-                    if (stat.stats.count === 0) {
-                        return null;
-                    }
-
                     const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
                     previousStat = stat;
                     return {
@@ -79,7 +74,7 @@ export class DashboardService {
                             } as any
                         }
                     } as Point;
-                }).filter(point => point !== null);
+                });
 
                 return {
                     chart: {
@@ -89,7 +84,8 @@ export class DashboardService {
                         text: `Blood Glucose level (${getBglUnitDisplayValue(bglUnit)})`
                     },
                     xAxis: {
-                        type: 'datetime'
+                        type: 'datetime',
+                        max: DateTime.now().toMillis()
                     },
                     yAxis: {
                         min: 1,
@@ -120,7 +116,7 @@ export class DashboardService {
                             return `<div class="chart-tooltip"><table>` +
                                 `<tr><th>${date}</th><th>${time}</th></tr>` +
                                 `<tr><td>BGL</td><td>${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
-                                `<tr><td>Change</td><td>${numberFormat(delta, 1)}</td></tr>` +
+                                `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
                                 `</table></div>`;
                         }
                     },

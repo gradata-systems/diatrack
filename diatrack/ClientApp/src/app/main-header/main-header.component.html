@@ -1,12 +1,20 @@
 <div class="status-bar-container">
   <div class="status-bar">
-    <span>BGL 5.0</span>
-<!--    <p>App config: {{(appConfigService.appConfig$ | async)?.publicOidcEndpoint}}</p>-->
+    <div class="bgl-stats">
+      <div class="bgl">
+        <span class="reading">{{bglStatus.bgl !== undefined ? (getScaledBgl(bglStatus.bgl) | async | number:'1.1-1') : '---'}}</span>
+        <span class="units">{{getBglUnit() | async}}</span>
+      </div>
+      <div class="stats">
+        <div class="delta">{{getDeltaDisplayValue(bglStatus) | async}}</div>
+        <div class="last-reading">{{getLastReadingDisplayValue(bglStatus)}}</div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="account-container">
   <div class="account">
-    <ng-container *ngIf="user">
+    <ng-container *ngIf="user; else signin">
       <mat-icon>account_circle</mat-icon>
       <div class="info">
         <div class="name">{{user.name}}</div>
@@ -14,8 +22,8 @@
         <a href="#" (click)="authService.logOut()">Sign out</a>
       </div>
     </ng-container>
-    <ng-container *ngIf="!user">
+    <ng-template #signin>
       <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
-    </ng-container>
+    </ng-template>
   </div>
 </div>

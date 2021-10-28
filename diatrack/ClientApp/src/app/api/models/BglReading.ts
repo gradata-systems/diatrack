@@ -1,7 +1,7 @@
 export interface BglReading {
     accountId: string;
-    timestamp: Date;
-    received: Date;
+    timestamp: string;
+    received: string;
     trend: BglTrend;
     trendId: number;
     value: number;

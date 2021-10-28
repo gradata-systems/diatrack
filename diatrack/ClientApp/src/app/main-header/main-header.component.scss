@@ -24,6 +24,54 @@ $max-account-info-width: 150px;
 
     .status-bar {
         width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+
+        .bgl-stats {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+            margin-left: auto;
+            margin-right: auto;
+
+            .bgl {
+                margin-top: auto;
+                margin-bottom: auto;
+                padding-right: 40px;
+
+                .reading {
+                    font-size: 50px;
+                    line-height: 50px;
+                    font-weight: 500;
+                    display: block;
+                }
+
+                .units {
+                    display: block;
+                    font-size: 1em;
+                    color: rgba(255, 255, 255, 0.6);
+                }
+            }
+
+            .stats {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: auto;
+                margin-bottom: auto;
+                font-size: 1.1em;
+                text-align: left;
+
+                .delta {
+
+                }
+
+                .last-reading {
+
+                }
+            }
+        }
     }
 }
 

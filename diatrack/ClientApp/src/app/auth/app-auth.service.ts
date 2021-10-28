@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
-import {BehaviorSubject, ReplaySubject, Subject} from "rxjs";
+import {ReplaySubject} from "rxjs";
 import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
 import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest} from "@azure/msal-browser";
-import {filter, takeUntil} from "rxjs/operators";
+import {filter} from "rxjs/operators";
 import {APP_CONFIG} from "../api/variables";
 import {AppConfig} from "../api/models/AppConfig";
 
@@ -18,8 +18,7 @@ export class AppAuthService {
         @Inject(APP_CONFIG) private appConfig: AppConfig,
         private msalService: MsalService,
         private msalBroadcastService: MsalBroadcastService
-    ) {
-    }
+    ) { }
 
     configure() {
         this.msalService.instance.enableAccountStorageEvents();

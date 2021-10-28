@@ -66,7 +66,9 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
 
     getLastReadingDisplayValue(bglStats: BglStatus) {
         if (bglStats.lastReading !== undefined) {
-            return bglStats.lastReading.toFormat('HH:mm')
+            return bglStats.lastReading.toRelativeCalendar({
+                unit: 'minutes'
+            })
         } else {
             return 'No sensor data';
         }

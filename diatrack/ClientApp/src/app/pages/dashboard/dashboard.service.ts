@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
-import {interval, Observable, of, Subject, timer} from "rxjs";
-import {DashboardPreferences, getBglUnitDisplayValue} from "../../api/models/UserPreferences";
+import {interval, Observable, Subject} from "rxjs";
+import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/UserPreferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {filter, map, mergeMap, repeatWhen, take, takeWhile} from "rxjs/operators";
+import {filter, map, mergeMap} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point} from "highcharts";
 import {BglDataPoint} from "../../api/models/BglDataPoint";
 import {AppConfigService} from "../../api/app-config.service";
+import * as chroma from 'chroma-js';
 
 @Injectable({
     providedIn: 'root'
@@ -52,6 +53,8 @@ export class DashboardService {
             const fromTime: DateTime = DateTime.now().minus({ hours: histogramSettings?.timeRangeHours || defaults.timeRangeHours });
             const toTime: DateTime = DateTime.now();
             const targetBglRange = userPreferences?.treatment?.targetBglRange || DEFAULTS.userPreferences.treatment!.targetBglRange;
+            const bglLowThreshold = userPreferences?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold;
+            const colourScale = histogramSettings?.plotColour || defaults.plotColour;
 
             return this.bglStatsService.getAccountStatsHistogram({
                 start: fromTime.toISO(),
@@ -59,15 +62,20 @@ export class DashboardService {
                 buckets: histogramSettings?.buckets || defaults.buckets
             }).pipe(map(response => {
                 const accountId = Object.keys(response)[0];
+                const scale = chroma
+                    .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])
+                    .domain([0, bglLowThreshold - 0.1, bglLowThreshold, targetBglRange.min - 0.1, targetBglRange.min, targetBglRange.max, targetBglRange.max + 1]);
+
                 let previousStat: BglDataPoint | undefined = undefined;
 
                 const data = response[accountId].stats.map(stat => {
+                    const scaledBgl = this.bglStatsService.scaleBglValue(stat.stats.average, bglUnit);
                     const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
                     previousStat = stat;
                     return {
                         x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
-                        y: this.bglStatsService.scaleBglValue(stat.stats.average, bglUnit),
-                        color: '#ffb635',
+                        y: scaledBgl,
+                        color: colourScale === PlotColour.Uniform ? '#ff3900' : scale(scaledBgl).css(),
                         options: {
                             custom: {
                                 delta: delta ? this.bglStatsService.scaleBglValue(delta, bglUnit) : null
@@ -101,9 +109,9 @@ export class DashboardService {
                             value: targetBglRange.max
                         }],
                         plotBands: [{
-                            color: 'rgba(255, 0, 0, 0.1)',
+                            color: 'rgba(200, 0, 0, 0.1)',
                             from: 0,
-                            to: userPreferences?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold
+                            to: bglLowThreshold
                         }]
                     },
                     tooltip: {
@@ -127,9 +135,10 @@ export class DashboardService {
                         line: {
                             connectNulls: false,
                             color: '#f37711',
+                            lineWidth: 1,
                             marker: {
                                 lineWidth: 1,
-                                lineColor: 'rgba(255, 255, 255, 0.5)'
+                                lineColor: 'rgba(255, 255, 255, 0.4)'
                             },
                             dataLabels: {
                                 enabled: histogramSettings?.dataLabels !== undefined ? histogramSettings.dataLabels : defaults.dataLabels,

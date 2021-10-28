@@ -12,7 +12,10 @@ export const HIGHCHARTS_BASE_OPTIONS: Options = {
         backgroundColor: 'transparent',
         style: {
             fontFamily: 'Roboto,sans-serif'
-        }
+        },
+    },
+    time: {
+        useUTC: false
     },
     title: {
         style: {

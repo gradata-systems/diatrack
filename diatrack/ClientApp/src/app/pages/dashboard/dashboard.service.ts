@@ -65,7 +65,7 @@ export class DashboardService {
                     const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
                     previousStat = stat;
                     return {
-                        x: DateTime.fromISO(stat.timestamp).toMillis(),
+                        x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
                         y: this.bglStatsService.scaleBglValue(stat.stats.average, bglUnit),
                         color: '#ffb635',
                         options: {
@@ -85,7 +85,7 @@ export class DashboardService {
                     },
                     xAxis: {
                         type: 'datetime',
-                        max: DateTime.now().toMillis()
+                        max: DateTime.now().toMillis(),
                     },
                     yAxis: {
                         min: 1,

@@ -18,12 +18,6 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
     user?: User;
     loggedIn = false;
 
-    bglStatus: BglStatus = {
-        bgl: undefined,
-        delta: undefined,
-        lastReading: undefined
-    };
-
     private readonly destroying$ = new Subject<boolean>();
 
     constructor(
@@ -43,9 +37,9 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
         });
 
         this.bglStatsService.refresh$.pipe(
-            takeUntil(this.destroying$),
-            mergeMap(() => this.updateBglStatus())
+            takeUntil(this.destroying$)
         ).subscribe(() => {
+            this.bglStatsService.updateBglStatus(5);
             console.log('Updated BGL status');
         }, error => {
             this.snackBar.open('Error retrieving BGL status');
@@ -57,23 +51,13 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
         this.destroying$.complete();
     }
 
-    private updateBglStatus(): Observable<void> {
-        return this.bglStatsService.getBglStatus(5).pipe(map(status => {
-            this.bglStatus = status;
-        }));
-    }
-
     getDeltaDisplayValue(stats: BglStatus): Observable<string> {
         return this.userService.userPreferences$.pipe(map(prefs => {
             const bglUnit = prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
 
             if (stats.delta !== undefined) {
                 const scaledDelta = this.bglStatsService.scaleBglValue(stats.delta, bglUnit);
-                if (scaledDelta > 0) {
-                    return `+ ${scaledDelta.toFixed(1)}`;
-                } else {
-                    return `- ${Math.abs(scaledDelta).toFixed(1)}`;
-                }
+                return this.bglStatsService.getDeltaDisplayValue(scaledDelta);
             } else {
                 return '---';
             }

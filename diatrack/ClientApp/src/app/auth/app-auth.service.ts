@@ -13,8 +13,6 @@ export class AppAuthService {
     // Fired when the user's account changes
     activeAccount$ = new ReplaySubject<AccountInfo | null>(1);
 
-    private readonly destroying$ = new Subject<void>();
-
     constructor(
         @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
         @Inject(APP_CONFIG) private appConfig: AppConfig,
@@ -29,8 +27,7 @@ export class AppAuthService {
         this.msalBroadcastService.msalSubject$
             .pipe(
                 filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
-            )
-            .subscribe((result: EventMessage) => {
+            ).subscribe((result: EventMessage) => {
                 if (this.msalService.instance.getAllAccounts().length === 0) {
                     window.location.pathname = "/";
                     this.notifyActiveAccountChanged(null);
@@ -39,10 +36,8 @@ export class AppAuthService {
 
         this.msalBroadcastService.inProgress$
             .pipe(
-                filter((status: InteractionStatus) => status === InteractionStatus.None),
-                takeUntil(this.destroying$)
-            )
-            .subscribe(() => {
+                filter((status: InteractionStatus) => status === InteractionStatus.None)
+            ).subscribe(() => {
                 this.checkAndSetActiveAccount();
             })
     }
@@ -90,10 +85,5 @@ export class AppAuthService {
         this.msalService.logoutPopup({
             mainWindowRedirectUri: this.appConfig.redirectUri
         });
-    }
-
-    destroy(): void {
-        this.destroying$.next(undefined);
-        this.destroying$.complete();
     }
 }

@@ -1,12 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BglReading} from "./models/BglReading";
-import {interval, Observable, Subject, timer} from "rxjs";
+import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
 import {BASE_PATH} from "./variables";
 import {BglAccountStats} from "./models/BglAccountStats";
 import {BglUnit} from "./models/UserPreferences";
 import {DateTime} from "luxon";
-import {filter, map, repeatWhen} from "rxjs/operators";
+import {filter} from "rxjs/operators";
 import {AppConfigService} from "./app-config.service";
 import {UserService} from "./user.service";
 
@@ -15,6 +15,7 @@ import {UserService} from "./user.service";
 })
 export class BglStatsService {
 
+    readonly bglStatus$ = new BehaviorSubject<BglStatus>({});
     readonly refresh$ = new Subject<void>();
 
     constructor(
@@ -37,12 +38,12 @@ export class BglStatsService {
         this.refresh$.next();
     }
 
-    getBglStatus(size: number): Observable<BglStatus> {
-        return this.httpClient.get<LatestReadings>(`${this.basePath}/bgl`, {
+    updateBglStatus(size: number) {
+        this.httpClient.get<LatestReadings>(`${this.basePath}/bgl`, {
             params: {
                 'size': size
             }
-        }).pipe(map(response => {
+        }).subscribe(response => {
             const firstAccountId = Object.keys(response)[0];
             const readings = response[firstAccountId];
 
@@ -52,17 +53,19 @@ export class BglStatsService {
                 const firstReading = readings[0];
                 for (let reading of readings) {
                     if (reading.timestamp !== firstReading.timestamp) {
-                        return {
+                        this.bglStatus$.next({
                             bgl: firstReading.value,
                             delta: firstReading.value - reading.value,
                             lastReading: DateTime.fromISO(firstReading.timestamp, { zone: 'UTC' }).toLocal()
-                        } as BglStatus;
+                        });
+
+                        return;
                     }
                 }
             }
 
-            return {};
-        }));
+            this.bglStatus$.next({});
+        });
     }
 
     getAccountStatsHistogram(params: GetLatestReadingsParams): Observable<BglAccountStats> {
@@ -75,6 +78,17 @@ export class BglStatsService {
                 return value / 18;
             default:
                 return value;
+        }
+    }
+
+    /**
+     * Add a leading `-` or `+` depending on the polarity of a number
+     */
+    getDeltaDisplayValue(scaledDelta: number): string {
+        if (scaledDelta >= 0) {
+            return `+${scaledDelta.toFixed(1)}`;
+        } else {
+            return `-${Math.abs(scaledDelta).toFixed(1)}`;
         }
     }
 }

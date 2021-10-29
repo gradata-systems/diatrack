@@ -3,7 +3,7 @@ import {AppAuthService} from "../../auth/app-auth.service";
 import {UserService} from "../../api/user.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {combineLatest, Observable, Subject} from "rxjs";
-import {debounceTime, filter, map, mergeMap, take, takeUntil} from "rxjs/operators";
+import {filter, map, mergeMap, take, takeUntil} from "rxjs/operators";
 import {DashboardPreferences, PlotColour} from "../../api/models/UserPreferences";
 import {DEFAULTS} from "../../defaults";
 import {DashboardService} from "./dashboard.service";
@@ -76,9 +76,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 return this.updateView()
             }),
             takeUntil(this.destroying$),
-        ).subscribe(() => {
-            console.log('BGL histogram refreshed');
-        }, error => {
+        ).subscribe(() => {}, error => {
+            this.loading = false;
             this.snackBar.open('Error retrieving BGL chart data');
         });
 

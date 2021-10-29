@@ -1,9 +1,12 @@
 import {BrowserCacheLocation, InteractionType, IPublicClientApplication, LogLevel, PublicClientApplication} from "@azure/msal-browser";
 import {MsalGuardConfiguration, MsalInterceptorConfiguration} from "@azure/msal-angular";
 import {AppConfig} from "../../api/models/AppConfig";
+import {environment} from "../../../environments/environment";
 
 export function loggerCallback(logLevel: LogLevel, message: string) {
-    console.log(message);
+    if (!environment.production) {
+        console.debug(message);
+    }
 }
 
 export function MSALInstanceFactory(appConfig: AppConfig): IPublicClientApplication {

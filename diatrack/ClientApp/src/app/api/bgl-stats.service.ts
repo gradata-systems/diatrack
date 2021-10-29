@@ -65,6 +65,9 @@ export class BglStatsService {
             }
 
             this.bglStatus$.next({});
+        }, error => {
+            // Refresh the display so the time since last reading is updated
+            this.bglStatus$.next(this.bglStatus$.value);
         });
     }
 

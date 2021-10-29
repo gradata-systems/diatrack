@@ -15,10 +15,12 @@ import {DashboardModule} from "./pages/dashboard/dashboard.module";
 import {AppCoreModule} from "./app-core.module";
 import {PreferencesModule} from "./pages/preferences/preferences.module";
 import {CommonDialogModule} from "./common-dialog/common-dialog.module";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
     imports: [
         BrowserModule,
+        RouterModule,
         AppRoutingModule,
         AppCoreModule,
         BrowserAnimationsModule,

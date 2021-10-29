@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../api/user.service";
 import {User} from "../api/models/User";
-import {AppAuthService} from "../auth/app-auth.service";
 import {BglStatsService, BglStatus} from "../api/bgl-stats.service";
-import {BehaviorSubject, Observable, of, Subject} from "rxjs";
-import {map, mergeMap, takeUntil} from "rxjs/operators";
+import {Observable, Subject} from "rxjs";
+import {map, takeUntil} from "rxjs/operators";
 import {DEFAULTS} from "../defaults";
 import {getBglUnitDisplayValue} from "../api/models/UserPreferences";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {environment} from "../../environments/environment";
 
 @Component({
     selector: 'app-main-header',
@@ -21,7 +21,6 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
     private readonly destroying$ = new Subject<boolean>();
 
     constructor(
-        public authService: AppAuthService,
         public userService: UserService,
         public bglStatsService: BglStatsService,
         private snackBar: MatSnackBar
@@ -31,16 +30,17 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
         this.userService.activeUser$.pipe(
             takeUntil(this.destroying$)
         ).subscribe(user => {
-            console.log(`Logged in user: ${user?.emailAddress}`);
             this.user = user
             this.loggedIn = user != null;
+            if (!environment.production) {
+                console.log(`Logged in user: ${user?.emailAddress}`);
+            }
         });
 
         this.bglStatsService.refresh$.pipe(
             takeUntil(this.destroying$)
         ).subscribe(() => {
             this.bglStatsService.updateBglStatus(5);
-            console.log('Updated BGL status');
         }, error => {
             this.snackBar.open('Error retrieving BGL status');
         });

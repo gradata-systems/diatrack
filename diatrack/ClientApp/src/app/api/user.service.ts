@@ -6,6 +6,7 @@ import {BehaviorSubject, Observable, of, ReplaySubject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
 import {catchError, map, mergeMap} from "rxjs/operators";
 import {UserPreferences} from "./models/UserPreferences";
+import {environment} from "../../environments/environment";
 
 @Injectable({
     providedIn: 'root'
@@ -76,7 +77,6 @@ export class UserService {
     savePreferences(preferences: UserPreferences): Observable<UserPreferences> {
         return this.httpClient.post<UserPreferences>(`${this.basePath}/user/preferences`, preferences).pipe(map(response => {
             if (response) {
-                console.log('Preferences saved');
                 this.userPreferences$.next(response);
             }
 

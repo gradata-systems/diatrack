@@ -1,11 +1,14 @@
 import {Injectable} from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class MainNavService {
-  expanded = false;
+    expanded = false;
 
-  constructor() {
-  }
+    constructor() { }
+
+    toggleNavExpanded() {
+        this.expanded = !this.expanded;
+    }
 }

@@ -105,6 +105,11 @@ export class DashboardService {
                         min: 1,
                         softMax: userPreferences?.treatment?.targetBglRange?.max,
                         title: undefined,
+                        labels: {
+                            x: 8,
+                            y: -5,
+                            align: 'left'
+                        },
                         plotLines: [{
                             color: 'rgba(2, 166, 36, 0.3)',
                             width: 3,

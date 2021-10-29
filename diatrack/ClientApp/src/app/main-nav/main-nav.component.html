@@ -1,11 +1,5 @@
-<div class="container">
-  <div class="navbar" [class.expanded]="mainNavService.expanded">
-    <div class="toggle-button-container">
-      <button class="toggle" mat-icon-button aria-label="Expand or collapse the side menu" color="primary" (click)="toggleNavExpanded()" matTooltip="Expand menu"
-              [matTooltipDisabled]="mainNavService.expanded">
-        <mat-icon>{{ mainNavService.expanded ? "chevron_left" : "menu" }}</mat-icon>
-      </button>
-    </div>
+<div class="container" [class.expanded]="mainNavService.expanded">
+  <div class="navbar">
     <div class="buttons">
       <div class="menu-buttons">
         <ng-container *ngIf="userService.loggedIn">
@@ -20,11 +14,30 @@
         </ng-container>
       </div>
       <div class="footer-buttons">
+        <a class="menu-button" mat-flat-button [matMenuTriggerFor]="accountMenu" matTooltip="Manage your account" [matTooltipDisabled]="mainNavService.expanded">
+          <mat-icon>account_circle</mat-icon>
+          <span class="caption">Profile</span>
+        </a>
         <a class="menu-button" mat-flat-button [routerLink]="['about']" [routerLinkActive]="['active']" aria-label="About button" matTooltip="About" [matTooltipDisabled]="mainNavService.expanded">
           <mat-icon>info_outline</mat-icon>
           <span class="caption">About</span>
         </a>
       </div>
+      <mat-menu #accountMenu="matMenu">
+        <div class="account">
+          <ng-container *ngIf="userService.activeUser$ | async; else signin; let user">
+            <mat-icon>account_circle</mat-icon>
+            <div class="info">
+              <div class="name">{{user.name}}</div>
+              <div class="email">{{user.emailAddress}}</div>
+              <a href="#" (click)="authService.logOut()">Sign out</a>
+            </div>
+          </ng-container>
+          <ng-template #signin>
+            <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
+          </ng-template>
+        </div>
+      </mat-menu>
     </div>
   </div>
 </div>

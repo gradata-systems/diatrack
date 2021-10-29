@@ -1,6 +1,7 @@
 @use '~@angular/material' as mat;
 @import '~highcharts/css/highcharts';
 @import '../theme';
+@import '../media-rules';
 
 @include mat.all-component-themes($diatrack-theme);
 
@@ -31,6 +32,15 @@
         &:first-of-type {
             font-weight: 500;
             padding-right: 15px;
+        }
+    }
+}
+
+@media (max-width: $media-phone-portrait-breakpoint) {
+    ::ng-deep {
+        // Disable chart title on small-format layouts
+        .highcharts-title {
+            display: none;
         }
     }
 }

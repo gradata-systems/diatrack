@@ -5,7 +5,7 @@ export const DEFAULT_CHART_ANIMATION_DURATION = 400;
 export const HIGHCHARTS_BASE_OPTIONS: Options = {
     chart: {
         animation: true,
-        spacingTop: 10,
+        spacingTop: 20,
         spacingRight: 0,
         spacingBottom: 0,
         spacingLeft: 0,

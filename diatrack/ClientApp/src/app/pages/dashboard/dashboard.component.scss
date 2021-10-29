@@ -1,4 +1,5 @@
 @import '../page-styles';
+@import '../../media-rules';
 
 :host {
     height: 100%;
@@ -7,7 +8,7 @@
 }
 
 .dashboard-container {
-    padding: 20px;
+    padding: 10px 0 10px 0;
     height: 100%;
     width: 100%;
     position: relative;
@@ -50,8 +51,17 @@ button.options {
 .chart-container {
     flex-grow: 1;
     max-height: 500px;
+
+    @media (max-height: $media-phone-landscape-breakpoint) {
+        max-height: 100%;
+    }
 }
 
 .activity-log-container {
     flex-grow: 1;
+
+    // Hide the activity log on the dashboard for smaller screens
+    @media (max-height: $media-phone-landscape-breakpoint) {
+        display: none;
+    }
 }

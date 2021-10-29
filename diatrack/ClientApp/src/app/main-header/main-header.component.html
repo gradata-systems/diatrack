@@ -14,18 +14,3 @@
     </div>
   </div>
 </div>
-<div class="account-container">
-  <div class="account">
-    <ng-container *ngIf="user; else signin">
-      <mat-icon>account_circle</mat-icon>
-      <div class="info">
-        <div class="name">{{user.name}}</div>
-        <div class="email">{{user.emailAddress}}</div>
-        <a href="#" (click)="authService.logOut()">Sign out</a>
-      </div>
-    </ng-container>
-    <ng-template #signin>
-      <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
-    </ng-template>
-  </div>
-</div>

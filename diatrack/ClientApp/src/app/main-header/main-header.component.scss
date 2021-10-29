@@ -4,8 +4,6 @@
 @include mat.all-component-themes($diatrack-theme);
 
 $status-bar-height: 100px;
-$avatar-size: 50px;
-$max-account-info-width: 150px;
 
 :host {
     display: flex;
@@ -38,7 +36,7 @@ $max-account-info-width: 150px;
             .bgl {
                 margin-top: auto;
                 margin-bottom: auto;
-                padding-right: 40px;
+                padding-right: 20px;
 
                 .reading {
                     font-size: 50px;
@@ -70,52 +68,6 @@ $max-account-info-width: 150px;
                 .last-reading {
 
                 }
-            }
-        }
-    }
-}
-
-.account-container {
-    position: absolute;
-    right: 0;
-    margin-right: 30px;
-
-    .account {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        height: 100%;
-
-        mat-icon {
-            font-size: $avatar-size;
-            width: $avatar-size;
-            height: $avatar-size;
-            margin-right: 15px;
-            cursor: default;
-        }
-
-        .info {
-            max-width: $max-account-info-width;
-
-            .name {
-                font-size: 1.1em;
-                font-weight: 500;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-            }
-
-            .email {
-                font-size: 0.9em;
-                opacity: 0.8;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-            }
-
-            a {
-                display: block;
-                margin-top: 2px;
             }
         }
     }

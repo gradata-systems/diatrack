@@ -1,36 +1,25 @@
 @use '~@angular/material' as mat;
 @import '../theme';
+@import '../media-rules';
 
 @include mat.all-component-themes($diatrack-theme);
 
 $navbar-min-width: 62px;
 $navbar-icon-size: 1.2em;
+$button-spacing: 15px;
 
 .container {
     display: block;
+    position: relative;
     height: 100%;
     overflow: hidden;
     background-color: mat.get-color-from-palette($diatrack-primary, 900);
     border-right: solid 1px black;
 
-    .navbar {
-        display: flex;
-        flex-direction: column;
-        align-items: normal;
-        padding-top: 10px;
-        padding-bottom: 5px;
-        width: 100%;
-        height: 100%;
+    &.expanded {
+        .navbar {
+            display: flex;
 
-        .toggle-button-container {
-            padding-left: 21px;
-
-            .menu-button {
-                font-size: $navbar-icon-size;
-            }
-        }
-
-        &.expanded {
             .buttons {
                 .menu-button .caption {
                     display: inline-block;
@@ -38,6 +27,28 @@ $navbar-icon-size: 1.2em;
                 }
             }
         }
+
+        @media (max-width: $media-phone-portrait-breakpoint) {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+    }
+
+    @media (max-width: $media-phone-portrait-breakpoint) {
+        display: none;
+    }
+
+    .navbar {
+        display: flex;
+        flex-direction: column;
+        align-items: normal;
+        padding-top: 90px;
+        padding-bottom: 5px;
+        width: 100%;
+        height: 100%;
 
         .buttons {
             display: flex;
@@ -70,17 +81,63 @@ $navbar-icon-size: 1.2em;
             }
 
             .menu-buttons {
+                display: flex;
+                flex-direction: column;
                 flex-grow: 1;
                 padding-top: 15px;
-
-                .menu-button {
-                    margin: 15px 0;
-                }
+                gap: $button-spacing;
             }
 
             .footer-buttons {
+                display: flex;
+                flex-direction: column;
                 padding-bottom: 10px;
+                gap: $button-spacing;
             }
+        }
+    }
+}
+
+$avatar-size: 50px;
+$max-account-info-width: 150px;
+
+.account {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 10px 20px;
+
+    mat-icon {
+        font-size: $avatar-size;
+        width: $avatar-size;
+        height: $avatar-size;
+        margin-right: 15px;
+        cursor: default;
+    }
+
+    .info {
+        max-width: $max-account-info-width;
+
+        .name {
+            font-size: 1.1em;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .email {
+            font-size: 0.9em;
+            opacity: 0.8;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        a {
+            display: block;
+            margin-top: 2px;
         }
     }
 }

@@ -8,6 +8,7 @@ import {HttpClient} from "@angular/common/http";
 export class AppConfigService {
     readonly autoRefreshEnabled = true;
     readonly refreshInterval = 10000;
+    readonly formDebounceInterval = 1000;
 
     constructor(
         @Inject(BASE_PATH) private basePath: string

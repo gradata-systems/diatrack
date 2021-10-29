@@ -2,10 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {BglUnit, TimeFormat, TreatmentPreferences, UserPreferences} from "../../../api/models/UserPreferences";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {UserService} from "../../../api/user.service";
-import {User} from "../../../api/models/User";
 import {Subject} from "rxjs";
 import {debounceTime, takeUntil} from "rxjs/operators";
 import {DEFAULTS} from "../../../defaults";
+import {AppConfigService} from "../../../api/app-config.service";
 
 @Component({
     selector: 'app-treatment-prefs',
@@ -26,6 +26,7 @@ export class TreatmentPrefsComponent implements OnInit {
 
     constructor(
         private userService: UserService,
+        private appConfigService: AppConfigService,
         fb: FormBuilder
     ) {
         const defaults = DEFAULTS.userPreferences.treatment!;
@@ -81,7 +82,7 @@ export class TreatmentPrefsComponent implements OnInit {
 
         // Update the user profile on change
         this.settingsForm.valueChanges.pipe(
-            debounceTime(250),
+            debounceTime(this.appConfigService.formDebounceInterval),
             takeUntil(this.destroying$)
         ).subscribe((value: TreatmentPreferences) => {
             this.userService.savePreferences({

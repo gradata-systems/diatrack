@@ -5,7 +5,7 @@ export var DEFAULTS = {
         dashboard: {
             bglStatsHistogram: {
                 timeRangeHours: 2,
-                plotColour: PlotColour.Temperature,
+                plotColour: PlotColour.ScaledByBgl,
                 dataLabels: false,
                 buckets: 1000
             }

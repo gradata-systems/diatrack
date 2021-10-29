@@ -53,8 +53,10 @@ export class DashboardService {
             const fromTime: DateTime = DateTime.now().minus({ hours: histogramSettings?.timeRangeHours || defaults.timeRangeHours });
             const toTime: DateTime = DateTime.now();
             const targetBglRange = userPreferences?.treatment?.targetBglRange || DEFAULTS.userPreferences.treatment!.targetBglRange;
+            const targetBglRangeMid = ((targetBglRange.max - targetBglRange.min) / 2) + targetBglRange.min;
             const bglLowThreshold = userPreferences?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold;
-            const colourScale = histogramSettings?.plotColour || defaults.plotColour;
+            const pointColourMode = histogramSettings?.plotColour || defaults.plotColour;
+            const uniformColour = '#ff3900';
 
             return this.bglStatsService.getAccountStatsHistogram({
                 start: fromTime.toISO(),
@@ -62,20 +64,24 @@ export class DashboardService {
                 buckets: histogramSettings?.buckets || defaults.buckets
             }).pipe(map(response => {
                 const accountId = Object.keys(response)[0];
-                const scale = chroma
-                    .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])
-                    .domain([0, bglLowThreshold - 0.1, bglLowThreshold, targetBglRange.min - 0.1, targetBglRange.min, targetBglRange.max, targetBglRange.max + 1]);
-
                 let previousStat: BglDataPoint | undefined = undefined;
+                let maxBgl = 0;
+
+                const colourScale = chroma
+                    .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])
+                    .domain([0, bglLowThreshold - 0.1, bglLowThreshold, targetBglRange.min - 0.1, targetBglRange.min, targetBglRange.max, targetBglRange.max + 0.1]);
 
                 const data = response[accountId].stats.map(stat => {
                     const scaledBgl = this.bglStatsService.scaleBglValue(stat.stats.average, bglUnit);
                     const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
                     previousStat = stat;
+
+                    maxBgl = Math.max(maxBgl, scaledBgl);
+
                     return {
                         x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
                         y: scaledBgl,
-                        color: colourScale === PlotColour.Uniform ? '#ff3900' : scale(scaledBgl).css(),
+                        color: pointColourMode === PlotColour.Uniform ? uniformColour : colourScale(scaledBgl).css(),
                         options: {
                             custom: {
                                 delta: delta ? this.bglStatsService.scaleBglValue(delta, bglUnit) : null
@@ -93,7 +99,7 @@ export class DashboardService {
                     },
                     xAxis: {
                         type: 'datetime',
-                        max: DateTime.now().toMillis(),
+                        max: DateTime.now().toMillis()
                     },
                     yAxis: {
                         min: 1,
@@ -121,9 +127,11 @@ export class DashboardService {
                             const datetime = DateTime.fromMillis(this.x);
                             const date = datetime.toFormat('dd MMM');
                             const time = datetime.toFormat('HH:mm');
+                            const pointColour = colourScale(this.y).css();
+
                             return `<div class="chart-tooltip"><table>` +
                                 `<tr><th>${date}</th><th>${time}</th></tr>` +
-                                `<tr><td>BGL</td><td>${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
+                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
                                 `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
                                 `</table></div>`;
                         }
@@ -134,11 +142,20 @@ export class DashboardService {
                     plotOptions: {
                         line: {
                             connectNulls: false,
-                            color: '#f37711',
                             lineWidth: 1,
                             marker: {
                                 lineWidth: 1,
                                 lineColor: 'rgba(255, 255, 255, 0.4)'
+                            },
+                            color: pointColourMode === PlotColour.Uniform ? uniformColour : {
+                                linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+                                stops: [
+                                    [0, 'yellow'],
+                                    [1 - (targetBglRange.max / maxBgl), 'yellow'],
+                                    [1 - (targetBglRangeMid / maxBgl), 'green'],
+                                    [1 - (targetBglRange.min / maxBgl), 'green'],
+                                    [1, 'orange']
+                                ] as any
                             },
                             dataLabels: {
                                 enabled: histogramSettings?.dataLabels !== undefined ? histogramSettings.dataLabels : defaults.dataLabels,

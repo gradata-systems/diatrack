@@ -43,5 +43,5 @@ export enum TimeFormat {
 
 export enum PlotColour {
     Uniform = 'Uniform',
-    Temperature = 'Temperature'
+    ScaledByBgl = 'ScaledByBgl'
 }

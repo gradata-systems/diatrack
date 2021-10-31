@@ -7,6 +7,10 @@
             <mat-icon>ssid_chart</mat-icon>
             <span class="caption">Dashboard</span>
           </a>
+          <a class="menu-button" mat-flat-button [routerLink]="['activity']" [routerLinkActive]="['active']" aria-label="Activity log button" matTooltip="Activity log" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>assignment</mat-icon>
+            <span class="caption">Activity log</span>
+          </a>
           <a class="menu-button" mat-flat-button [routerLink]="['preferences']" [routerLinkActive]="['active']" aria-label="User preferences button" matTooltip="User preferences" [matTooltipDisabled]="mainNavService.expanded">
             <mat-icon>manage_accounts</mat-icon>
             <span class="caption">Preferences</span>

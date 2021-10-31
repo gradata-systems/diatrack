@@ -4,7 +4,8 @@ import {MsalGuard} from "@azure/msal-angular";
 import {DashboardComponent} from "./pages/dashboard/dashboard.component";
 import {PreferencesComponent} from "./pages/preferences/preferences.component";
 import {FailedLoginComponent} from "./auth/failed-login/failed-login.component";
-import {AboutComponent} from "./pages/about/about.component";
+import {AboutPageComponent} from "./pages/about/about.component";
+import {ActivityLogPageComponent} from "./pages/activity-log/activity-log.component";
 
 const routes: Routes = [
     {
@@ -17,13 +18,18 @@ const routes: Routes = [
         component: DashboardComponent
     },
     {
+        path: 'activity',
+        component: ActivityLogPageComponent,
+        canActivate: [MsalGuard]
+    },
+    {
         path: 'preferences',
         component: PreferencesComponent,
         canActivate: [MsalGuard]
     },
     {
         path: 'about',
-        component: AboutComponent
+        component: AboutPageComponent
     },
     {
         path: 'login-failed',

@@ -7,10 +7,13 @@
 $fab-icon-size: 30px;
 $fab-icon-button-size: $fab-icon-size + 35px;
 
-button.new-log-entry {
-    position: absolute;
+:host {
+    position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 25px;
+}
+
+button.new-log-entry {
     width: $fab-icon-button-size;
     height: $fab-icon-button-size;
 

@@ -10,13 +10,14 @@ import {APP_CONFIG, BASE_PATH} from "./api/variables";
 import {ApiModule} from "./api/api.module";
 import {MainHeaderModule} from "./main-header/main-header.module";
 import {AppAuthModule} from "./auth/app-auth.module";
-import {AboutComponent} from './pages/about/about.component';
+import {AboutPageComponent} from './pages/about/about.component';
 import {DashboardModule} from "./pages/dashboard/dashboard.module";
 import {AppCoreModule} from "./app-core.module";
 import {PreferencesModule} from "./pages/preferences/preferences.module";
 import {CommonDialogModule} from "./common-dialog/common-dialog.module";
 import {RouterModule} from "@angular/router";
 import {ActivityLogModule} from "./activity-log/activity-log.module";
+import { ActivityLogPageComponent } from './pages/activity-log/activity-log.component';
 
 @NgModule({
     imports: [
@@ -40,7 +41,8 @@ import {ActivityLogModule} from "./activity-log/activity-log.module";
     declarations: [
         AppComponent,
         MainNavComponent,
-        AboutComponent
+        AboutPageComponent,
+        ActivityLogPageComponent
     ],
     bootstrap: [AppComponent]
 })

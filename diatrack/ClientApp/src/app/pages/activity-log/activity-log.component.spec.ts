@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AboutPageComponent } from './about.component';
+import { ActivityLogPageComponent } from './activity-log.component';
 
-describe('AboutComponent', () => {
-  let component: AboutPageComponent;
-  let fixture: ComponentFixture<AboutPageComponent>;
+describe('ActivityLogComponent', () => {
+  let component: ActivityLogPageComponent;
+  let fixture: ComponentFixture<ActivityLogPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AboutPageComponent ]
+      declarations: [ ActivityLogPageComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AboutPageComponent);
+    fixture = TestBed.createComponent(ActivityLogPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

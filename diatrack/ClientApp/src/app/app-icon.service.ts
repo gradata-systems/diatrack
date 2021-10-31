@@ -7,12 +7,12 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class AppIconService {
 
-    readonly icons: ReadonlyMap<string, string> = new Map<AppIcon, string>([
-        [ AppIcon.BglReading, '../assets/icons/bloodtype_black_24dp.svg' ],
-        [ AppIcon.Exercise, '../assets/icons/directions_run_black_24dp.svg' ],
-        [ AppIcon.Food, '../assets/icons/glyphicons-basic-278-cutlery.svg' ],
+    private readonly icons: ReadonlyMap<string, string> = new Map<AppIcon, string>([
+        [ AppIcon.BglReading, '../assets/icons/bloodtype_white_24dp.svg' ],
+        [ AppIcon.Exercise, '../assets/icons/directions_run_white_24dp.svg' ],
+        [ AppIcon.Food, '../assets/icons/dining_white_24dp.svg' ],
         [ AppIcon.Insulin, '../assets/icons/glyphicons-basic-627-syringe-empty.svg' ],
-        [ AppIcon.Note, '../assets/icons/text_snippet_black_24dp.svg' ]
+        [ AppIcon.Note, '../assets/icons/assignment_white_24dp.svg' ]
     ]);
 
     constructor(
@@ -24,6 +24,10 @@ export class AppIconService {
         this.icons.forEach((url, key) => {
             this.matIconRegistry.addSvgIcon(key, this.domSanitizerService.bypassSecurityTrustResourceUrl(url));
         });
+    }
+
+    getIconUrl(iconId: AppIcon): string | undefined {
+        return this.icons.get(iconId);
     }
 }
 

@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivityLogService} from "../activity-log.service";
-import {AsyncSubject, Observable, Subject} from "rxjs";
+import {combineLatest, merge, Observable, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";
@@ -11,6 +11,7 @@ import {map, mergeMap, takeUntil} from "rxjs/operators";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
+import {DashboardService} from "../../pages/dashboard/dashboard.service";
 
 @Component({
     selector: 'app-activity-log-list',
@@ -33,11 +34,15 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         private snackBar: MatSnackBar,
         private appConfigService: AppConfigService,
         private appDialogService: DialogService,
-        private dialogService: MatDialog
+        private dialogService: MatDialog,
+        private dashboardService: DashboardService
     ) { }
 
     ngOnInit() {
-        this.activityLogService.refresh$.pipe(
+        merge(
+            this.activityLogService.refresh$,
+            this.activityLogService.changed$
+        ).pipe(
             takeUntil(this.destroying$),
             mergeMap(() => {
                 this.loading = true;
@@ -55,12 +60,27 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
             this.snackBar.open('Error occurred when querying the activity log');
         });
 
-        this.activityLogService.refreshEntries();
+        // If a dashboard log entry marker is clicked, display the edit dialog
+        this.dashboardService.activityLogMarkerClicked$.pipe(
+            takeUntil(this.destroying$)
+        ).subscribe(logEntryId => {
+            this.editLogEntryById(logEntryId);
+        });
+
+        this.activityLogService.triggerRefresh();
     }
 
     ngOnDestroy() {
         this.destroying$.next(true);
         this.destroying$.complete();
+    }
+
+    editLogEntryById(id: string) {
+        this.activityLogService.getEntry(id).subscribe(logEntry => {
+            this.editLogEntry(logEntry);
+        }, error => {
+            this.snackBar.open('Could not find the requested log entry');
+        });
     }
 
     editLogEntry(logEntry: ActivityLogEntry) {
@@ -80,7 +100,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
 
     deleteLogEntry(logEntry: ActivityLogEntry) {
         this.activityLogService.deleteEntry(logEntry.id).subscribe(() => {
-            this.activityLogService.refreshEntries();
+            this.activityLogService.triggerChanged();
             this.snackBar.open('Log entry deleted');
         }, error => {
             this.appDialogService.error('Delete log entry', 'The selected log entry could not be deleted. Please try again later.');
@@ -106,7 +126,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
     getScaledBgl(logEntry: ActivityLogEntry): Observable<number | undefined> {
         return this.userService.getBglUnits().pipe(map(bglUnits => {
             if (logEntry.bgl !== undefined) {
-                return this.bglStatsService.scaleBglValue(logEntry.bgl!, bglUnits)
+                return this.bglStatsService.scaleBglValueFromMgDl(logEntry.bgl!, bglUnits)
             } else {
                 return undefined;
             }

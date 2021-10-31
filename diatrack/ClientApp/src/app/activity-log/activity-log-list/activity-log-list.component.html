@@ -3,7 +3,7 @@
     <mat-list-item *ngFor="let logEntry of logEntries" role="listitem">
       <div class="list-item">
         <div class="content">
-          <mat-icon matListIcon class="light" [svgIcon]="activityLogService.getLogEntryIcon(logEntry)"></mat-icon>
+          <mat-icon matListIcon class="light" [svgIcon]="activityLogService.getLogEntryIcon(logEntry)!"></mat-icon>
           <div class="properties">
             <h3 matLine (click)="editLogEntry(logEntry)">{{activityLogService.getLogEntryCategoryName(logEntry)}}</h3>
 
@@ -23,8 +23,8 @@
 
             <ng-container *ngIf="logEntry.category === activityLogEntryCategory.BglReading">
               <div class="property">
-                <span class="bold">{{logEntry.properties.bglReading | number:'1.1-1'}} </span>
-                <span>{{userService.getBglUnitDisplayValue() | async}}</span>
+                <span class="bold">{{bglStatsService.scaleBglValueFromMgDl(logEntry.properties.bglReading, logEntry.properties.bglUnits) | number:'1.1-1'}} </span>
+                <span>{{userService.getBglUnitDisplayValue(logEntry.properties.bglUnits)}}</span>
               </div>
             </ng-container>
 

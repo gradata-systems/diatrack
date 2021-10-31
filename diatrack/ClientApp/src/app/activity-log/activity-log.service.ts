@@ -15,6 +15,7 @@ import {UserService} from "../api/user.service";
 export class ActivityLogService {
 
     readonly refresh$ = new Subject<void>();
+    readonly changed$ = new Subject<void>();
 
     readonly activityLogCategories: ReadonlyMap<ActivityLogEntryCategory, ActivityLogEntryCategoryInfo> = new Map([
         [ActivityLogEntryCategory.Insulin, { name: 'Insulin', icon: AppIcon.Insulin }],
@@ -36,17 +37,21 @@ export class ActivityLogService {
         ]).pipe(
             filter(() => this.appConfigService.autoRefreshEnabled)
         ).subscribe(() => {
-            this.refreshEntries();
+            this.triggerRefresh();
         });
     }
 
-    refreshEntries() {
+    triggerRefresh() {
         this.refresh$.next();
     }
 
-    getLogEntryIcon(logEntry: ActivityLogEntry): string {
+    triggerChanged() {
+        this.changed$.next();
+    }
+
+    getLogEntryIcon(logEntry: ActivityLogEntry): AppIcon | undefined {
         let category = this.activityLogCategories.get(logEntry.category);
-        return category?.icon || '';
+        return category?.icon;
     }
 
     getLogEntryCategoryName(logEntry: ActivityLogEntry): string {
@@ -86,6 +91,14 @@ export class ActivityLogService {
 interface LogEntryQueryParams
 {
     size: number;
+
+    /**
+     * Request log entries occurring on or after this date, in local time
+     */
     fromDate?: DateTime;
+
+    /**
+     * Limit entries to those occurring on or before this date, in local time
+     */
     toDate?: DateTime;
 }

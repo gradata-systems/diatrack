@@ -90,9 +90,13 @@ export class UserService {
         }));
     }
 
-    getBglUnitDisplayValue(): Observable<string> {
+    getUserBglUnitDisplayValue(): Observable<string> {
         return this.getBglUnits().pipe(map(bglUnit => {
             return getBglUnitDisplayValue(bglUnit);
         }));
+    }
+
+    getBglUnitDisplayValue(bglUnit: BglUnit): string {
+        return getBglUnitDisplayValue(bglUnit);
     }
 }

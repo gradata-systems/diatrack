@@ -6,6 +6,7 @@ export var DEFAULTS = {
             bglStatsHistogram: {
                 timeRangeHours: 2,
                 plotColour: PlotColour.ScaledByBgl,
+                activityLog: true,
                 dataLabels: false,
                 buckets: 1000
             }

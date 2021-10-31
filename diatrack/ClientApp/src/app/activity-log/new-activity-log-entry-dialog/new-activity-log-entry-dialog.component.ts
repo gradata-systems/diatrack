@@ -9,6 +9,8 @@ import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";
+import {BglUnit} from "../../api/models/user-preferences";
+import {take} from "rxjs/operators";
 
 @Component({
     selector: 'app-new-activity-log-entry-dialog',
@@ -21,6 +23,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
     inProgress = false;
 
     readonly activityLogEntryType = ActivityLogEntryCategory;
+    readonly bglUnit = BglUnit;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public readonly dialogData: ActivityLogEntryDialogParams,
@@ -64,7 +67,8 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
                 };
             case ActivityLogEntryCategory.BglReading:
                 return {
-                    bglReading: this.fb.control('', Validators.min(0.1))
+                    bglReading: this.fb.control('', Validators.min(0.1)),
+                    bglUnits: this.fb.control('', Validators.required)
                 };
             case ActivityLogEntryCategory.Exercise:
                 return {
@@ -76,10 +80,25 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {
+    ngOnInit() {
+        // Pre-fill BGL units
+        this.userService.userPreferences$.pipe(take(1)).subscribe(userPrefs => {
+            const bglUnits = userPrefs?.treatment?.bglUnit;
+            if (bglUnits !== undefined) {
+                this.formGroup.patchValue({
+                    properties: {
+                        bglUnits: bglUnits
+                    }
+                }, {
+                    emitEvent: false
+                });
+            }
+        });
     }
 
     onSubmit() {
+        this.formGroup.markAllAsTouched();
+        console.log('Submit');
         if (this.formGroup.valid) {
             // Attempt to create a log entry
             const bglStatus = this.bglStatsService.bglStatus$.value;
@@ -101,7 +120,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
         this.inProgress = true;
         this.activityLogService.addEntry(logEntryParams).subscribe(() => {
             this.snackBar.open('Log entry added');
-            this.activityLogService.refreshEntries();
+            this.activityLogService.triggerChanged();
             this.dialogRef.close(true);
         }, error => {
             this.dialogService.error('Add log entry', 'Log entry could not be added. Please try again in a moment.');
@@ -116,13 +135,21 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
         this.inProgress = true;
         this.activityLogService.updateEntry(existingEntry.id, logEntryParams).subscribe(() => {
             this.snackBar.open('Log entry updated');
-            this.activityLogService.refreshEntries();
+            this.activityLogService.triggerChanged();
             this.dialogRef.close(true);
         }, error => {
             this.dialogService.error('Edit log entry', 'Log entry could not be updated. Please try again in a moment.');
         }, () => {
             this.inProgress = false;
         });
+    }
+
+    getSubmitButtonCaption() {
+        if (this.dialogData.existingEntry) {
+            return 'Save';
+        } else {
+            return 'Create';
+        }
     }
 }
 

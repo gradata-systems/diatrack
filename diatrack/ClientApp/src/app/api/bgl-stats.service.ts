@@ -88,7 +88,24 @@ export class BglStatsService {
         return this.httpClient.post<BglAccountStats>(`${this.basePath}/bgl/accountStatsHistogram`, params);
     }
 
-    scaleBglValue(value: number, bglUnit: BglUnit): number {
+    scaleBglValue(value: number, bglUnitFrom: BglUnit, bglUnitTo: BglUnit): number {
+        if (bglUnitFrom !== bglUnitTo) {
+            if (bglUnitFrom === BglUnit.MgDl && bglUnitTo === BglUnit.MmolL) {
+                return value / 18;
+            } else if (bglUnitFrom === BglUnit.MmolL && bglUnitTo === BglUnit.MgDl) {
+                return value * 18;
+            } else {
+                throw new Error(`Unexpected BGL unit values: ${bglUnitFrom}, ${bglUnitTo}`)
+            }
+        } else {
+            return value;
+        }
+    }
+
+    /**
+     * Scale from the Dexcom default scale of Mg/dL to the target units
+     */
+    scaleBglValueFromMgDl(value: number, bglUnit: BglUnit): number {
         switch(bglUnit) {
             case BglUnit.MmolL:
                 return value / 18;

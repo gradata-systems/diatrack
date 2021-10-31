@@ -42,12 +42,14 @@ export class NewDataSourceDialogComponent implements OnInit {
     }
 
     onSubmit() {
-        this.inProgress = true;
-        this.dataSourceService.addDataSource(this.formGroup.value).subscribe(result => {
-            this.dialogRef.close(this.formGroup.value);
-        }, (error: HttpErrorResponse) => {
-            this.inProgress = false;
-            this.error = error.error?.detail || 'Error occurred when registering account';
-        })
+        if (this.formGroup.valid) {
+            this.inProgress = true;
+            this.dataSourceService.addDataSource(this.formGroup.value).subscribe(result => {
+                this.dialogRef.close(this.formGroup.value);
+            }, (error: HttpErrorResponse) => {
+                this.inProgress = false;
+                this.error = error.error?.detail || 'Error occurred when registering account';
+            })
+        }
     }
 }

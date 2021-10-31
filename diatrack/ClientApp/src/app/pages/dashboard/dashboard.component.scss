@@ -41,6 +41,12 @@ button.options {
         mat-radio-button, mat-checkbox {
             padding: 4px 8px;
         }
+
+        &.plot-options {
+            mat-checkbox {
+                display: block;
+            }
+        }
     }
 }
 
@@ -67,3 +73,4 @@ button.options {
 
     @include diatrack-custom-scrollbar;
 }
+

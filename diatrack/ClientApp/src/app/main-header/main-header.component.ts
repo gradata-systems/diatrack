@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../api/user.service";
 import {UserProfile} from "../api/models/user";
 import {BglStatsService, BglStatus} from "../api/bgl-stats.service";
@@ -12,7 +12,8 @@ import {DateTime} from "luxon";
 @Component({
     selector: 'app-main-header',
     templateUrl: './main-header.component.html',
-    styleUrls: ['./main-header.component.scss']
+    styleUrls: ['./main-header.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MainHeaderComponent implements OnInit, OnDestroy {
     user?: UserProfile;
@@ -56,7 +57,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
             const bglUnit = prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
 
             if (stats.delta !== undefined) {
-                const scaledDelta = this.bglStatsService.scaleBglValue(stats.delta, bglUnit);
+                const scaledDelta = this.bglStatsService.scaleBglValueFromMgDl(stats.delta, bglUnit);
                 return this.bglStatsService.getDeltaDisplayValue(scaledDelta);
             } else {
                 return '---';
@@ -83,7 +84,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
     getScaledBgl(bgl: number): Observable<number> {
         return this.userService.userPreferences$.pipe(map(prefs => {
             const bglUnit = prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
-            return this.bglStatsService.scaleBglValue(bgl, bglUnit);
+            return this.bglStatsService.scaleBglValueFromMgDl(bgl, bglUnit);
         }));
     }
 }

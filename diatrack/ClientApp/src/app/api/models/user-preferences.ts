@@ -18,6 +18,7 @@ export interface DashboardPreferences {
         plotColour: PlotColour;
         timeRangeHours: number;
         buckets: number;
+        activityLog: boolean;
         dataLabels: boolean;
     }
 }

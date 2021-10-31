@@ -1,5 +1,5 @@
 <div class="dashboard-container">
-  <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading"></mat-progress-bar>
+  <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading$ | async"></mat-progress-bar>
   <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
     <mat-icon>settings</mat-icon>
     <span class="caption">Options</span>
@@ -36,10 +36,11 @@
               <mat-radio-button [value]="plotColour.ScaledByBgl">Scaled by BGL</mat-radio-button>
             </mat-radio-group>
           </div>
-          <div class="field">
+          <div class="field plot-options">
             <div class="label">
               <mat-label>Plot options</mat-label>
             </div>
+            <mat-checkbox formControlName="activityLog">Activity log</mat-checkbox>
             <mat-checkbox formControlName="dataLabels">Data labels</mat-checkbox>
           </div>
         </div>

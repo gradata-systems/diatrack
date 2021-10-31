@@ -4,10 +4,11 @@ import {AppAuthService} from "./auth/app-auth.service";
 import {of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 import {BglStatsService} from "./api/bgl-stats.service";
-import {catchError, map, mergeMap, takeUntil} from "rxjs/operators";
+import {map, mergeMap, takeUntil} from "rxjs/operators";
 import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
+import {AppIconService} from "./app-icon.service";
 
 @Component({
     selector: 'app-root',
@@ -26,13 +27,17 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private bglStatsService: BglStatsService,
         private userService: UserService,
-        private authService: AppAuthService
+        private authService: AppAuthService,
+        private appIconService: AppIconService
     ) { }
 
     ngOnInit() {
+        this.appIconService.registerIcons();
+
         this.authService.configure();
         this.authService.checkAndSetActiveAccount();
 
+        // Update the browser title when the BGL status updates
         this.bglStatsService.bglStatus$.pipe(
             takeUntil(this.destroying$),
             mergeMap(bglStatus => {
@@ -41,9 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         const bglUnit = userPreferences?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
                         const scaledBgl = this.bglStatsService.scaleBglValue(bglStatus.bgl, bglUnit).toFixed(1);
                         const scaledDelta = this.bglStatsService.getDeltaDisplayValue(this.bglStatsService.scaleBglValue(bglStatus.delta, bglUnit));
-                        const time = bglStatus.lastReading.toRelativeCalendar({
-                            unit: 'minutes'
-                        });
+                        const time = bglStatus.lastReading.toRelative();
 
                         this.titleService.setTitle(`${scaledBgl} ${scaledDelta} : ${time}`);
                     } else {

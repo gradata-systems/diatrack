@@ -32,6 +32,6 @@
 </mat-dialog-content>
 <div mat-dialog-actions>
   <button mat-raised-button color="accent" (click)="onSubmit()">Connect</button>
-  <button mat-button (click)="dialogRef.close()">Cancel</button>
+  <button mat-button mat-dialog-close>Cancel</button>
   <mat-progress-spinner mode="indeterminate" *ngIf="inProgress" diameter="25"></mat-progress-spinner>
 </div>

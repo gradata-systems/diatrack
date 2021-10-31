@@ -4,11 +4,11 @@
       <ng-container *ngIf="bglStatsService.bglStatus$ | async; let bglStatus">
         <div class="bgl">
           <span class="reading">{{bglStatus.bgl !== undefined ? (getScaledBgl(bglStatus.bgl) | async | number:'1.1-1') : '---'}}</span>
-          <span class="units">{{getBglUnit() | async}}</span>
+          <span class="units">{{userService.getBglUnitDisplayValue() | async}}</span>
         </div>
         <div class="stats">
           <div class="delta">{{getDeltaDisplayValue(bglStatus) | async}}</div>
-          <div class="last-reading">{{getLastReadingDisplayValue(bglStatus)}}</div>
+          <div class="last-reading" [matTooltip]="getLastReadingFullDate(bglStatus)">{{getLastReadingDisplayValue(bglStatus)}}</div>
         </div>
       </ng-container>
     </div>

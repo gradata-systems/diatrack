@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {DataSourceService} from "../../../api/data-source.service";
 import {MatDialog} from "@angular/material/dialog";
 import {NewDataSourceDialogComponent} from "./new-data-source-dialog/new-data-source-dialog.component";
-import {DataSource, DataSourceType} from "../../../api/models/DataSource";
+import {DataSource, DataSourceType} from "../../../api/models/data-source";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../../common-dialog/common-dialog.service";
 import {UserService} from "../../../api/user.service";

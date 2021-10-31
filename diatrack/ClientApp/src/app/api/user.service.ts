@@ -1,24 +1,24 @@
 import {Inject, Injectable} from '@angular/core';
 import {BASE_PATH} from "./variables";
 import {HttpClient} from "@angular/common/http";
-import {User} from "./models/User";
+import {UserProfile} from "./models/user";
 import {BehaviorSubject, Observable, of, ReplaySubject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
 import {catchError, map, mergeMap} from "rxjs/operators";
-import {UserPreferences} from "./models/UserPreferences";
-import {environment} from "../../environments/environment";
+import {BglUnit, getBglUnitDisplayValue, UserPreferences} from "./models/user-preferences";
+import {DEFAULTS} from "../defaults";
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
     // Fires when the logged-on user changes
-    readonly activeUser$: Observable<User | undefined>;
+    readonly activeUser$: Observable<UserProfile | undefined>;
 
     // Fires when the user profile changes (like when a data source is added)
     readonly userProfileLoading$ = new BehaviorSubject<boolean>(false);
 
-    readonly userProfile$ = new ReplaySubject<User>(1);
+    readonly userProfile$ = new ReplaySubject<UserProfile>(1);
     readonly userPreferences$ = new ReplaySubject<UserPreferences | undefined>(1);
 
     private _loggedIn = false;
@@ -55,8 +55,8 @@ export class UserService {
     /**
      * Retrieve the user profile
      */
-    private getUser(): Observable<User> {
-        return this.httpClient.get<User>(`${this.basePath}/user`);
+    private getUser(): Observable<UserProfile> {
+        return this.httpClient.get<UserProfile>(`${this.basePath}/user`);
     }
 
     /**
@@ -81,6 +81,18 @@ export class UserService {
             }
 
             return response;
+        }));
+    }
+
+    getBglUnits(): Observable<BglUnit> {
+        return this.userPreferences$.pipe(map(prefs => {
+            return prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+        }));
+    }
+
+    getBglUnitDisplayValue(): Observable<string> {
+        return this.getBglUnits().pipe(map(bglUnit => {
+            return getBglUnitDisplayValue(bglUnit);
         }));
     }
 }

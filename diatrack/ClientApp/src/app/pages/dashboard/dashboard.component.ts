@@ -4,7 +4,7 @@ import {UserService} from "../../api/user.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {combineLatest, Observable, Subject} from "rxjs";
 import {filter, map, mergeMap, take, takeUntil} from "rxjs/operators";
-import {DashboardPreferences, PlotColour} from "../../api/models/UserPreferences";
+import {DashboardPreferences, PlotColour} from "../../api/models/user-preferences";
 import {DEFAULTS} from "../../defaults";
 import {DashboardService} from "./dashboard.service";
 import {MatSnackBar} from "@angular/material/snack-bar";

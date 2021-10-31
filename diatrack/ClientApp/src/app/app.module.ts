@@ -16,6 +16,7 @@ import {AppCoreModule} from "./app-core.module";
 import {PreferencesModule} from "./pages/preferences/preferences.module";
 import {CommonDialogModule} from "./common-dialog/common-dialog.module";
 import {RouterModule} from "@angular/router";
+import {ActivityLogModule} from "./activity-log/activity-log.module";
 
 @NgModule({
     imports: [
@@ -29,6 +30,7 @@ import {RouterModule} from "@angular/router";
         MainHeaderModule,
         DashboardModule,
         PreferencesModule,
+        ActivityLogModule,
         CommonDialogModule
     ],
     providers: [

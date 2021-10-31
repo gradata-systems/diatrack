@@ -1,0 +1,27 @@
+@use '~@angular/material' as mat;
+@import '../../theme';
+@import '../../media-rules';
+
+@include mat.all-component-themes($diatrack-theme);
+
+$category-icon-size: 120px;
+
+mat-icon.dialog-background {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: $category-icon-size;
+    line-height: $category-icon-size;
+    height: $category-icon-size;
+    width: $category-icon-size;
+}
+
+form {
+    mat-form-field {
+        display: block;
+
+        &.numeric {
+            width: 80px;
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {DataSource, DataSourceType} from "../../../../api/models/DataSource";
+import {DataSource, DataSourceType} from "../../../../api/models/data-source";
 import {DataSourceService} from "../../../../api/data-source.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -21,8 +21,8 @@ export class NewDataSourceDialogComponent implements OnInit {
     readonly dataSourceType = DataSourceType;
 
     constructor(
-        public dialogRef: MatDialogRef<NewDataSourceDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: DataSource,
+        private dialogRef: MatDialogRef<NewDataSourceDialogComponent>,
         private dataSourceService: DataSourceService,
         private dialogService: DialogService,
         private snackBar: MatSnackBar,

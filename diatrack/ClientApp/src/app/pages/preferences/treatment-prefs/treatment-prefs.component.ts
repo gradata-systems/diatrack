@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BglUnit, TimeFormat, TreatmentPreferences, UserPreferences} from "../../../api/models/UserPreferences";
+import {BglUnit, TimeFormat, TreatmentPreferences, UserPreferences} from "../../../api/models/user-preferences";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {UserService} from "../../../api/user.service";
 import {Subject} from "rxjs";

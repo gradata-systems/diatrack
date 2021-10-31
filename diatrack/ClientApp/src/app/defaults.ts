@@ -1,4 +1,4 @@
-import {BglUnit, PlotColour, TimeFormat, UserPreferences} from "./api/models/UserPreferences";
+import {BglUnit, PlotColour, TimeFormat, UserPreferences} from "./api/models/user-preferences";
 
 export var DEFAULTS = {
     userPreferences: {

@@ -4,7 +4,7 @@ import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalSer
 import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest} from "@azure/msal-browser";
 import {filter} from "rxjs/operators";
 import {APP_CONFIG} from "../api/variables";
-import {AppConfig} from "../api/models/AppConfig";
+import {AppConfig} from "../api/models/app-config";
 
 @Injectable({
     providedIn: 'root'

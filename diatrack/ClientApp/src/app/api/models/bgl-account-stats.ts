@@ -1,4 +1,4 @@
-import {BglDataPoint} from "./BglDataPoint";
+import {BglDataPoint} from "./bgl-data-point";
 
 export interface BglAccountStats
 {

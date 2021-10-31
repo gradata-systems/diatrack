@@ -1,0 +1,66 @@
+<mat-icon class="dialog-background" [svgIcon]="dialogData.entryCategory.icon"></mat-icon>
+<h2 mat-dialog-title>New log entry</h2>
+<mat-dialog-content class="new-activity-dialog">
+  <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <mat-form-field matTooltip="This is the person (data source) who the log entry relates to. Any other user who has also linked to this account (i.e. your spouse), will be able to see what you enter here." [matTooltipShowDelay]="500">
+      <mat-label>Link to account</mat-label>
+      <mat-select formControlName="accountId" required>
+        <mat-option *ngFor="let dataSource of dataSourceService.dataSources$ | async" [value]="dataSource.id">
+          <span>{{dataSource.name}}</span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <ng-container formGroupName="properties">
+      <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Insulin">
+        <mat-form-field class="numeric">
+          <mat-label>Units</mat-label>
+          <input matInput formControlName="insulinUnits" type="number" min="0" placeholder="0.0" required cdkFocusInitial>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Food">
+        <mat-form-field class="numeric">
+          <mat-label>Grams</mat-label>
+          <input matInput formControlName="foodGrams" type="number" min="0" placeholder="0.0" required cdkFocusInitial>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Type of food</mat-label>
+          <input matInput formControlName="foodType" type="text" maxlength="50" placeholder="Glucose powder">
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="dialogData.entryType === activityLogEntryType.BglReading">
+        <mat-form-field>
+          <mat-label>Blood glucose reading ({{userService.getBglUnitDisplayValue() | async}})</mat-label>
+          <input matInput formControlName="bglReading" type="number" min="0" placeholder="0.0" required cdkFocusInitial>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Exercise">
+        <mat-form-field>
+          <mat-label>Duration (minutes)</mat-label>
+          <input matInput formControlName="exerciseDuration" type="number" min="1" placeholder="0" required cdkFocusInitial>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Intensity</mat-label>
+          <mat-select formControlName="exerciseIntensity" required>
+            <mat-option value="low">Low</mat-option>
+            <mat-option value="medium">Medium</mat-option>
+            <mat-option value="high">High</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+    </ng-container>
+
+    <mat-form-field matTooltip="Optionally provide any additional notes. These are displayed as tooltips on the main BGL chart." [matTooltipShowDelay]="500">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" [maxLength]="appConfigService.maxNoteLength" cdkFocusInitial></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button color="accent" (click)="onSubmit()">Create</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <mat-progress-spinner mode="indeterminate" *ngIf="inProgress" diameter="25"></mat-progress-spinner>
+</mat-dialog-actions>

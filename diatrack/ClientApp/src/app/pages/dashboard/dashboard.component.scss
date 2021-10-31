@@ -14,7 +14,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+
+    // Do not scroll the entire page, just the log entry list
+    overflow-y: hidden;
 
     & > mat-progress-bar {
         position: absolute;
@@ -50,8 +52,10 @@ button.options {
 
 .chart-container {
     flex-grow: 1;
-    max-height: 500px;
+    min-height: 50vh;
+    max-height: 50vh;
 
+    // Fill the entire screen on shorter layouts
     @media (max-height: $media-phone-landscape-breakpoint) {
         max-height: 100%;
     }
@@ -59,8 +63,11 @@ button.options {
 
 .activity-log-container {
     flex-grow: 1;
+    margin-top: 15px;
+    margin-right: 5px;
+    overflow-y: auto;
 
-    // Hide the activity log on the dashboard for smaller screens
+    // Hide the activity log on the dashboard for shorter screens
     @media (max-height: $media-phone-landscape-breakpoint) {
         display: none;
     }

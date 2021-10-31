@@ -1,14 +1,16 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BglReading} from "./models/BglReading";
+import {BglReading} from "./models/bgl-reading";
 import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
 import {BASE_PATH} from "./variables";
-import {BglAccountStats} from "./models/BglAccountStats";
-import {BglUnit} from "./models/UserPreferences";
+import {BglAccountStats} from "./models/bgl-account-stats";
+import {BglUnit} from "./models/user-preferences";
 import {DateTime} from "luxon";
 import {filter} from "rxjs/operators";
 import {AppConfigService} from "./app-config.service";
 import {UserService} from "./user.service";
+import * as chroma from "chroma-js";
+import {DEFAULTS} from "../defaults";
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +20,8 @@ export class BglStatsService {
     readonly bglStatus$ = new BehaviorSubject<BglStatus>({});
     readonly refresh$ = new Subject<void>();
 
+    private colourScale: chroma.Scale<chroma.Color> = chroma.scale();
+
     constructor(
         @Inject(BASE_PATH) private basePath: string,
         private httpClient: HttpClient,
@@ -26,6 +30,15 @@ export class BglStatsService {
     ) {
         this.userService.activeUser$.subscribe(user => {
             this.refresh$.next();
+        });
+
+        this.userService.userPreferences$.subscribe(prefs => {
+            const targetBglRange = prefs?.treatment?.targetBglRange || DEFAULTS.userPreferences.treatment!.targetBglRange;
+            const bglLowThreshold = prefs?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold;
+
+            this.colourScale = chroma
+                .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])
+                .domain([0, bglLowThreshold - 0.1, bglLowThreshold, targetBglRange.min - 0.1, targetBglRange.min, targetBglRange.max, targetBglRange.max + 0.1]);
         });
 
         // Trigger refresh on timer
@@ -82,6 +95,14 @@ export class BglStatsService {
             default:
                 return value;
         }
+    }
+
+    /**
+     * Get a CSS colour value for displaying a colour-coded BGL value, according to the user's treatment parameters
+     * @param scaledBgl - Scaled to the user's BGL units
+     */
+    getBglColour(scaledBgl: number): string {
+        return this.colourScale(scaledBgl).css();
     }
 
     /**

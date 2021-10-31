@@ -1,5 +1,6 @@
 @use '~@angular/material' as mat;
 @import 'theme';
+@import 'media-rules';
 
 @include mat.all-component-themes($diatrack-theme);
 
@@ -50,6 +51,6 @@ $navbar-max-width: 220px;
         flex-grow: 1;
         position: relative;
         background-color: #1e1c1b;
-        overflow-y: auto;
+        overflow-x: hidden;
     }
 }

@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UserService} from "../api/user.service";
-import {User} from "../api/models/User";
+import {UserProfile} from "../api/models/user";
 import {BglStatsService, BglStatus} from "../api/bgl-stats.service";
 import {Observable, Subject} from "rxjs";
 import {map, takeUntil} from "rxjs/operators";
 import {DEFAULTS} from "../defaults";
-import {getBglUnitDisplayValue} from "../api/models/UserPreferences";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {environment} from "../../environments/environment";
+import {DateTime} from "luxon";
 
 @Component({
     selector: 'app-main-header',
@@ -15,7 +15,7 @@ import {environment} from "../../environments/environment";
     styleUrls: ['./main-header.component.scss']
 })
 export class MainHeaderComponent implements OnInit, OnDestroy {
-    user?: User;
+    user?: UserProfile;
     loggedIn = false;
 
     private readonly destroying$ = new Subject<boolean>();
@@ -66,18 +66,18 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
 
     getLastReadingDisplayValue(bglStats: BglStatus) {
         if (bglStats.lastReading !== undefined) {
-            return bglStats.lastReading.toRelativeCalendar({
-                unit: 'minutes'
-            })
+            return bglStats.lastReading.toRelative();
         } else {
             return 'No sensor data';
         }
     }
 
-    getBglUnit(): Observable<string> {
-        return this.userService.userPreferences$.pipe(map(prefs => {
-            return getBglUnitDisplayValue(prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit);
-        }));
+    getLastReadingFullDate(bglStats: BglStatus) {
+        if (bglStats.lastReading !== undefined) {
+            return bglStats.lastReading.toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS);
+        } else {
+            return '';
+        }
     }
 
     getScaledBgl(bgl: number): Observable<number> {

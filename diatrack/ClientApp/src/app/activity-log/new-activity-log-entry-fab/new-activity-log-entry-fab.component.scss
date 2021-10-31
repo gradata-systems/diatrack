@@ -1,0 +1,30 @@
+@use '~@angular/material' as mat;
+@import '../../theme';
+@import '../../media-rules';
+
+@include mat.all-component-themes($diatrack-theme);
+
+$fab-icon-size: 30px;
+$fab-icon-button-size: $fab-icon-size + 35px;
+
+button.new-log-entry {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: $fab-icon-button-size;
+    height: $fab-icon-button-size;
+
+    @media (max-height: $media-phone-portrait-breakpoint), (max-width: $media-phone-landscape-breakpoint) {
+        bottom: 10px;
+        right: 10px;
+        width: $fab-icon-size + 30px;
+        height: $fab-icon-size + 30px;
+    }
+
+    mat-icon {
+        font-size: $fab-icon-size;
+        line-height: $fab-icon-size;
+        height: $fab-icon-size;
+        width: $fab-icon-size;
+    }
+}

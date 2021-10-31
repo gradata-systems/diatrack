@@ -18,6 +18,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {A11yModule} from "@angular/cdk/a11y";
 
 @NgModule({
     imports: [
@@ -42,14 +43,11 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
         MatCheckboxModule,
         MatProgressSpinnerModule,
         MatProgressBarModule,
+        A11yModule,
         FormsModule,
         ReactiveFormsModule
     ],
     providers: [
-        // TODO: Configure Angular to use moment
-        // {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
-        // {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true }},
-        // {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS]}
         {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000 }}
     ],
     declarations: [],

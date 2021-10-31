@@ -14,6 +14,5 @@
     <ng-container *ngIf="options.buttons?.primary as primaryButton">
       <button mat-raised-button [color]="primaryButton.color || 'primary'" [mat-dialog-close]="true">{{primaryButton.text || 'CLOSE'}}</button>
     </ng-container>
-    <button mat-button [mat-dialog-close]="undefined">{{options.buttons?.cancel || 'CLOSE'}}</button>
   </div>
 </div>

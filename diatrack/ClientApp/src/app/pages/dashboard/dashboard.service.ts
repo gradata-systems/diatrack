@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {interval, Observable, Subject} from "rxjs";
-import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/UserPreferences";
+import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {filter, map, mergeMap} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point} from "highcharts";
-import {BglDataPoint} from "../../api/models/BglDataPoint";
+import {BglDataPoint} from "../../api/models/bgl-data-point";
 import {AppConfigService} from "../../api/app-config.service";
 import * as chroma from 'chroma-js';
 
@@ -67,10 +67,6 @@ export class DashboardService {
                 let previousStat: BglDataPoint | undefined = undefined;
                 let maxBgl = 0;
 
-                const colourScale = chroma
-                    .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])
-                    .domain([0, bglLowThreshold - 0.1, bglLowThreshold, targetBglRange.min - 0.1, targetBglRange.min, targetBglRange.max, targetBglRange.max + 0.1]);
-
                 const data = response[accountId].stats.map(stat => {
                     const scaledBgl = this.bglStatsService.scaleBglValue(stat.stats.average, bglUnit);
                     const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
@@ -81,7 +77,7 @@ export class DashboardService {
                     return {
                         x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
                         y: scaledBgl,
-                        color: pointColourMode === PlotColour.Uniform ? uniformColour : colourScale(scaledBgl).css(),
+                        color: pointColourMode === PlotColour.Uniform ? uniformColour : this.bglStatsService.getBglColour(scaledBgl),
                         options: {
                             custom: {
                                 delta: delta ? this.bglStatsService.scaleBglValue(delta, bglUnit) : null
@@ -90,6 +86,7 @@ export class DashboardService {
                     } as Point;
                 });
 
+                const self = this;
                 return {
                     chart: {
                         type: 'line'
@@ -99,7 +96,8 @@ export class DashboardService {
                     },
                     xAxis: {
                         type: 'datetime',
-                        max: DateTime.now().toMillis()
+                        max: DateTime.now().toMillis(),
+                        maxPadding: 10
                     },
                     yAxis: {
                         min: 1,
@@ -132,7 +130,7 @@ export class DashboardService {
                             const datetime = DateTime.fromMillis(this.x);
                             const date = datetime.toFormat('dd MMM');
                             const time = datetime.toFormat('HH:mm');
-                            const pointColour = colourScale(this.y).css();
+                            const pointColour = self.bglStatsService.getBglColour(this.y);
 
                             return `<div class="chart-tooltip"><table>` +
                                 `<tr><th>${date}</th><th>${time}</th></tr>` +

@@ -1,6 +1,6 @@
 <div class="log-list">
-  <mat-list role="list">
-    <mat-list-item *ngFor="let logEntry of activityLogService.logEntries$ | async" role="listitem">
+  <mat-list role="list" *ngIf="logEntries$ | async; let logEntries; else loading">
+    <mat-list-item *ngFor="let logEntry of logEntries" role="listitem">
       <div class="list-item">
         <div class="content">
           <mat-icon matListIcon class="light" [svgIcon]="activityLogService.getLogEntryIcon(logEntry)"></mat-icon>
@@ -71,4 +71,9 @@
       </div>
     </mat-list-item>
   </mat-list>
+  <ng-template #loading>
+    <div class="loading-container">
+      <mat-progress-spinner mode="indeterminate" color="primary" diameter="50"></mat-progress-spinner>
+    </div>
+  </ng-template>
 </div>

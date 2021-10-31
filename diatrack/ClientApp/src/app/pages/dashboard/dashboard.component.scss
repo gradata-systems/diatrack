@@ -1,5 +1,6 @@
 @import '../page-styles';
 @import '../../media-rules';
+@import '../../scrollbar';
 
 :host {
     height: 100%;
@@ -17,13 +18,6 @@
 
     // Do not scroll the entire page, just the log entry list
     overflow-y: hidden;
-
-    & > mat-progress-bar {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-    }
 }
 
 button.options {
@@ -70,4 +64,6 @@ button.options {
     @media (max-height: $media-phone-landscape-breakpoint) {
         display: none;
     }
+
+    @include diatrack-custom-scrollbar;
 }

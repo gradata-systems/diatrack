@@ -6,7 +6,7 @@ import {HttpClient} from "@angular/common/http";
     providedIn: 'root'
 })
 export class AppConfigService {
-    readonly autoRefreshEnabled = false;
+    readonly autoRefreshEnabled = true;
     readonly refreshInterval = 10000;
     readonly formDebounceInterval = 1000;
     readonly maxNoteLength = 1000;

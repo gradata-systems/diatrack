@@ -97,22 +97,3 @@ mat-icon.context-help {
 mat-icon.light > svg {
     fill: rgba(255, 255, 255, 0.9);
 }
-
-// Customise scrollbar appearance for larger displays (like desktop)
-@media (min-width: $media-phone-landscape-breakpoint) and (min-height: $media-phone-portrait-breakpoint) {
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.5);
-        border: solid 1px rgba(255, 255, 255, 0.2);
-        border-radius: 5px;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgba(136, 136, 136, 0.8);
-        border-radius: 5px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: #AAA;
-    }
-}

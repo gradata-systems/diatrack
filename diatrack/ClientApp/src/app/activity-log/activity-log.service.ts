@@ -1,19 +1,19 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {DateTime} from "luxon";
-import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
-import {ActivityLogEntry, ActivityLogEntryCategoryInfo, ActivityLogEntryParams, ActivityLogEntryCategory} from "../api/models/activity-log-entry";
+import {combineLatest, interval, Observable, Subject} from "rxjs";
+import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../api/models/activity-log-entry";
 import {BASE_PATH} from "../api/variables";
 import {AppIcon} from "../app-icon.service";
 import {AppConfigService} from "../api/app-config.service";
 import {filter} from "rxjs/operators";
+import {UserService} from "../api/user.service";
 
 @Injectable({
     providedIn: 'root',
 })
 export class ActivityLogService {
 
-    readonly logEntries$ = new BehaviorSubject<ActivityLogEntry[]>([]);
     readonly refresh$ = new Subject<void>();
 
     readonly activityLogCategories: ReadonlyMap<ActivityLogEntryCategory, ActivityLogEntryCategoryInfo> = new Map([
@@ -27,18 +27,16 @@ export class ActivityLogService {
     constructor(
         @Inject(BASE_PATH) private basePath: string,
         private httpClient: HttpClient,
-        private appConfigService: AppConfigService
+        private appConfigService: AppConfigService,
+        private userService: UserService
     ) {
-        interval(this.appConfigService.refreshInterval).pipe(
+        combineLatest([
+            interval(this.appConfigService.refreshInterval),
+            this.userService.userPreferences$
+        ]).pipe(
             filter(() => this.appConfigService.autoRefreshEnabled)
         ).subscribe(() => {
             this.refreshEntries();
-        });
-
-        this.refresh$.subscribe(() => {
-            this.getEntries(this.appConfigService.initialLogEntryQuerySize).subscribe((logEntries) => {
-                this.logEntries$.next(logEntries);
-            });
         });
     }
 
@@ -60,12 +58,11 @@ export class ActivityLogService {
     API methods
      */
 
-    getEntries(size: number, createdBefore?: DateTime): Observable<ActivityLogEntry[]> {
-        return this.httpClient.get<ActivityLogEntry[]>(`${this.basePath}/activityLog`, {
-            params: {
-                size: size,
-                from: createdBefore?.toISO() || DateTime.utc().toISO()
-            }
+    searchEntries(params: LogEntryQueryParams): Observable<ActivityLogEntry[]> {
+        return this.httpClient.post<ActivityLogEntry[]>(`${this.basePath}/activityLog/search`, {
+            size: params.size,
+            fromDate: params.fromDate?.toISO() || undefined,
+            toDate: params.toDate?.toISO() || undefined
         });
     }
 
@@ -84,4 +81,11 @@ export class ActivityLogService {
     deleteEntry(id: string): Observable<void> {
         return this.httpClient.delete<void>(`${this.basePath}/activityLog/${id}`);
     }
+}
+
+interface LogEntryQueryParams
+{
+    size: number;
+    fromDate?: DateTime;
+    toDate?: DateTime;
 }

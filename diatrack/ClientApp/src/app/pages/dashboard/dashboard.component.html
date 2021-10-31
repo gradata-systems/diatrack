@@ -1,5 +1,5 @@
 <div class="dashboard-container">
-  <mat-progress-bar mode="indeterminate" color="accent" *ngIf="loading"></mat-progress-bar>
+  <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading"></mat-progress-bar>
   <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
     <mat-icon>settings</mat-icon>
     <span class="caption">Options</span>
@@ -50,7 +50,7 @@
     <highcharts-chart [options]="bglHistogramChartOptions"></highcharts-chart>
   </div>
   <div class="activity-log-container">
-    <app-activity-log-list></app-activity-log-list>
+    <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="getDateFrom()"></app-activity-log-list>
   </div>
   <app-new-activity-log-entry-fab></app-new-activity-log-entry-fab>
 </div>

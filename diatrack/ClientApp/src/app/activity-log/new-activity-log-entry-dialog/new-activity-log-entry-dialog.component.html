@@ -53,7 +53,7 @@
       </ng-container>
     </ng-container>
 
-    <mat-form-field matTooltip="Optionally provide any additional notes. These are displayed as tooltips on the main BGL chart." [matTooltipShowDelay]="500">
+    <mat-form-field appearance="fill" floatLabel="always" matTooltip="Optionally provide any additional notes. These are displayed as tooltips on the main BGL chart." [matTooltipShowDelay]="500">
       <mat-label>Notes</mat-label>
       <textarea matInput formControlName="notes" [maxLength]="appConfigService.maxNoteLength" cdkFocusInitial></textarea>
     </mat-form-field>

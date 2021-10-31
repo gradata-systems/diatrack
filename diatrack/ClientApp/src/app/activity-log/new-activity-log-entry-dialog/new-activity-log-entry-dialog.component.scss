@@ -23,5 +23,9 @@ form {
         &.numeric {
             width: 80px;
         }
+
+        textarea {
+            min-height: 60px;
+        }
     }
 }

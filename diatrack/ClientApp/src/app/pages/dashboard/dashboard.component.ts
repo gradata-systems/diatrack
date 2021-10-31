@@ -10,6 +10,7 @@ import {DashboardService} from "./dashboard.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
 import {Router} from "@angular/router";
+import {DateTime} from "luxon";
 
 @Component({
     selector: 'app-dashboard',
@@ -29,7 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     constructor(
         private authService: AppAuthService,
-        private userService: UserService,
+        public userService: UserService,
         public dashboardService: DashboardService,
         private snackBar: MatSnackBar,
         private router: Router,
@@ -97,5 +98,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroying$.next(true);
         this.destroying$.complete();
+    }
+
+    getDateFrom(): DateTime | undefined {
+        const timeRangeHours: number | undefined = this.settingsForm.get('bglStatsHistogram')?.get('timeRangeHours')?.value;
+        if (timeRangeHours !== undefined) {
+            return DateTime.now().minus({ hours: timeRangeHours });
+        } else {
+            return undefined;
+        }
     }
 }

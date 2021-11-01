@@ -6,18 +6,7 @@ import {AppConfig} from "../app/api/models/app-config";
 
 export const environment = {
     production: false,
-    apiBasePath: '/api',
-    appConfig: {
-        clientId: '397b9d98-83b4-451d-a271-e68f9675e277',
-        authority: 'https://diatrack.b2clogin.com/diatrack.onmicrosoft.com/b2c_1_signin_signup',
-        knownAuthorities: ['diatrack.b2clogin.com'],
-        redirectUri: 'http://localhost:4200/',
-        protectedResourceUris: [
-            'http://localhost:4200/api/*',
-            'https://localhost:5001/*'
-        ],
-        scopes: ['https://diatrack.onmicrosoft.com/397b9d98-83b4-451d-a271-e68f9675e277/owndata:readwrite']
-    } as AppConfig
+    appConfig: (window as any)['env'] as AppConfig
 };
 
 /*

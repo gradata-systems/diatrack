@@ -1,8 +1,6 @@
 @use '~@angular/material' as mat;
 @import '../theme';
 
-@include mat.all-component-themes($diatrack-theme);
-
 $status-bar-height: 100px;
 
 :host {

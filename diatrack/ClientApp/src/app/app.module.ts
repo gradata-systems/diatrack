@@ -18,6 +18,7 @@ import {CommonDialogModule} from "./common-dialog/common-dialog.module";
 import {RouterModule} from "@angular/router";
 import {ActivityLogModule} from "./activity-log/activity-log.module";
 import { ActivityLogPageComponent } from './pages/activity-log/activity-log.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
     imports: [
@@ -32,10 +33,16 @@ import { ActivityLogPageComponent } from './pages/activity-log/activity-log.comp
         DashboardModule,
         PreferencesModule,
         ActivityLogModule,
-        CommonDialogModule
+        CommonDialogModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+          enabled: environment.production,
+          // Register the ServiceWorker as soon as the app is stable
+          // or after 30 seconds (whichever comes first).
+          registrationStrategy: 'registerWhenStable:30000'
+        })
     ],
     providers: [
-        {provide: BASE_PATH, useValue: environment.apiBasePath},
+        {provide: BASE_PATH, useValue: environment.appConfig.apiBasePath},
         {provide: APP_CONFIG, useValue: environment.appConfig}
     ],
     declarations: [

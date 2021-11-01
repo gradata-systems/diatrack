@@ -98,7 +98,6 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
 
     onSubmit() {
         this.formGroup.markAllAsTouched();
-        console.log('Submit');
         if (this.formGroup.valid) {
             // Attempt to create a log entry
             const bglStatus = this.bglStatsService.bglStatus$.value;

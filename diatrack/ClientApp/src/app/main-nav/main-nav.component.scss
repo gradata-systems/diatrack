@@ -2,8 +2,6 @@
 @import '../theme';
 @import '../media-rules';
 
-@include mat.all-component-themes($diatrack-theme);
-
 $navbar-min-width: 62px;
 $navbar-icon-size: 1.2em;
 $button-spacing: 15px;
@@ -28,6 +26,7 @@ $button-spacing: 15px;
             }
         }
 
+        // Display the side menu if expanded
         @media (max-width: $media-phone-portrait-breakpoint) {
             display: block;
             position: fixed;
@@ -37,6 +36,7 @@ $button-spacing: 15px;
         }
     }
 
+    // Hide the side menu on smaller devices, unless it's expanded
     @media (max-width: $media-phone-portrait-breakpoint) {
         display: none;
     }
@@ -69,8 +69,8 @@ $button-spacing: 15px;
                 border-radius: 100px;
 
                 &.active {
-                    color: mat.get-color-from-palette($diatrack-accent);
                     background-color: rgba(255, 255, 255, 0.1);
+                    color: mat.get-color-from-palette($diatrack-accent);
                 }
 
                 .caption {
@@ -138,6 +138,12 @@ $max-account-info-width: 150px;
         a {
             display: block;
             margin-top: 2px;
+            color: mat.get-color-from-palette($diatrack-hyperlink, 500);
+            text-decoration: none;
+
+            &:visited {
+                color: mat.get-color-from-palette($diatrack-hyperlink, 500);;
+            }
         }
     }
 }

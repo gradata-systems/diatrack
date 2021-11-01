@@ -1,4 +1,5 @@
 export interface AppConfig {
+    apiBasePath: string;
     clientId: string;
     authority: string;
     knownAuthorities: string[];

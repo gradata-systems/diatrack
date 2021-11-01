@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivityLogService} from "../activity-log.service";
-import {combineLatest, merge, Observable, Subject} from "rxjs";
+import {merge, Observable, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";

@@ -2,8 +2,6 @@
 @import '../../theme';
 @import '../../media-rules';
 
-@include mat.all-component-themes($diatrack-theme);
-
 $fab-icon-size: 30px;
 $fab-icon-button-size: $fab-icon-size + 35px;
 

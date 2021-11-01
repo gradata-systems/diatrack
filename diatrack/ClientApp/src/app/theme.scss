@@ -2,31 +2,24 @@
 // For more information: https://material.angular.io/guide/theming
 @use '~@angular/material' as mat;
 
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
-
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
 $diatrack-primary: mat.define-palette(mat.$gray-palette, 400);
 $diatrack-accent: mat.define-palette(mat.$yellow-palette, 700);
 $diatrack-warn: mat.define-palette(mat.$yellow-palette, 600);
-
 $diatrack-hyperlink: mat.define-palette(mat.$blue-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
 $diatrack-theme: mat.define-dark-theme((
-  color: (
-    primary: $diatrack-primary,
-    accent: $diatrack-accent,
-    warn: $diatrack-warn,
-  )
+    color: (
+        primary: $diatrack-primary,
+        accent: $diatrack-accent,
+        warn: $diatrack-warn,
+    )
 ));
 
+// Common styles
 $heading-1-color: #e37670;
 $heading-2-color: mat.get-color-from-palette($diatrack-accent, 800);

@@ -1,4 +1,10 @@
 @use '~@angular/material' as mat;
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
 @import './app/theme';
 @import './app/media-rules';
 
@@ -6,8 +12,6 @@
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 @include mat.all-component-themes($diatrack-theme);
-
-/* You can add global styles to this file, and also import other style files */
 
 html, body {
     height: 100%;
@@ -26,16 +30,6 @@ body {
 
 div {
     box-sizing: border-box;
-}
-
-$hyperlink-color: mat.get-color-from-palette($diatrack-hyperlink, 500);
-a {
-    color: $hyperlink-color;
-    text-decoration: none;
-
-    &:visited {
-        color: $hyperlink-color;
-    }
 }
 
 // Allow elements to be positioned absolutely within dialog overlays
@@ -71,7 +65,7 @@ mat-icon.context-help {
     font-size: 12px;
     line-height: 12px;
     margin-left: 5px;
-    color: #e37670;
+    color: $heading-1-color;
     position: relative;
     top: -3px;
     cursor: pointer;

@@ -1,8 +1,5 @@
 @use '~@angular/material' as mat;
 @import '../../theme';
-@import '../../media-rules';
-
-@include mat.all-component-themes($diatrack-theme);
 
 $category-icon-size: 120px;
 

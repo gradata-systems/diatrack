@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {HIGHCHARTS_BASE_OPTIONS} from './base-options';
-import * as Highcharts from 'highcharts';
-import {AxisSetExtremesEventObject, Chart, ChartSelectionContextObject, Options, Point} from 'highcharts';
+import {AxisSetExtremesEventObject, chart, Chart, ChartSelectionContextObject, merge, Options, Point, setOptions} from 'highcharts';
 import {EMPTY, Observable, Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 
@@ -75,7 +74,7 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
 
     constructor(private zone: NgZone)
     {
-        Highcharts.setOptions({
+        setOptions({
             lang: {
                 thousandsSep: ','
             }
@@ -116,7 +115,7 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
         // TODO: Preserve existing bindings and values
         if (options)
         {
-            this._options = Highcharts.merge(HIGHCHARTS_BASE_OPTIONS, options);
+            this._options = merge(HIGHCHARTS_BASE_OPTIONS, options);
             return this.regenerate(this.options);
         }
         else
@@ -231,7 +230,7 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
                     this.destroy();
                     this.zone.runOutsideAngular(() => {
                         if (this.chartEl) {
-                            Highcharts.chart(this.chartEl.nativeElement, this.options!, (chart) => {
+                            chart(this.chartEl.nativeElement, this.options!, (chart) => {
                                 this._chart = chart;
                                 subscription.next(chart);
                                 subscription.complete();

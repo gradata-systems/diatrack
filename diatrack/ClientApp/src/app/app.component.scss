@@ -2,8 +2,6 @@
 @import 'theme';
 @import 'media-rules';
 
-@include mat.all-component-themes($diatrack-theme);
-
 $navbar-icon-size: 35px;
 $navbar-max-width: 220px;
 
@@ -52,5 +50,6 @@ $navbar-max-width: 220px;
         position: relative;
         background-color: #1e1c1b;
         overflow-x: hidden;
+        overflow-y: hidden;
     }
 }

@@ -142,12 +142,12 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
         });
     }
 
+    getDialogTitle() {
+        return this.dialogData.existingEntry ? 'Edit log entry' : 'New log entry'
+    }
+
     getSubmitButtonCaption() {
-        if (this.dialogData.existingEntry) {
-            return 'Save';
-        } else {
-            return 'Create';
-        }
+        return this.dialogData.existingEntry ? 'Save' : 'Create';
     }
 }
 

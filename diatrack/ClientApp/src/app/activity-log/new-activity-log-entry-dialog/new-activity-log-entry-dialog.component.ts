@@ -11,6 +11,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";
 import {BglUnit} from "../../api/models/user-preferences";
 import {take} from "rxjs/operators";
+import {DEFAULTS} from "../../defaults";
 
 @Component({
     selector: 'app-new-activity-log-entry-dialog',
@@ -83,16 +84,14 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
     ngOnInit() {
         // Pre-fill BGL units
         this.userService.userPreferences$.pipe(take(1)).subscribe(userPrefs => {
-            const bglUnits = userPrefs?.treatment?.bglUnit;
-            if (bglUnits !== undefined) {
-                this.formGroup.patchValue({
-                    properties: {
-                        bglUnits: bglUnits
-                    }
-                }, {
-                    emitEvent: false
-                });
-            }
+            const bglUnits = userPrefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment?.bglUnit;
+            this.formGroup.patchValue({
+                properties: {
+                    bglUnits: bglUnits
+                }
+            }, {
+                emitEvent: false
+            });
         });
     }
 

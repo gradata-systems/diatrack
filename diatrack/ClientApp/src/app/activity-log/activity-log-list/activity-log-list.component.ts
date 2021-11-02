@@ -134,11 +134,11 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         }));
     }
 
-    scaleManualBglReading(logEntry: ActivityLogEntry): Observable<number | undefined> {
+    getScaledManualBglReading(logEntry: ActivityLogEntry): Observable<number | undefined> {
         return this.userService.getBglUnits().pipe(map(profileBglUnits => {
-            if (logEntry.bgl !== undefined) {
+            if (logEntry.properties.bglReading !== undefined) {
                 const logEntryBglUnits = logEntry.properties.bglUnits ?? DEFAULTS.userPreferences.treatment?.bglUnit;
-                return this.bglStatsService.scaleBglValue(logEntry.bgl!, logEntryBglUnits, profileBglUnits);
+                return this.bglStatsService.scaleBglValue(logEntry.properties.bglReading!, logEntryBglUnits, profileBglUnits);
             } else {
                 return undefined;
             }

@@ -84,7 +84,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
     ngOnInit() {
         // Pre-fill BGL units
         this.userService.userPreferences$.pipe(take(1)).subscribe(userPrefs => {
-            const bglUnits = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment?.bglUnit;
+            const bglUnits = this.dialogData.existingEntry?.properties.bglUnits ?? userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment?.bglUnit;
             this.formGroup.patchValue({
                 properties: {
                     bglUnits: bglUnits

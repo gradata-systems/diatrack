@@ -23,7 +23,7 @@
 
             <ng-container *ngIf="logEntry.category === activityLogEntryCategory.BglReading">
               <div class="property">
-                <span class="bold">{{scaleManualBglReading(logEntry) | async | number:'1.1-1'}} </span>
+                <span class="bold">{{getScaledManualBglReading(logEntry) | async | number:'1.1-1'}} </span>
                 <span>{{userService.getBglUnitDisplayValue(logEntry.properties.bglUnits)}}</span>
               </div>
             </ng-container>

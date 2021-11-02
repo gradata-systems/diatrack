@@ -4,7 +4,7 @@ export var DEFAULTS = {
     userPreferences: {
         dashboard: {
             bglStatsHistogram: {
-                timeRangeHours: 2,
+                timeRangeHours: 12,
                 plotColour: PlotColour.ScaledByBgl,
                 activityLog: true,
                 dataLabels: false,

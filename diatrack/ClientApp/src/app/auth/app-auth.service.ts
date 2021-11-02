@@ -23,22 +23,26 @@ export class AppAuthService {
     configure() {
         this.msalService.instance.enableAccountStorageEvents();
 
-        this.msalBroadcastService.msalSubject$
-            .pipe(
-                filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
-            ).subscribe((result: EventMessage) => {
-                if (this.msalService.instance.getAllAccounts().length === 0) {
-                    window.location.pathname = "/";
-                    this.notifyActiveAccountChanged(null);
-                }
-            });
+        this.msalBroadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
+        ).subscribe((result: EventMessage) => {
+            if (this.msalService.instance.getAllAccounts().length === 0) {
+                window.location.pathname = "/";
+                this.notifyActiveAccountChanged(null);
+            }
+        });
 
-        this.msalBroadcastService.inProgress$
-            .pipe(
-                filter((status: InteractionStatus) => status === InteractionStatus.None)
-            ).subscribe(() => {
-                this.checkAndSetActiveAccount();
-            })
+        this.msalBroadcastService.msalSubject$.pipe(
+            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS)
+        ).subscribe(() => {
+            this.checkAndSetActiveAccount();
+        });
+
+        this.msalBroadcastService.inProgress$.pipe(
+            filter((status: InteractionStatus) => status === InteractionStatus.None)
+        ).subscribe(() => {
+            this.checkAndSetActiveAccount();
+        });
     }
 
     checkAndSetActiveAccount() {
@@ -83,6 +87,6 @@ export class AppAuthService {
     logOut() {
         this.msalService.logoutPopup({
             mainWindowRedirectUri: this.appConfig.redirectUri
-        });
+        }).subscribe();
     }
 }

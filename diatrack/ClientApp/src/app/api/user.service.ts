@@ -4,7 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {UserProfile} from "./models/user";
 import {BehaviorSubject, Observable, of, ReplaySubject} from "rxjs";
 import {AppAuthService} from "../auth/app-auth.service";
-import {catchError, map, mergeMap} from "rxjs/operators";
+import {catchError, distinct, map, mergeMap} from "rxjs/operators";
 import {BglUnit, getBglUnitDisplayValue, UserPreferences} from "./models/user-preferences";
 import {DEFAULTS} from "../defaults";
 
@@ -29,27 +29,29 @@ export class UserService {
         private httpClient: HttpClient,
         private authService: AppAuthService
     ) {
-        this.activeUser$ = this.authService.activeAccount$.pipe(mergeMap(account => {
-            if (account) {
-                this.userProfileLoading$.next(true);
-                return this.getUser().pipe(
-                    map(response => {
-                        this._loggedIn = true;
-                        this.userProfileLoading$.next(false);
-                        this.userProfile$.next(response);
-                        this.userPreferences$.next(response.preferences);
-                        return response;
-                    }),
-                    catchError(error => {
-                        this._loggedIn = false;
-                        return of(undefined);
-                    })
-                );
-            } else {
-                this._loggedIn = false;
-                return of(undefined);
-            }
-        }));
+        this.activeUser$ = this.authService.activeAccount$.pipe(
+            distinct(),
+            mergeMap(account => {
+                if (account) {
+                    this.userProfileLoading$.next(true);
+                    return this.getUser().pipe(
+                        map(response => {
+                            this._loggedIn = true;
+                            this.userProfileLoading$.next(false);
+                            this.userProfile$.next(response);
+                            this.userPreferences$.next(response.preferences);
+                            return response;
+                        }),
+                        catchError(error => {
+                            this._loggedIn = false;
+                            return of(undefined);
+                        })
+                    );
+                } else {
+                    this._loggedIn = false;
+                    return of(undefined);
+                }
+            }));
     }
 
     /**

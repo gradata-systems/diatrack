@@ -40,14 +40,14 @@ export function MSALInterceptorConfigFactory(appConfig: AppConfig): MsalIntercep
     });
 
     return {
-        interactionType: InteractionType.Redirect,
+        interactionType: InteractionType.Popup,
         protectedResourceMap
     };
 }
 
 export function MSALGuardConfigFactory(appConfig: AppConfig): MsalGuardConfiguration {
     return {
-        interactionType: InteractionType.Redirect,
+        interactionType: InteractionType.Popup,
         authRequest: {
             scopes: appConfig.scopes
         },

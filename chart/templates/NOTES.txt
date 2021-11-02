@@ -1,0 +1,1 @@
+Diatrack deployed and accessible at: https://{{ .Values.global.hostName }}

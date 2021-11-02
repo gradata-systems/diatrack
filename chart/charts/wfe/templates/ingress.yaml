@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "diatrack-wfe.fullname" . }}
+  labels:
+  {{- include "diatrack-wfe.labels" . | nindent 4 }}
+  {{- with .Values.global.ingress.annotations }}
+  annotations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.global.ingress.className }}
+  {{- with .Values.global.ingress.tls.secretName }}
+  tls:
+    - hosts:
+        - {{ $.Values.global.hostName }}
+      secretName: {{ . }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.global.hostName }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "diatrack-wfe.fullname" . }}
+                port:
+                  name: http

@@ -1,6 +1,5 @@
 @import '../page-styles';
 @import '../../media-rules';
-@import '../../scrollbar';
 
 :host {
     height: 100%;
@@ -70,7 +69,5 @@ button.options {
     @media (max-height: $media-phone-landscape-breakpoint) {
         display: none;
     }
-
-    @include diatrack-custom-scrollbar;
 }
 

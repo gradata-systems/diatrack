@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
             mergeMap(bglStatus => {
                 return this.userService.userPreferences$.pipe(map(userPreferences => {
                     if (bglStatus.bgl !== undefined && bglStatus.delta !== undefined && bglStatus.lastReading !== undefined) {
-                        const bglUnit = userPreferences?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+                        const bglUnit = userPreferences?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
                         const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(bglStatus.bgl, bglUnit).toFixed(1);
                         const scaledDelta = this.bglStatsService.getDeltaDisplayValue(this.bglStatsService.scaleBglValueFromMgDl(bglStatus.delta, bglUnit));
                         const time = bglStatus.lastReading.toRelative();

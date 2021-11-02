@@ -33,8 +33,8 @@ export class BglStatsService {
         });
 
         this.userService.userPreferences$.subscribe(prefs => {
-            const targetBglRange = prefs?.treatment?.targetBglRange || DEFAULTS.userPreferences.treatment!.targetBglRange;
-            const bglLowThreshold = prefs?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold;
+            const targetBglRange = prefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
+            const bglLowThreshold = prefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
 
             this.colourScale = chroma
                 .scale(['red', 'red', 'yellow', 'yellow', 'green', 'green', 'yellow'])

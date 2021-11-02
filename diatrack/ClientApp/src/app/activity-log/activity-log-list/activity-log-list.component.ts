@@ -12,6 +12,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
 import {DashboardService} from "../../pages/dashboard/dashboard.service";
+import {DEFAULTS} from "../../defaults";
 
 @Component({
     selector: 'app-activity-log-list',
@@ -48,7 +49,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                 this.loading = true;
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: this.dateFrom || undefined
+                    fromDate: this.dateFrom ?? undefined
                 }).pipe(map(entries => {
                     this.loading = false;
                     return entries;
@@ -127,6 +128,17 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         return this.userService.getBglUnits().pipe(map(bglUnits => {
             if (logEntry.bgl !== undefined) {
                 return this.bglStatsService.scaleBglValueFromMgDl(logEntry.bgl!, bglUnits)
+            } else {
+                return undefined;
+            }
+        }));
+    }
+
+    scaleManualBglReading(logEntry: ActivityLogEntry): Observable<number | undefined> {
+        return this.userService.getBglUnits().pipe(map(profileBglUnits => {
+            if (logEntry.bgl !== undefined) {
+                const logEntryBglUnits = logEntry.properties.bglUnits ?? DEFAULTS.userPreferences.treatment?.bglUnit;
+                return this.bglStatsService.scaleBglValue(logEntry.bgl!, logEntryBglUnits, profileBglUnits);
             } else {
                 return undefined;
             }

@@ -88,7 +88,7 @@ export class UserService {
 
     getBglUnits(): Observable<BglUnit> {
         return this.userPreferences$.pipe(map(prefs => {
-            return prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+            return prefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
         }));
     }
 

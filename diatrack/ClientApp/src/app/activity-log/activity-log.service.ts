@@ -56,7 +56,7 @@ export class ActivityLogService {
 
     getLogEntryCategoryName(logEntry: ActivityLogEntry): string {
         let category = this.activityLogCategories.get(logEntry.category);
-        return category?.name || '';
+        return category?.name ?? '';
     }
 
     /*
@@ -66,8 +66,8 @@ export class ActivityLogService {
     searchEntries(params: LogEntryQueryParams): Observable<ActivityLogEntry[]> {
         return this.httpClient.post<ActivityLogEntry[]>(`${this.basePath}/activityLog/search`, {
             size: params.size,
-            fromDate: params.fromDate?.toISO() || undefined,
-            toDate: params.toDate?.toISO() || undefined
+            fromDate: params.fromDate?.toISO(),
+            toDate: params.toDate?.toISO()
         });
     }
 

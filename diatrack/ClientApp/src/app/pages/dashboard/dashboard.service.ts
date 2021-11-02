@@ -62,20 +62,20 @@ export class DashboardService {
                 fromDate: DateTime.now().minus({ hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours })
             }).pipe(mergeMap(logEntries => {
                 const histogramSettings = userPrefs?.dashboard?.bglStatsHistogram;
-                const bglUnit = userPrefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+                const bglUnit = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
                 const defaults = DEFAULTS.userPreferences.dashboard!.bglStatsHistogram;
-                const fromTime: DateTime = DateTime.now().minus({hours: histogramSettings?.timeRangeHours || defaults.timeRangeHours});
+                const fromTime: DateTime = DateTime.now().minus({hours: histogramSettings?.timeRangeHours ?? defaults.timeRangeHours});
                 const toTime: DateTime = DateTime.now();
-                const targetBglRange = userPrefs?.treatment?.targetBglRange || DEFAULTS.userPreferences.treatment!.targetBglRange;
+                const targetBglRange = userPrefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
                 const targetBglRangeMid = ((targetBglRange.max - targetBglRange.min) / 2) + targetBglRange.min;
-                const bglLowThreshold = userPrefs?.treatment?.bglLowThreshold || DEFAULTS.userPreferences.treatment!.bglLowThreshold;
-                const pointColourMode = histogramSettings?.plotColour || defaults.plotColour;
+                const bglLowThreshold = userPrefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
+                const pointColourMode = histogramSettings?.plotColour ?? defaults.plotColour;
                 const uniformColour = '#ff3900';
 
                 return this.bglStatsService.getAccountStatsHistogram({
                     start: fromTime.toISO(),
                     end: toTime.toISO(),
-                    buckets: histogramSettings?.buckets || defaults.buckets
+                    buckets: histogramSettings?.buckets ?? defaults.buckets
                 }).pipe(map(bglStatsResponse => {
                     const accountId = Object.keys(bglStatsResponse)[0];
                     let previousStat: BglDataPoint | undefined = undefined;
@@ -186,7 +186,7 @@ export class DashboardService {
                                     return `<div class="chart-tooltip"><table>` +
                                         `<tr><th>${properties.category}</th></tr>` +
                                         `<tr><td>${properties.value}</td></tr>` +
-                                        `<tr><td>${properties.notes || ''}</td></tr>` +
+                                        `<tr><td>${properties.notes ?? ''}</td></tr>` +
                                         `</table></div>`;
                                 }
                             }

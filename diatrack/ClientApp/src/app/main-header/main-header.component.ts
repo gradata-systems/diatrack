@@ -54,7 +54,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
 
     getDeltaDisplayValue(stats: BglStatus): Observable<string> {
         return this.userService.userPreferences$.pipe(map(prefs => {
-            const bglUnit = prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+            const bglUnit = prefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
 
             if (stats.delta !== undefined) {
                 const scaledDelta = this.bglStatsService.scaleBglValueFromMgDl(stats.delta, bglUnit);
@@ -83,7 +83,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
 
     getScaledBgl(bgl: number): Observable<number> {
         return this.userService.userPreferences$.pipe(map(prefs => {
-            const bglUnit = prefs?.treatment?.bglUnit || DEFAULTS.userPreferences.treatment!.bglUnit;
+            const bglUnit = prefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
             return this.bglStatsService.scaleBglValueFromMgDl(bgl, bglUnit);
         }));
     }

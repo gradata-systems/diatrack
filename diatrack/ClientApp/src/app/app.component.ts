@@ -4,7 +4,7 @@ import {AppAuthService} from "./auth/app-auth.service";
 import {of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 import {BglStatsService} from "./api/bgl-stats.service";
-import {map, mergeMap, takeUntil} from "rxjs/operators";
+import {filter, map, mergeMap, takeUntil} from "rxjs/operators";
 import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
@@ -39,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Update the browser title when the BGL status updates
         this.bglStatsService.bglStatus$.pipe(
+            filter(() => this.userService.loggedIn),
             takeUntil(this.destroying$),
             mergeMap(bglStatus => {
                 return this.userService.userPreferences$.pipe(map(userPreferences => {

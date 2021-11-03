@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
-import {ReplaySubject} from "rxjs";
+import {Observable, ReplaySubject} from "rxjs";
 import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest} from "@azure/msal-browser";
+import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest, RedirectRequest} from "@azure/msal-browser";
 import {filter} from "rxjs/operators";
 import {APP_CONFIG} from "../api/variables";
 import {AppConfig} from "../api/models/app-config";
@@ -21,21 +21,22 @@ export class AppAuthService {
     ) { }
 
     configure() {
-        this.msalService.instance.enableAccountStorageEvents();
-
-        this.msalBroadcastService.msalSubject$.pipe(
-            filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
-        ).subscribe((result: EventMessage) => {
-            if (this.msalService.instance.getAllAccounts().length === 0) {
-                window.location.pathname = "/";
-                this.notifyActiveAccountChanged(null);
-            }
-        });
+        // this.msalService.instance.enableAccountStorageEvents();
+        // this.msalBroadcastService.msalSubject$.pipe(
+        //     filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
+        // ).subscribe((result: EventMessage) => {
+        //     if (this.msalService.instance.getAllAccounts().length === 0) {
+        //         window.location.pathname = "/";
+        //         this.notifyActiveAccountChanged(null);
+        //     }
+        // });
 
         this.msalBroadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS)
-        ).subscribe(() => {
-            this.checkAndSetActiveAccount();
+        ).subscribe((result) => {
+            const payload = result.payload as AuthenticationResult;
+            console.debug(`Login success: ${payload.account?.username}`)
+            this.notifyActiveAccountChanged(payload.account);
         });
 
         this.msalBroadcastService.inProgress$.pipe(
@@ -70,23 +71,15 @@ export class AppAuthService {
         this.activeAccount$.next(account);
     }
 
-    logIn() {
+    logIn(): void {
         if (this.msalGuardConfig.authRequest) {
-            this.msalService.loginPopup({...this.msalGuardConfig.authRequest} as PopupRequest)
-                .subscribe((response: AuthenticationResult) => {
-                    this.msalService.instance.setActiveAccount(response.account);
-                });
+            this.msalService.loginRedirect({...this.msalGuardConfig.authRequest} as RedirectRequest);
         } else {
-            this.msalService.loginPopup()
-                .subscribe((response: AuthenticationResult) => {
-                    this.msalService.instance.setActiveAccount(response.account);
-                });
+            this.msalService.loginRedirect();
         }
     }
 
-    logOut() {
-        this.msalService.logoutPopup({
-            mainWindowRedirectUri: this.appConfig.redirectUri
-        }).subscribe();
+    logOut(): void {
+        this.msalService.logoutRedirect();
     }
 }

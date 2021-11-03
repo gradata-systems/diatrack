@@ -17,8 +17,10 @@ import {PreferencesModule} from "./pages/preferences/preferences.module";
 import {CommonDialogModule} from "./common-dialog/common-dialog.module";
 import {RouterModule} from "@angular/router";
 import {ActivityLogModule} from "./activity-log/activity-log.module";
-import { ActivityLogPageComponent } from './pages/activity-log/activity-log.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import {ActivityLogPageComponent} from './pages/activity-log/activity-log.component';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {HomeComponent} from "./pages/home/home.component";
+import {MsalRedirectComponent} from "@azure/msal-angular";
 
 @NgModule({
     imports: [
@@ -35,10 +37,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
         ActivityLogModule,
         CommonDialogModule,
         ServiceWorkerModule.register('ngsw-worker.js', {
-          enabled: environment.production,
-          // Register the ServiceWorker as soon as the app is stable
-          // or after 30 seconds (whichever comes first).
-          registrationStrategy: 'registerWhenStable:30000'
+            enabled: environment.production,
+            // Register the ServiceWorker as soon as the app is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
         })
     ],
     providers: [
@@ -48,10 +50,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     declarations: [
         AppComponent,
         MainNavComponent,
+        HomeComponent,
         AboutPageComponent,
         ActivityLogPageComponent
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent, MsalRedirectComponent]
 })
 export class AppModule {
 }

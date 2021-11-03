@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalRedirectComponent, MsalService} from "@azure/msal-angular";
+import {MSAL_GUARD_CONFIG, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG, MsalBroadcastService, MsalGuard, MsalInterceptor, MsalModule, MsalService} from "@azure/msal-angular";
 import {MSALGuardConfigFactory, MSALInstanceFactory, MSALInterceptorConfigFactory} from "./msal/msal-factories";
 import {FailedLoginComponent} from './failed-login/failed-login.component';
 import {APP_CONFIG} from "../api/variables";
@@ -20,9 +20,6 @@ import {APP_CONFIG} from "../api/variables";
         MsalService,
         MsalGuard,
         MsalBroadcastService
-    ],
-    bootstrap: [
-        MsalRedirectComponent
     ],
     declarations: [
         FailedLoginComponent

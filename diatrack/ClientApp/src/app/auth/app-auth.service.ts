@@ -21,16 +21,6 @@ export class AppAuthService {
     ) { }
 
     configure() {
-        // this.msalService.instance.enableAccountStorageEvents();
-        // this.msalBroadcastService.msalSubject$.pipe(
-        //     filter((msg: EventMessage) => msg.eventType === EventType.ACCOUNT_ADDED || msg.eventType === EventType.ACCOUNT_REMOVED)
-        // ).subscribe((result: EventMessage) => {
-        //     if (this.msalService.instance.getAllAccounts().length === 0) {
-        //         window.location.pathname = "/";
-        //         this.notifyActiveAccountChanged(null);
-        //     }
-        // });
-
         this.msalBroadcastService.msalSubject$.pipe(
             filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS)
         ).subscribe((result) => {

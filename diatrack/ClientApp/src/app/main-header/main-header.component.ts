@@ -3,7 +3,7 @@ import {UserService} from "../api/user.service";
 import {UserProfile} from "../api/models/user";
 import {BglStatsService, BglStatus} from "../api/bgl-stats.service";
 import {Observable, Subject} from "rxjs";
-import {map, takeUntil} from "rxjs/operators";
+import {filter, map, takeUntil} from "rxjs/operators";
 import {DEFAULTS} from "../defaults";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {environment} from "../../environments/environment";
@@ -39,6 +39,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
         });
 
         this.bglStatsService.refresh$.pipe(
+            filter(() => this.userService.loggedIn),
             takeUntil(this.destroying$)
         ).subscribe(() => {
             this.bglStatsService.updateBglStatus(5);

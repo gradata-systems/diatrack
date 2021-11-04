@@ -19,7 +19,6 @@ import {RouterModule} from "@angular/router";
 import {ActivityLogModule} from "./activity-log/activity-log.module";
 import {ActivityLogPageComponent} from './pages/activity-log/activity-log.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
-import {HomeComponent} from "./pages/home/home.component";
 import {MsalRedirectComponent} from "@azure/msal-angular";
 import {LoginComponent} from "./pages/login/login.component";
 
@@ -52,7 +51,6 @@ import {LoginComponent} from "./pages/login/login.component";
         AppComponent,
         MainNavComponent,
         LoginComponent,
-        HomeComponent,
         AboutPageComponent,
         ActivityLogPageComponent
     ],

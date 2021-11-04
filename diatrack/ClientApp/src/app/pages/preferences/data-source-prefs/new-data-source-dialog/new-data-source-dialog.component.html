@@ -21,11 +21,11 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Login Id</mat-label>
-      <input matInput type="text" formControlName="loginId" placeholder="Dexcom account name" required>
+      <input matInput id="username" type="text" formControlName="loginId" placeholder="Dexcom account name" required>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" required>
+      <input matInput id="password" type="password" formControlName="password" required>
     </mat-form-field>
     <mat-error *ngIf="error">{{error}}</mat-error>
   </mat-dialog-content>

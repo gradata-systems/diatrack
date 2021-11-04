@@ -3,7 +3,7 @@ import {interval, Observable, of, Subject} from "rxjs";
 import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {filter, map, mergeMap} from "rxjs/operators";
+import {filter, map, mergeMap, take} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point, PointOptionsObject} from "highcharts";
@@ -56,12 +56,7 @@ export class DashboardService {
     }
 
     getBglHistogramChartOptions(): Observable<Options | undefined> {
-        return this.userService.userProfile$.pipe(mergeMap(userProfile => {
-            // Abort if no datasources are defined
-            if (userProfile.dataSources.length === 0) {
-                return of(undefined);
-            }
-
+        return this.userService.userProfile$.pipe(take(1), mergeMap(userProfile => {
             const userPrefs = userProfile.preferences;
             return this.activityLogService.searchEntries({
                 size: this.appConfigService.initialLogEntryQuerySize,

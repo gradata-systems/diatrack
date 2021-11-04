@@ -3,7 +3,7 @@ import {AppAuthService} from "../../auth/app-auth.service";
 import {UserService} from "../../api/user.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {BehaviorSubject, merge, Observable, Subject} from "rxjs";
-import {debounceTime, filter, map, mergeMap, take, takeUntil, tap, throttleTime} from "rxjs/operators";
+import {debounceTime, filter, map, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {PlotColour} from "../../api/models/user-preferences";
 import {DEFAULTS} from "../../defaults";
 import {DashboardService} from "./dashboard.service";
@@ -23,8 +23,8 @@ import {ActivityLogService} from "../../activity-log/activity-log.service";
 export class DashboardComponent implements OnInit, OnDestroy {
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
+    readonly bglHistogramChartOptions = new BehaviorSubject<Options | undefined>(undefined);
     settingsForm: FormGroup;
-    bglHistogramChartOptions: Options | undefined;
 
     // Enum constants
     readonly plotColour = PlotColour;
@@ -94,10 +94,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private updateView(): Observable<void> {
         this.loading$.next(true);
         return this.dashboardService.getBglHistogramChartOptions().pipe(
-            take(1),
             map(chartData => {
                 this.loading$.next(false);
-                this.bglHistogramChartOptions = chartData;
+                this.bglHistogramChartOptions.next(chartData);
             }));
     }
 

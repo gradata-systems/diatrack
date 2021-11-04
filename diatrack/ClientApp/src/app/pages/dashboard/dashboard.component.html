@@ -1,6 +1,6 @@
 <div class="dashboard-container">
-  <ng-container *ngIf="bglHistogramChartOptions; else noData">
-    <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading$ | async"></mat-progress-bar>
+  <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading$ | async"></mat-progress-bar>
+  <ng-container *ngIf="bglHistogramChartOptions | async; else noData; let chartOptions">
     <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
       <mat-icon>settings</mat-icon>
       <span class="caption">Options</span>
@@ -49,7 +49,7 @@
       </div>
     </mat-menu>
     <div class="chart-container">
-      <highcharts-chart [options]="bglHistogramChartOptions"></highcharts-chart>
+      <highcharts-chart [options]="chartOptions"></highcharts-chart>
     </div>
     <div class="activity-log-container">
       <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="getDateFrom()"></app-activity-log-list>

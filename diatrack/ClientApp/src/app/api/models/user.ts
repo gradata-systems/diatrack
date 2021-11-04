@@ -10,6 +10,7 @@ export interface User {
 export interface UserProfile extends User
 {
     created: Date;
+    isNew: boolean;
     preferences: UserPreferences;
     dataSources: DataSource[];
 }

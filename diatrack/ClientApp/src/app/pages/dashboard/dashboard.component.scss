@@ -55,7 +55,7 @@ button.options {
     max-height: 50vh;
 
     // Fill the entire screen on shorter layouts
-    @media (max-height: $media-phone-landscape-breakpoint) {
+    @media (max-height: $media-phone-portrait-breakpoint) {
         max-height: 100%;
     }
 }
@@ -66,7 +66,7 @@ button.options {
     overflow-y: auto;
 
     // Hide the activity log on the dashboard for shorter screens
-    @media (max-height: $media-phone-landscape-breakpoint) {
+    @media (max-height: $media-phone-portrait-breakpoint) {
         display: none;
     }
 }

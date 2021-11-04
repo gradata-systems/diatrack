@@ -47,11 +47,16 @@
       </form>
     </div>
   </mat-menu>
-  <div class="chart-container">
-    <highcharts-chart [options]="bglHistogramChartOptions"></highcharts-chart>
-  </div>
-  <div class="activity-log-container">
-    <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="getDateFrom()"></app-activity-log-list>
-  </div>
-  <app-new-activity-log-entry-fab></app-new-activity-log-entry-fab>
+  <ng-container *ngIf="hasDataSource() | async; else noDataSource">
+    <div class="chart-container">
+      <highcharts-chart [options]="bglHistogramChartOptions"></highcharts-chart>
+    </div>
+    <div class="activity-log-container">
+      <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="getDateFrom()"></app-activity-log-list>
+    </div>
+    <app-new-activity-log-entry-fab></app-new-activity-log-entry-fab>
+  </ng-container>
+  <ng-template #noDataSource>
+    No data source defined
+  </ng-template>
 </div>

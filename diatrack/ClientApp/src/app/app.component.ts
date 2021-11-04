@@ -4,7 +4,7 @@ import {AppAuthService} from "./auth/app-auth.service";
 import {of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 import {BglStatsService} from "./api/bgl-stats.service";
-import {filter, map, mergeMap, takeUntil} from "rxjs/operators";
+import {filter, mergeMap, takeUntil, tap} from "rxjs/operators";
 import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
             filter(() => this.userService.loggedIn),
             takeUntil(this.destroying$),
             mergeMap(bglStatus => {
-                return this.userService.userPreferences$.pipe(map(userPreferences => {
+                return this.userService.userPreferences$.pipe(tap(userPreferences => {
                     if (bglStatus.bgl !== undefined && bglStatus.delta !== undefined && bglStatus.lastReading !== undefined) {
                         const bglUnit = userPreferences?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
                         const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(bglStatus.bgl, bglUnit).toFixed(1);

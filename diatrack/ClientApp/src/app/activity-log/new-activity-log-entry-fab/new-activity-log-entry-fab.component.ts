@@ -33,8 +33,6 @@ export class NewActivityLogEntryFabComponent {
             } as ActivityLogEntryDialogParams
         });
 
-        return dialogRef.afterClosed().pipe(map(result => {
-            return result;
-        }));
+        return dialogRef.afterClosed();
     }
 }

@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {DataSource} from "./models/data-source";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {UserService} from "./user.service";
-import {map} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 import {BASE_PATH} from "./variables";
 
 @Injectable({
@@ -31,9 +31,8 @@ export class DataSourceService {
     addDataSource(dataSource: DataSource): Observable<HttpResponse<any>> {
         return this.httpClient.put(`${this.basePath}/user/dataSource`, dataSource, {
             observe: 'response'
-        }).pipe(map(response => {
+        }).pipe(tap(() => {
             this.userService.reloadUser();
-            return response;
         }));
     }
 
@@ -41,9 +40,8 @@ export class DataSourceService {
         return this.httpClient.delete(`${this.basePath}/user/dataSource`, {
             observe: 'response',
             body: dataSource
-        }).pipe(map(response => {
+        }).pipe(tap(() => {
             this.userService.reloadUser();
-            return response;
         }));
     }
 }

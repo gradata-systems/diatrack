@@ -7,7 +7,7 @@ import {DialogService} from "../../common-dialog/common-dialog.service";
 import {DateTime} from "luxon";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {UserService} from "../../api/user.service";
-import {map, mergeMap, takeUntil} from "rxjs/operators";
+import {map, mergeMap, takeUntil, tap} from "rxjs/operators";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
@@ -50,9 +50,8 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
                     fromDate: this.dateFrom ?? undefined
-                }).pipe(map(entries => {
+                }).pipe(tap(() => {
                     this.loading = false;
-                    return entries;
                 }));
             })
         ).subscribe(entries => {
@@ -94,9 +93,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
             } as ActivityLogEntryDialogParams
         });
 
-        return dialogRef.afterClosed().pipe(map(result => {
-            return result;
-        }));
+        return dialogRef.afterClosed();
     }
 
     deleteLogEntry(logEntry: ActivityLogEntry) {

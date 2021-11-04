@@ -3,7 +3,7 @@ import {AppAuthService} from "../../auth/app-auth.service";
 import {UserService} from "../../api/user.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {BehaviorSubject, merge, Observable, Subject} from "rxjs";
-import {debounceTime, filter, map, mergeMap, take, takeUntil, throttleTime} from "rxjs/operators";
+import {debounceTime, filter, map, mergeMap, take, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {PlotColour} from "../../api/models/user-preferences";
 import {DEFAULTS} from "../../defaults";
 import {DashboardService} from "./dashboard.service";
@@ -68,11 +68,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
             debounceTime(this.appConfigService.formDebounceInterval),
             takeUntil(this.destroying$),
             mergeMap(value => this.userService.savePreferences({
-                    dashboard: value
-                }).pipe(map(() => {
-                    this.dashboardService.triggerRefresh();
-                }))
-            )
+                dashboard: value
+            }).pipe(
+                tap(() => this.dashboardService.triggerRefresh())
+            ))
         ).subscribe();
 
         // Query data for the main BGL display chart on auto-refresh or when an activity log change occurs
@@ -100,6 +99,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.loading$.next(false);
                 this.bglHistogramChartOptions = chartData;
             }));
+    }
+
+    hasDataSource(): Observable<boolean> {
+        return this.userService.userProfile$.pipe(map(userProfile => {
+            return userProfile?.dataSources?.length > 0;
+        }));
     }
 
     ngOnDestroy() {

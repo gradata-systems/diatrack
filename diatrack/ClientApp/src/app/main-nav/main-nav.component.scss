@@ -19,9 +19,13 @@ $button-spacing: 15px;
             display: flex;
 
             .buttons {
-                .menu-button .caption {
-                    display: inline-block;
-                    margin-left: 15px;
+                .menu-button {
+                    padding-right: 80px;
+
+                    .caption {
+                        display: inline-block;
+                        margin-left: 15px;
+                    }
                 }
             }
         }

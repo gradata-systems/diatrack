@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from "rxjs";
+import {ReplaySubject} from "rxjs";
 import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, PopupRequest, RedirectRequest} from "@azure/msal-browser";
+import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, RedirectRequest} from "@azure/msal-browser";
 import {filter} from "rxjs/operators";
 import {APP_CONFIG} from "../api/variables";
 import {AppConfig} from "../api/models/app-config";

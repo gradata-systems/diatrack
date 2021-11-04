@@ -6,7 +6,7 @@
 </div>
 <app-main-nav></app-main-nav>
 <div class="content">
-  <div class="header">
+  <div class="header" *ngIf="userService.loggedIn">
     <app-main-header></app-main-header>
   </div>
   <div class="page-container">

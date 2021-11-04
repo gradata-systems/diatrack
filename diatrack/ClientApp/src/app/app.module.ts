@@ -21,6 +21,7 @@ import {ActivityLogPageComponent} from './pages/activity-log/activity-log.compon
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {HomeComponent} from "./pages/home/home.component";
 import {MsalRedirectComponent} from "@azure/msal-angular";
+import {LoginComponent} from "./pages/login/login.component";
 
 @NgModule({
     imports: [
@@ -50,6 +51,7 @@ import {MsalRedirectComponent} from "@azure/msal-angular";
     declarations: [
         AppComponent,
         MainNavComponent,
+        LoginComponent,
         HomeComponent,
         AboutPageComponent,
         ActivityLogPageComponent

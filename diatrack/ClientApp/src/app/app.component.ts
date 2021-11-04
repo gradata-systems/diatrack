@@ -23,11 +23,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
     constructor(
         public mainNavService: MainNavService,
+        public userService: UserService,
+        public authService: AppAuthService,
         private router: Router,
         private titleService: Title,
         private bglStatsService: BglStatsService,
-        private userService: UserService,
-        private authService: AppAuthService,
         private appIconService: AppIconService
     ) { }
 

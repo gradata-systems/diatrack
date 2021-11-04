@@ -1,0 +1,20 @@
+<div class="page">
+  <div class="login-splash-container">
+    <div class="login-splash">
+      <div class="logo">
+        <img src="assets/images/diatrack-logo.png" height="80" alt="Diatrack logo" />
+        <span>Diatrack</span>
+      </div>
+      <h1 class="header">Welcome</h1>
+      <p>Diatrack helps you and your carers to monitor and manage diabetes.</p>
+      <p>To get started, log in using the button below.</p>
+      <p>You will be prompted to sign in using an external account provider. If this is your first time using Diatrack, your account will be automatically created when you sign in.</p>
+      <div class="button-container">
+        <button mat-raised-button aria-label="Login button" color="accent" (click)="authService.logIn()">
+          <span>Sign In</span>
+          <mat-icon>login</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

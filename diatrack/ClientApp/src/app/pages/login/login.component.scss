@@ -1,0 +1,62 @@
+@import '../page-styles';
+
+.page {
+    display: flex;
+    align-items: center;
+
+    .login-splash-container {
+        margin: auto;
+
+        .login-splash {
+            border-radius: 5px;
+            padding: 30px 40px;
+            max-width: 600px;
+            position: relative;
+
+            .logo {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                grid-gap: 20px;
+                gap: 20px;
+
+                img {
+
+                }
+
+                span {
+                    font-size: 3em;
+                    margin-top: 5px;
+                }
+            }
+
+            h1 {
+                margin-top: 30px;
+            }
+
+            h1, p {
+                margin-bottom: 20px;
+            }
+
+            p {
+                font-size: 1.1em;
+                line-height: 1.5em;
+            }
+
+            .button-container {
+                width: 100%;
+                text-align: left;
+
+                button {
+                    font-size: 1.2em;
+                    padding: 3px 30px;
+                    margin-top: 20px;
+
+                    mat-icon {
+                        margin-left: 10px;
+                    }
+                }
+            }
+        }
+    }
+}

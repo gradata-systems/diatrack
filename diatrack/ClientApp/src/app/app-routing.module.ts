@@ -6,6 +6,8 @@ import {PreferencesComponent} from "./pages/preferences/preferences.component";
 import {FailedLoginComponent} from "./auth/failed-login/failed-login.component";
 import {AboutPageComponent} from "./pages/about/about.component";
 import {ActivityLogPageComponent} from "./pages/activity-log/activity-log.component";
+import {LoggedInGuard} from "./auth/logged-in.guard";
+import {LoginComponent} from "./pages/login/login.component";
 
 const routes: Routes = [
     {
@@ -14,18 +16,23 @@ const routes: Routes = [
         pathMatch: 'full'
     },
     {
+        path: 'login',
+        component: LoginComponent
+    },
+    {
         path: 'dashboard',
-        component: DashboardComponent
+        component: DashboardComponent,
+        canActivate: [LoggedInGuard]
     },
     {
         path: 'activity',
         component: ActivityLogPageComponent,
-        canActivate: [MsalGuard]
+        canActivate: [LoggedInGuard, MsalGuard]
     },
     {
         path: 'preferences',
         component: PreferencesComponent,
-        canActivate: [MsalGuard]
+        canActivate: [LoggedInGuard, MsalGuard]
     },
     {
         path: 'about',

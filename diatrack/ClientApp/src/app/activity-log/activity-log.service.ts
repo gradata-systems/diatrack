@@ -18,10 +18,11 @@ export class ActivityLogService {
     readonly changed$ = new Subject<void>();
 
     readonly activityLogCategories: ReadonlyMap<ActivityLogEntryCategory, ActivityLogEntryCategoryInfo> = new Map([
-        [ActivityLogEntryCategory.Insulin, { name: 'Insulin', icon: AppIcon.Insulin }],
-        [ActivityLogEntryCategory.Food, { name: 'Food', icon: AppIcon.Food }],
+        [ActivityLogEntryCategory.BasalRateChange, { name: 'Basal rate change', icon: AppIcon.BasalRateChange }],
         [ActivityLogEntryCategory.BglReading, { name: 'Blood glucose reading', icon: AppIcon.BglReading }],
         [ActivityLogEntryCategory.Exercise, { name: 'Exercise', icon: AppIcon.Exercise }],
+        [ActivityLogEntryCategory.Food, { name: 'Food', icon: AppIcon.Food }],
+        [ActivityLogEntryCategory.Insulin, { name: 'Insulin', icon: AppIcon.Insulin }],
         [ActivityLogEntryCategory.Other, { name: 'Other', icon: AppIcon.Note }]
     ]);
 

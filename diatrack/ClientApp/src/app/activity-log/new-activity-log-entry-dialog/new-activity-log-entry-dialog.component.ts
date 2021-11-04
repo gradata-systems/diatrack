@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../../api/models/activity-log-entry";
+import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams, TimeUnit} from "../../api/models/activity-log-entry";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AppConfigService} from "../../api/app-config.service";
 import {DataSourceService} from "../../api/data-source.service";
@@ -25,6 +25,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
 
     readonly activityLogEntryType = ActivityLogEntryCategory;
     readonly bglUnit = BglUnit;
+    readonly timeUnit = TimeUnit;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public readonly dialogData: ActivityLogEntryDialogParams,
@@ -60,6 +61,12 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
             case ActivityLogEntryCategory.Insulin:
                 return {
                     insulinUnits: this.fb.control('', Validators.min(0.1))
+                };
+            case ActivityLogEntryCategory.BasalRateChange:
+                return {
+                    basalRatePercent: this.fb.control('', Validators.required),
+                    basalRateDuration: this.fb.control('', Validators.required),
+                    basalRateTimeUnit: this.fb.control(TimeUnit.Minute, Validators.required)
                 };
             case ActivityLogEntryCategory.Food:
                 return {

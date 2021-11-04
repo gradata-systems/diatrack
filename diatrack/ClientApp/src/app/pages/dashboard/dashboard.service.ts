@@ -265,6 +265,8 @@ export class DashboardService {
         switch (logEntry.category) {
             case ActivityLogEntryCategory.Insulin:
                 return `${logEntry.properties.insulinUnits} units`;
+            case ActivityLogEntryCategory.BasalRateChange:
+                return `${logEntry.properties.basalRatePercent} %`;
             case ActivityLogEntryCategory.Food:
                 return `${logEntry.properties.foodGrams} g`;
             case ActivityLogEntryCategory.BglReading:

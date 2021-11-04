@@ -9,6 +9,7 @@ export class AppIconService {
 
     private readonly icons: ReadonlyMap<string, string> = new Map<AppIcon, string>([
         [ AppIcon.BglReading, '../assets/icons/bloodtype_white_24dp.svg' ],
+        [ AppIcon.BasalRateChange, '../assets/icons/percent_white_24dp.svg' ],
         [ AppIcon.Exercise, '../assets/icons/directions_run_white_24dp.svg' ],
         [ AppIcon.Food, '../assets/icons/dining_white_24dp.svg' ],
         [ AppIcon.Insulin, '../assets/icons/glyphicons-basic-627-syringe-empty.svg' ],
@@ -37,5 +38,6 @@ export enum AppIcon
     Exercise = 'exercise',
     Food = 'food',
     Insulin = 'insulin',
+    BasalRateChange = 'percent',
     Note = 'note'
 }

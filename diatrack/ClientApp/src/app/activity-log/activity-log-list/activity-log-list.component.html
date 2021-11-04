@@ -14,6 +14,13 @@
               </div>
             </ng-container>
 
+            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.BasalRateChange">
+              <div class="property">
+                <span class="bold">{{logEntry.properties.basalRatePercent}} % </span>
+                <span>for {{logEntry.properties.basalRateDuration}} {{logEntry.properties.basalRateTimeUnit}}s</span>
+              </div>
+            </ng-container>
+
             <ng-container *ngIf="logEntry.category === activityLogEntryCategory.Food">
               <div class="property">
                 <span class="bold">{{logEntry.properties.foodGrams}}g </span>

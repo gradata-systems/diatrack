@@ -21,6 +21,24 @@
         </mat-form-field>
       </ng-container>
 
+      <ng-container *ngIf="dialogData.entryType === activityLogEntryType.BasalRateChange">
+        <mat-form-field class="numeric">
+          <mat-label>Percent</mat-label>
+          <input matInput formControlName="basalRatePercent" type="number" min="0" max="250" placeholder="100" autocomplete="off" required cdkFocusInitial>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Duration</mat-label>
+          <input matInput formControlName="basalRateDuration" type="number" min="0" placeholder="0" autocomplete="off" required>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Time units</mat-label>
+          <mat-select formControlName="basalRateTimeUnit" required>
+            <mat-option [value]="timeUnit.Minute">Minutes</mat-option>
+            <mat-option [value]="timeUnit.Hour">Hours</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Food">
         <mat-form-field class="numeric">
           <mat-label>Grams</mat-label>

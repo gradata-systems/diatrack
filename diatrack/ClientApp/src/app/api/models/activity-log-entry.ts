@@ -26,8 +26,17 @@ export interface ActivityLogEntryCategoryInfo
 export enum ActivityLogEntryCategory
 {
     Insulin = 'insulin',
+    BasalRateChange = 'basal_rate_change',
     Food = 'food',
     BglReading = 'bgl_reading',
     Exercise = 'exercise',
     Other = 'other'
+}
+
+export enum TimeUnit
+{
+    Second = 'second',
+    Minute = 'minute',
+    Hour = 'hour',
+    Day = 'day'
 }

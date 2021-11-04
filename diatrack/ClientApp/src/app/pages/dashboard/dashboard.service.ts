@@ -1,5 +1,5 @@
 import {Injectable, NgZone} from '@angular/core';
-import {interval, Observable, Subject} from "rxjs";
+import {interval, Observable, of, Subject} from "rxjs";
 import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
@@ -56,7 +56,13 @@ export class DashboardService {
     }
 
     getBglHistogramChartOptions(): Observable<Options | undefined> {
-        return this.userService.userPreferences$.pipe(mergeMap(userPrefs => {
+        return this.userService.userProfile$.pipe(mergeMap(userProfile => {
+            // Abort if no datasources are defined
+            if (userProfile.dataSources.length === 0) {
+                return of(undefined);
+            }
+
+            const userPrefs = userProfile.preferences;
             return this.activityLogService.searchEntries({
                 size: this.appConfigService.initialLogEntryQuerySize,
                 fromDate: DateTime.now().minus({ hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours })

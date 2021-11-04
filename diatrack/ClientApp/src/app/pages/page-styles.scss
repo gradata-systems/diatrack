@@ -28,3 +28,8 @@ form {
         }
     }
 }
+
+a {
+    color: mat.get-color-from-palette($diatrack-hyperlink);
+    text-decoration: none;
+}

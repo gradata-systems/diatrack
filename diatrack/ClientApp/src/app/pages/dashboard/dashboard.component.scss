@@ -71,3 +71,24 @@ button.options {
     }
 }
 
+.no-datasource-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .no-datasource {
+        margin: auto 0;
+        text-align: center;
+        max-width: 400px;
+
+        $icon-size: 100px;
+        mat-icon {
+            opacity: 0.2;
+            font-size: $icon-size;
+            line-height: $icon-size;
+            height: $icon-size;
+            width: $icon-size;
+        }
+    }
+}

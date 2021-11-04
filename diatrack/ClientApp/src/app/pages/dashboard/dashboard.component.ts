@@ -101,12 +101,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }));
     }
 
-    hasDataSource(): Observable<boolean> {
-        return this.userService.userProfile$.pipe(map(userProfile => {
-            return userProfile?.dataSources?.length > 0;
-        }));
-    }
-
     ngOnDestroy() {
         this.destroying$.next(true);
         this.destroying$.complete();

@@ -56,8 +56,7 @@ export class DashboardService {
     }
 
     getBglHistogramChartOptions(): Observable<Options | undefined> {
-        return this.userService.userProfile$.pipe(take(1), mergeMap(userProfile => {
-            const userPrefs = userProfile.preferences;
+        return this.userService.userPreferences$.pipe(take(1), mergeMap(userPrefs => {
             return this.activityLogService.searchEntries({
                 size: this.appConfigService.initialLogEntryQuerySize,
                 fromDate: DateTime.now().minus({ hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours })

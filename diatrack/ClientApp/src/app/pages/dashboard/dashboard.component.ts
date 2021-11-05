@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
             takeUntil(this.destroying$),
             mergeMap(() => this.updateView())
-        ).subscribe(() => {}, error => {
+        ).subscribe(() => {}, () => {
             this.loading$.next(false);
             this.snackBar.open('Error retrieving BGL chart data');
         });

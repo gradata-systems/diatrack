@@ -18,13 +18,15 @@ export class AppIconService {
     ]);
 
     private readonly bglTrendIcons: ReadonlyMap<BglTrend, string> = new Map<BglTrend, string>([
-        [ BglTrend.DoubleUp, '../assets/icons/arrows/double-up.svg' ],
-        [ BglTrend.SingleUp, '../assets/icons/arrows/single-up.svg' ],
-        [ BglTrend.FortyFiveUp, '../assets/icons/arrows/fortyfive-up.svg' ],
-        [ BglTrend.Flat, '../assets/icons/arrows/flat.svg' ],
-        [ BglTrend.FortyFiveDown, '../assets/icons/arrows/fortyfive-down.svg' ],
-        [ BglTrend.SingleDown, '../assets/icons/arrows/single-down.svg' ],
-        [ BglTrend.DoubleDown, '../assets/icons/arrows/double-down.svg' ]
+        [ BglTrend.DoubleUp, '../assets/icons/bgl-trend/double-up.svg' ],
+        [ BglTrend.SingleUp, '../assets/icons/bgl-trend/single-up.svg' ],
+        [ BglTrend.FortyFiveUp, '../assets/icons/bgl-trend/fortyfive-up.svg' ],
+        [ BglTrend.Flat, '../assets/icons/bgl-trend/flat.svg' ],
+        [ BglTrend.FortyFiveDown, '../assets/icons/bgl-trend/fortyfive-down.svg' ],
+        [ BglTrend.SingleDown, '../assets/icons/bgl-trend/single-down.svg' ],
+        [ BglTrend.DoubleDown, '../assets/icons/bgl-trend/double-down.svg' ],
+        [ BglTrend.NotComputable, '../assets/icons/bgl-trend/not-computable.svg' ],
+        [ BglTrend.RateOutOfRange, '../assets/icons/bgl-trend/out-of-range.svg' ]
     ]);
 
     constructor(

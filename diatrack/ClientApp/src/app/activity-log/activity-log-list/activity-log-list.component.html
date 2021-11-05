@@ -54,7 +54,7 @@
           <div class="info">
             <div class="bgl" *ngIf="getScaledBgl(logEntry) | async; let bgl">
               <mat-icon [style]="{color: bglStatsService.getBglColour(bgl)}">water_drop</mat-icon>
-              <span [style]="{color: bglStatsService.getBglColour(bgl)}" matTooltip="Latest blood glucose reading at the time the log entry was created" [matTooltipShowDelay]="500">{{bgl | number:'1.1-1'}}</span>
+              <span [style]="{color: bglStatsService.getBglColour(bgl)}" matTooltip="Latest blood glucose reading at the time the log entry was created">{{bgl | number:'1.1-1'}}</span>
             </div>
             <div class="menu-button-container">
               <button mat-icon-button [matMenuTriggerFor]="contextMenu">
@@ -73,7 +73,7 @@
             </div>
           </div>
           <div class="spacer"></div>
-          <div class="time" [matTooltip]="getLogEntryFullTime(logEntry)" [matTooltipShowDelay]="500">{{getLogEntryTime(logEntry)}}</div>
+          <div class="time" [matTooltip]="getLogEntryFullTime(logEntry)">{{getLogEntryTime(logEntry)}}</div>
         </div>
       </div>
     </mat-list-item>

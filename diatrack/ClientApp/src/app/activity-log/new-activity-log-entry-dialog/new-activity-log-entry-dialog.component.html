@@ -3,8 +3,7 @@
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
   <mat-dialog-content class="new-activity-dialog">
     <mat-form-field
-      matTooltip="This is the person (data source) who the log entry relates to. Any other user who has also linked to this account (i.e. your spouse), will be able to see what you enter here."
-      [matTooltipShowDelay]="500">
+      matTooltip="This is the person (data source) who the log entry relates to. Any other user who has also linked to this account (i.e. your spouse), will be able to see what you enter here.">
       <mat-label>Link to account</mat-label>
       <mat-select formControlName="accountId" required>
         <mat-option *ngFor="let dataSource of dataSourceService.dataSources$ | async" [value]="dataSource.id">
@@ -80,7 +79,7 @@
       </ng-container>
     </ng-container>
 
-    <mat-form-field appearance="fill" floatLabel="always" matTooltip="Optionally provide any additional notes. These are displayed as tooltips on the main BGL chart." [matTooltipShowDelay]="500">
+    <mat-form-field appearance="fill" floatLabel="always" matTooltip="Optionally provide any additional notes. These are displayed as tooltips on the main BGL chart.">
       <mat-label>Notes</mat-label>
       <textarea matInput formControlName="notes" [maxLength]="appConfigService.maxNoteLength" cdkFocusInitial></textarea>
     </mat-form-field>

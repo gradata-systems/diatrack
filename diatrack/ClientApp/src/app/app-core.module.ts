@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
-import {MatTooltipModule} from "@angular/material/tooltip";
+import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipModule} from "@angular/material/tooltip";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatLineModule, MatOptionModule} from "@angular/material/core";
 import {MatMenuModule} from "@angular/material/menu";
@@ -48,7 +48,8 @@ import {A11yModule} from "@angular/cdk/a11y";
         ReactiveFormsModule
     ],
     providers: [
-        {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000 }}
+        {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 3000 }},
+        {provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: {showDelay: 500}}
     ],
     declarations: [],
 })

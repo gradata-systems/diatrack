@@ -1,5 +1,6 @@
 @use '~@angular/material' as mat;
 @import '../theme';
+@import '../media-rules';
 
 $status-bar-height: 100px;
 
@@ -86,6 +87,10 @@ $status-bar-height: 100px;
         flex-direction: column;
         align-items: flex-end;
         gap: 5px;
+
+        @media (max-width: $media-phone-portrait-breakpoint), (max-height: $media-phone-landscape-breakpoint) {
+            display: none;
+        }
 
         p {
             margin: 0;

@@ -2,27 +2,27 @@
   <div class="field">
     <div class="label">
       <mat-label>Blood glucose unit</mat-label>
-      <mat-icon class="context-help">help_outline</mat-icon>
+      <mat-icon class="context-help" matTooltip="Blood glucose levels are displayed using the units you select here">help_outline</mat-icon>
     </div>
     <mat-radio-group formControlName="bglUnit">
       <mat-radio-button [value]="bglUnit.MmolL">mmol/L</mat-radio-button>
       <mat-radio-button [value]="bglUnit.MgDl">mg/dL</mat-radio-button>
     </mat-radio-group>
   </div>
-  <div class="field">
-    <div class="label">
-      <mat-label>Time format</mat-label>
-      <mat-icon class="context-help">help_outline</mat-icon>
-    </div>
-    <mat-radio-group formControlName="timeFormat">
-      <mat-radio-button [value]="timeFormat.TwelveHour">12-hour</mat-radio-button>
-      <mat-radio-button [value]="timeFormat.TwentyFourHour">24-hour</mat-radio-button>
-    </mat-radio-group>
-  </div>
+<!--  <div class="field">-->
+<!--    <div class="label">-->
+<!--      <mat-label>Time format</mat-label>-->
+<!--      <mat-icon class="context-help">help_outline</mat-icon>-->
+<!--    </div>-->
+<!--    <mat-radio-group formControlName="timeFormat">-->
+<!--      <mat-radio-button [value]="timeFormat.TwelveHour">12-hour</mat-radio-button>-->
+<!--      <mat-radio-button [value]="timeFormat.TwentyFourHour">24-hour</mat-radio-button>-->
+<!--    </mat-radio-group>-->
+<!--  </div>-->
   <div class="field range" formGroupName="targetBglRange">
     <div class="label">
       <mat-label>Target blood glucose range</mat-label>
-      <mat-icon class="context-help">help_outline</mat-icon>
+      <mat-icon class="context-help" matTooltip="This determines the 'green' range shown in the BGL graph on the Dashboard">help_outline</mat-icon>
     </div>
     <mat-form-field>
       <input matInput placeholder="Low" type="number" formControlName="min" min="3" required>
@@ -36,7 +36,7 @@
   <div class="field">
     <div class="label">
       <mat-label>Low blood glucose threshold</mat-label>
-      <mat-icon class="context-help" matTooltip="Affects the display of low BGL indicators">help_outline</mat-icon>
+      <mat-icon class="context-help" matTooltip="This controls the 'red' area in the BGL graph">help_outline</mat-icon>
     </div>
     <mat-form-field class="bgl">
       <input matInput type="number" formControlName="bglLowThreshold" min="1" autocomplete="none" required>

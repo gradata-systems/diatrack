@@ -21,6 +21,9 @@ import {ActivityLogPageComponent} from './pages/activity-log/activity-log.compon
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {MsalRedirectComponent} from "@azure/msal-angular";
 import {LoginComponent} from "./pages/login/login.component";
+import {GettingStartedComponent} from "./pages/getting-started/getting-started.component";
+import {TermsPageComponent} from "./pages/terms/terms.component";
+import {PrivacyPageComponent} from "./pages/privacy/privacy.component";
 
 @NgModule({
     imports: [
@@ -51,7 +54,10 @@ import {LoginComponent} from "./pages/login/login.component";
         AppComponent,
         MainNavComponent,
         LoginComponent,
+        GettingStartedComponent,
         AboutPageComponent,
+        TermsPageComponent,
+        PrivacyPageComponent,
         ActivityLogPageComponent
     ],
     bootstrap: [AppComponent, MsalRedirectComponent]

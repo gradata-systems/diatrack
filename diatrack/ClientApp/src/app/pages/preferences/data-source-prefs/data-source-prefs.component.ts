@@ -24,7 +24,7 @@ export class DataSourcePrefsComponent {
 
     onCreateNewClicked() {
         const dialogRef = this.dialog.open(NewDataSourceDialogComponent, {
-            width: '350px',
+            width: '380px',
             data: {
                 type: DataSourceType.Dexcom
             } as DataSource
@@ -34,7 +34,7 @@ export class DataSourcePrefsComponent {
             if (dataSource) {
                 this.snackBar.open(`Data source '${dataSource.name}' created`);
             }
-        })
+        });
     }
 
     onDeleteClicked(dataSource: DataSource) {

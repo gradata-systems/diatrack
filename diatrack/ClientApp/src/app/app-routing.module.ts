@@ -8,6 +8,9 @@ import {AboutPageComponent} from "./pages/about/about.component";
 import {ActivityLogPageComponent} from "./pages/activity-log/activity-log.component";
 import {LoggedInGuard} from "./auth/logged-in.guard";
 import {LoginComponent} from "./pages/login/login.component";
+import {GettingStartedComponent} from "./pages/getting-started/getting-started.component";
+import {TermsPageComponent} from "./pages/terms/terms.component";
+import {PrivacyPageComponent} from "./pages/privacy/privacy.component";
 
 const routes: Routes = [
     {
@@ -18,6 +21,10 @@ const routes: Routes = [
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: 'getting-started',
+        component: GettingStartedComponent
     },
     {
         path: 'dashboard',
@@ -37,6 +44,14 @@ const routes: Routes = [
     {
         path: 'about',
         component: AboutPageComponent
+    },
+    {
+        path: 'terms',
+        component: TermsPageComponent
+    },
+    {
+        path: 'privacy',
+        component: PrivacyPageComponent
     },
     {
         path: 'login-failed',

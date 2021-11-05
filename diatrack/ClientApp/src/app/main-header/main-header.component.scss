@@ -77,4 +77,25 @@ $status-bar-height: 100px;
             }
         }
     }
+
+    .links {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+
+        p {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+
+            a {
+                color: rgba(255, 255, 255, 0.5);
+                text-decoration: none;
+
+                &:hover {
+                    color: mat.get-color-from-palette($diatrack-hyperlink);
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
 }

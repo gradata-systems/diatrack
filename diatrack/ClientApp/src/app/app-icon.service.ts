@@ -22,7 +22,7 @@ export class AppIconService {
         [ BglTrend.SingleUp, '../assets/icons/arrows/single-up.svg' ],
         [ BglTrend.FortyFiveUp, '../assets/icons/arrows/fortyfive-up.svg' ],
         [ BglTrend.Flat, '../assets/icons/arrows/flat.svg' ],
-        [ BglTrend.FortyFiveDown, '../assets/icons/arrows/double-up.svg' ],
+        [ BglTrend.FortyFiveDown, '../assets/icons/arrows/fortyfive-down.svg' ],
         [ BglTrend.SingleDown, '../assets/icons/arrows/single-down.svg' ],
         [ BglTrend.DoubleDown, '../assets/icons/arrows/double-down.svg' ]
     ]);

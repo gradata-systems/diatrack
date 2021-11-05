@@ -6,7 +6,7 @@
           <span class="reading" matTooltip="Most recent blood glucose reading">{{bglStatus.bgl !== undefined ? (getScaledBgl(bglStatus.bgl) | async | number:'1.1-1') : '---'}}</span>
           <span class="units">{{userService.getUserBglUnitDisplayValue() | async}}</span>
         </div>
-        <div class="trend-arrow" *ngIf="bglStatus.trend && appIconService.getBglTrendIconUrl(bglStatus.trend)">
+        <div class="trend-arrow" *ngIf="bglStatus.trend && appIconService.getBglTrendIconUrl(bglStatus.trend)" matTooltip="Blood glucose trend arrow">
           <mat-icon [svgIcon]="bglStatus.trend"></mat-icon>
         </div>
         <div class="stats">

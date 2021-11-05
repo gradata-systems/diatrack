@@ -4,7 +4,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntry, ActivityLogEntryCategoryInfo, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {Observable} from "rxjs";
 import {NewActivityLogEntryDialogComponent, ActivityLogEntryDialogParams} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
-import {map, mergeMap} from "rxjs/operators";
+import {map, mergeMap, take} from "rxjs/operators";
 import {DataSourceService} from "../../api/data-source.service";
 import {DashboardService} from "../../pages/dashboard/dashboard.service";
 import {DateTime} from "luxon";
@@ -34,7 +34,7 @@ export class NewActivityLogEntryFabComponent {
     }
 
     openNewEntryDialog(type: ActivityLogEntryCategory, category: ActivityLogEntryCategoryInfo): Observable<ActivityLogEntry> {
-        return this.userService.userPreferences$.pipe(mergeMap(userPrefs => {
+        return this.userService.userPreferences$.pipe(take(1), mergeMap(userPrefs => {
             const bglUnits = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
             const selectedPoint = this.dashboardService.selectedPoint;
             let atTime: DateTime | undefined;

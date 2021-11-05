@@ -47,7 +47,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
             properties: fb.group({
                 ...this.createControls()
             }),
-            notes: fb.control(null)
+            notes: fb.control(null, this.dialogData.entryType === ActivityLogEntryCategory.Other ? Validators.required : undefined)
         });
 
         if (this.dialogData.existingEntry) {
@@ -146,6 +146,21 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
             this.dialogRef.close(true);
         }, error => {
             this.dialogService.error('Edit log entry', 'Log entry could not be updated. Please try again in a moment.');
+        }, () => {
+            this.inProgress = false;
+        });
+    }
+
+    deleteLogEntry() {
+        const existingEntry = this.dialogData.existingEntry!;
+
+        this.inProgress = true;
+        this.activityLogService.deleteEntry(existingEntry.id).subscribe(() => {
+            this.snackBar.open('Log entry deleted');
+            this.activityLogService.triggerChanged();
+            this.dialogRef.close(false);
+        }, error => {
+            this.dialogService.error('Delete log entry', 'Log entry could not be deleted. Please try again in a moment.');
         }, () => {
             this.inProgress = false;
         });

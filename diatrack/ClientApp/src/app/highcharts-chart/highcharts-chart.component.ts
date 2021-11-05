@@ -6,6 +6,7 @@ import {map, takeUntil} from 'rxjs/operators';
 
 @Component({
     selector: 'highcharts-chart',
+    exportAs: 'highartsChart',
     template: `
         <div class="highcharts-chart" #chart></div>
     `,
@@ -156,6 +157,16 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
                     this.chart.reflow();
             });
         });
+    }
+
+    deselectAllPoints() {
+        if (this.chart) {
+            this.chart.series.forEach(series => {
+                series.points.forEach(point => {
+                    point.select(false);
+                });
+            });
+        }
     }
 
     /**

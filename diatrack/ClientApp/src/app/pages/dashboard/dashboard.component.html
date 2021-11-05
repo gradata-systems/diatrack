@@ -49,7 +49,7 @@
       </div>
     </mat-menu>
     <div class="chart-container">
-      <highcharts-chart [options]="chartOptions"></highcharts-chart>
+      <highcharts-chart #bglChart [options]="chartOptions"></highcharts-chart>
     </div>
     <div class="activity-log-container">
       <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="getDateFrom()"></app-activity-log-list>

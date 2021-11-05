@@ -7,7 +7,7 @@
 // hue. Available color palettes: https://material.io/design/color/
 $diatrack-primary: mat.define-palette(mat.$gray-palette, 400);
 $diatrack-accent: mat.define-palette(mat.$yellow-palette, 700);
-$diatrack-warn: mat.define-palette(mat.$yellow-palette, 600);
+$diatrack-warn: mat.define-palette(mat.$red-palette, 600);
 $diatrack-hyperlink: mat.define-palette(mat.$blue-palette);
 
 // Create the theme object. A theme consists of configurations for individual

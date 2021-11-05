@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AppAuthService} from "../../auth/app-auth.service";
 import {UserService} from "../../api/user.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
@@ -13,6 +13,7 @@ import {Router} from "@angular/router";
 import {DateTime} from "luxon";
 import {AppConfigService} from "../../api/app-config.service";
 import {ActivityLogService} from "../../activity-log/activity-log.service";
+import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
 
 @Component({
     selector: 'app-dashboard',
@@ -20,7 +21,8 @@ import {ActivityLogService} from "../../activity-log/activity-log.service";
     styleUrls: ['./dashboard.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('bglChart') bglChart?: HighchartsChartComponent;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
     readonly bglHistogramChartOptions = new BehaviorSubject<Options | undefined>(undefined);
@@ -98,6 +100,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.loading$.next(false);
                 this.bglHistogramChartOptions.next(chartData);
             }));
+    }
+
+    ngAfterViewInit() {
+        this.activityLogService.changed$.pipe(
+            takeUntil(this.destroying$)
+        ).subscribe(() => {
+            // If a log entry is created, clear the selected BGL point so the new log entry icon is visible
+            this.bglChart?.deselectAllPoints();
+            this.dashboardService.selectedPoint = undefined;
+        });
     }
 
     ngOnDestroy() {

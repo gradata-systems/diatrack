@@ -136,7 +136,7 @@ export class DashboardService {
                             type: 'line'
                         },
                         title: {
-                            text: `Blood Glucose level (${getBglUnitDisplayValue(bglUnit)})`
+                            text: `Blood glucose level (${getBglUnitDisplayValue(bglUnit)})`
                         },
                         xAxis: {
                             type: 'datetime',

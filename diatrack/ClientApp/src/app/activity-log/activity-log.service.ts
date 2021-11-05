@@ -4,7 +4,7 @@ import {DateTime} from "luxon";
 import {combineLatest, interval, Observable, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../api/models/activity-log-entry";
 import {BASE_PATH} from "../api/variables";
-import {AppIcon} from "../app-icon.service";
+import {LogActivityIcon} from "../app-icon.service";
 import {AppConfigService} from "../api/app-config.service";
 import {filter} from "rxjs/operators";
 import {UserService} from "../api/user.service";
@@ -18,12 +18,12 @@ export class ActivityLogService {
     readonly changed$ = new Subject<void>();
 
     readonly activityLogCategories: ReadonlyMap<ActivityLogEntryCategory, ActivityLogEntryCategoryInfo> = new Map([
-        [ActivityLogEntryCategory.BasalRateChange, { name: 'Basal rate change', icon: AppIcon.BasalRateChange }],
-        [ActivityLogEntryCategory.BglReading, { name: 'Blood glucose reading', icon: AppIcon.BglReading }],
-        [ActivityLogEntryCategory.Exercise, { name: 'Exercise', icon: AppIcon.Exercise }],
-        [ActivityLogEntryCategory.Food, { name: 'Food', icon: AppIcon.Food }],
-        [ActivityLogEntryCategory.Insulin, { name: 'Insulin', icon: AppIcon.Insulin }],
-        [ActivityLogEntryCategory.Other, { name: 'Other', icon: AppIcon.Note }]
+        [ActivityLogEntryCategory.BasalRateChange, { name: 'Basal rate change', icon: LogActivityIcon.BasalRateChange }],
+        [ActivityLogEntryCategory.BglReading, { name: 'Blood glucose reading', icon: LogActivityIcon.BglReading }],
+        [ActivityLogEntryCategory.Exercise, { name: 'Exercise', icon: LogActivityIcon.Exercise }],
+        [ActivityLogEntryCategory.Food, { name: 'Food', icon: LogActivityIcon.Food }],
+        [ActivityLogEntryCategory.Insulin, { name: 'Insulin', icon: LogActivityIcon.Insulin }],
+        [ActivityLogEntryCategory.Other, { name: 'Other', icon: LogActivityIcon.Note }]
     ]);
 
     constructor(
@@ -50,7 +50,7 @@ export class ActivityLogService {
         this.changed$.next();
     }
 
-    getLogEntryIcon(logEntry: ActivityLogEntry): AppIcon | undefined {
+    getLogEntryIcon(logEntry: ActivityLogEntry): LogActivityIcon | undefined {
         let category = this.activityLogCategories.get(logEntry.category);
         return category?.icon;
     }

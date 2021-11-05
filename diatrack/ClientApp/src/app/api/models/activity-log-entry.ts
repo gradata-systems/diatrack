@@ -1,5 +1,5 @@
 import {User} from "./user";
-import {AppIcon} from "../../app-icon.service";
+import {LogActivityIcon} from "../../app-icon.service";
 
 export interface ActivityLogEntry extends ActivityLogEntryParams
 {
@@ -20,7 +20,7 @@ export interface ActivityLogEntryParams
 export interface ActivityLogEntryCategoryInfo
 {
     name: string;
-    icon: AppIcon;
+    icon: LogActivityIcon;
 }
 
 export enum ActivityLogEntryCategory

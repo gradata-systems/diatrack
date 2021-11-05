@@ -116,7 +116,7 @@ export class DashboardService {
                                 x: DateTime.fromISO(logEntry.created, {zone: 'UTC'}).toLocal().toMillis(),
                                 y: scaledBgl,
                                 marker: {
-                                    symbol: iconId ? `url(${this.appIconService.getIconUrl(iconId)})` : undefined
+                                    symbol: iconId ? `url(${this.appIconService.getLogActivityIconUrl(iconId)})` : undefined
                                 },
                                 options: {
                                     custom: {

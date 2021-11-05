@@ -27,6 +27,7 @@ $status-bar-height: 100px;
         .bgl-stats {
             display: flex;
             flex-direction: row;
+            align-items: center;
             height: 100%;
             margin-left: auto;
             margin-right: auto;
@@ -34,7 +35,7 @@ $status-bar-height: 100px;
             .bgl {
                 margin-top: auto;
                 margin-bottom: auto;
-                padding-right: 20px;
+                padding-right: 5px;
 
                 .reading {
                     font-size: 50px;
@@ -50,10 +51,25 @@ $status-bar-height: 100px;
                 }
             }
 
+            .trend-arrow {
+                position: relative;
+                top: -8px;
+
+                & > mat-icon {
+                    width: 35px;
+                    height: 35px;
+
+                    ::ng-deep svg > line {
+                        stroke: white;
+                    }
+                }
+            }
+
             .stats {
                 display: flex;
                 flex-direction: column;
                 gap: 10px;
+                padding-left: 15px;
                 margin-top: auto;
                 margin-bottom: auto;
                 font-size: 1.1em;

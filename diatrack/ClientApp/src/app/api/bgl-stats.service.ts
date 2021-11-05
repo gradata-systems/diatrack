@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {BglReading} from "./models/bgl-reading";
+import {BglReading, BglTrend} from "./models/bgl-reading";
 import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
 import {BASE_PATH} from "./variables";
 import {BglAccountStats} from "./models/bgl-account-stats";
@@ -69,6 +69,7 @@ export class BglStatsService {
                         this.bglStatus$.next({
                             bgl: firstReading.value,
                             delta: firstReading.value - reading.value,
+                            trend: firstReading.trend,
                             lastReading: DateTime.fromISO(firstReading.timestamp, { zone: 'UTC' }).toLocal()
                         });
 
@@ -147,5 +148,6 @@ interface GetLatestReadingsParams {
 export interface BglStatus {
     bgl?: number;
     delta?: number;
+    trend?: BglTrend;
     lastReading?: DateTime;
 }

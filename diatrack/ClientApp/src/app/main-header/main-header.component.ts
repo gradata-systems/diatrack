@@ -8,6 +8,7 @@ import {DEFAULTS} from "../defaults";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {environment} from "../../environments/environment";
 import {DateTime} from "luxon";
+import {AppIconService} from "../app-icon.service";
 
 @Component({
     selector: 'app-main-header',
@@ -24,6 +25,7 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
     constructor(
         public userService: UserService,
         public bglStatsService: BglStatsService,
+        public appIconService: AppIconService,
         private snackBar: MatSnackBar
     ) { }
 

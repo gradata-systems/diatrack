@@ -19,6 +19,7 @@ import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activ
 export class DashboardService {
 
     dashboardSettings?: DashboardPreferences;
+    selectedPoint: Point | undefined;
 
     // How often (in milliseconds) to check for new data
     readonly refresh$ = new Subject<void>();
@@ -200,10 +201,19 @@ export class DashboardService {
                             },
                             line: {
                                 connectNulls: false,
-                                lineWidth: 1,
+                                lineWidth: 2,
+                                allowPointSelect: true,
                                 marker: {
                                     lineWidth: 1,
-                                    lineColor: 'rgba(255, 255, 255, 0.4)'
+                                    lineColor: 'rgba(255, 255, 255, 0.4)',
+                                    states: {
+                                        select: {
+                                            radius: 8,
+                                            lineColor: '#af0000',
+                                            lineWidth: 2,
+                                            fillColor: 'white'
+                                        }
+                                    }
                                 },
                                 color: pointColourMode === PlotColour.Uniform ? uniformColour : {
                                     linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
@@ -221,6 +231,16 @@ export class DashboardService {
                                     padding: 10,
                                     formatter: function (options) {
                                         return this.y ? numberFormat(this.y, 1) : null;
+                                    }
+                                },
+                                events: {
+                                    click: function (event) {
+                                        if (!event.point.selected) {
+                                            // Record the selected point, so it may be used when creating a log entry
+                                            self.selectedPoint = event.point;
+                                        } else {
+                                            self.selectedPoint = undefined;
+                                        }
                                     }
                                 }
                             },

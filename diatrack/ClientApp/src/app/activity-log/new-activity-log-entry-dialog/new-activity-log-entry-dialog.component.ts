@@ -12,6 +12,7 @@ import {DialogService} from "../../common-dialog/common-dialog.service";
 import {BglUnit} from "../../api/models/user-preferences";
 import {take} from "rxjs/operators";
 import {DEFAULTS} from "../../defaults";
+import {DateTime} from "luxon";
 
 @Component({
     selector: 'app-new-activity-log-entry-dialog',
@@ -64,7 +65,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
                 };
             case ActivityLogEntryCategory.BasalRateChange:
                 return {
-                    basalRatePercent: this.fb.control('', Validators.required),
+                    basalRatePercent: this.fb.control(100, Validators.required),
                     basalRateDuration: this.fb.control('', Validators.required),
                     basalRateTimeUnit: this.fb.control(TimeUnit.Minute, Validators.required)
                 };
@@ -108,9 +109,10 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
             // Attempt to create a log entry
             const bglStatus = this.bglStatsService.bglStatus$.value;
             const logEntryParams: ActivityLogEntryParams = {
-                ...this.formGroup.value,
+                atTime: this.dialogData.atTime?.toISO(),
+                bgl: this.dialogData.bgl ?? bglStatus.bgl,
                 category: this.dialogData.entryType,
-                bgl: bglStatus.bgl
+                ...this.formGroup.value,
             };
 
             if (this.dialogData.existingEntry) {
@@ -156,10 +158,16 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
     getSubmitButtonCaption() {
         return this.dialogData.existingEntry ? 'Save' : 'Create';
     }
+
+    getAtTimeDisplayValue() {
+        return this.dialogData.atTime?.toLocaleString(DateTime.DATETIME_MED);
+    }
 }
 
 export interface ActivityLogEntryDialogParams
 {
+    atTime?: DateTime;
+    bgl?: number;
     entryType: ActivityLogEntryCategory;
     entryCategory: ActivityLogEntryCategoryInfo;
     existingEntry?: ActivityLogEntry;

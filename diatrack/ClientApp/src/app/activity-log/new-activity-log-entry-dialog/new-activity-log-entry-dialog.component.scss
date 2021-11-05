@@ -13,6 +13,12 @@ mat-icon.dialog-background {
     width: $category-icon-size;
 }
 
+.at-time {
+    font-size: 0.9em;
+    opacity: 0.8;
+    cursor: default;
+}
+
 form {
     mat-form-field {
         display: block;

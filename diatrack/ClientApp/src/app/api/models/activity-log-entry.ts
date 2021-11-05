@@ -10,6 +10,7 @@ export interface ActivityLogEntry extends ActivityLogEntryParams
 
 export interface ActivityLogEntryParams
 {
+    atTime?: string;
     accountId: string;
     category: ActivityLogEntryCategory;
     bgl?: number;

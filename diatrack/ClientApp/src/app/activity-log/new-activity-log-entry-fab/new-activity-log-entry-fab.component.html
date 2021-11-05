@@ -4,7 +4,7 @@
     <mat-icon>post_add</mat-icon>
   </button>
   <mat-menu #newActivityMenu="matMenu" class="fab-menu">
-    <button mat-menu-item *ngFor="let category of logEntryCategories" (click)="openNewEntryDialog(category[0], category[1])">
+    <button mat-menu-item *ngFor="let category of logEntryCategories" (click)="openNewEntryDialog(category[0], category[1]).subscribe()">
       <mat-icon color="primary" [svgIcon]="category[1].icon"></mat-icon>
       <span>{{category[1].name}}</span>
     </button>

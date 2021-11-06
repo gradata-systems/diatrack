@@ -1,1 +1,94 @@
-/* You can add global styles to this file, and also import other style files */
+@use '~@angular/material' as mat;
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+@import './app/theme';
+@import './app/media-rules';
+@import './app/scrollbar';
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($diatrack-theme);
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    background-color: mat.get-color-from-palette($diatrack-primary);
+    color: mat.get-contrast-color-from-palette($diatrack-primary, 900);
+}
+
+div {
+    box-sizing: border-box;
+}
+
+// Allow elements to be positioned absolutely within dialog overlays
+mat-dialog-container {
+    position: relative;
+}
+
+// Background icon used in dialog overlays
+mat-icon.dialog-background > svg {
+    fill: rgba(255, 255, 255, 0.1);
+}
+
+// Position progress spinners in the bottom right-hand corner of the dialog.
+// Spinner diameter should be `25`
+.mat-dialog-actions {
+    mat-progress-spinner {
+        margin-left: auto;
+    }
+}
+
+// Override default MatTooltip style
+.mat-tooltip {
+    font-size: 1em !important;
+    background-color: white;
+    color: #333 !important;
+    box-shadow: 0 0 25px 1px rgba(0, 0, 0, 0.3);
+}
+
+// A small icon that can be hover over to trigger a helpful tooltip
+mat-icon.context-help {
+    width: 12px;
+    height: 12px;
+    font-size: 12px;
+    line-height: 12px;
+    margin-left: 5px;
+    color: $heading-1-color;
+    position: relative;
+    top: -3px;
+    cursor: pointer;
+}
+
+// Menu opened by a floating action button (FAB)
+.fab-menu {
+    .mat-menu-item {
+        padding: 0 30px 0 15px;
+
+        mat-icon {
+            background-color: #222;
+            border-radius: 50px;
+            padding: 5px;
+
+            svg {
+                fill: mat.get-color-from-palette($diatrack-accent);
+            }
+        }
+    }
+}
+
+mat-icon.light > svg {
+    fill: rgba(255, 255, 255, 0.9);
+}

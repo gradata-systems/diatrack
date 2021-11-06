@@ -1,0 +1,71 @@
+# Default values for diatrack-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: docker.intranet.gradata.com.au/diatrack-api
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+dexcom:
+  maxAccountQuerySize: 10000
+  maxConcurrentRequests: 10
+  maxQueryPeriodSeconds: 10
+  bglQueryFrequencySeconds: 10
+  bglMaxWindowMinutes: 1440
+  bglMaxReadings: 288
+
+elastic:
+  connectionUri: ""
+  apiKey:
+    id: ""
+    secretName: ""
+    secretKey: ""
+  forwardingWorkers: 4
+  forwardingBatchSize: 1000
+  indices:
+    users: diatrack_v1_users
+    accountBglState: diatrack_v1_account_bgl_state
+    bglReadings: diatrack_v1_bgl_readings
+    activityLog: diatrack_v1_activity_log
+
+logging:
+  console:
+    enabled: true
+  file:
+    enabled: true
+    rollingInterval: Day # Infinite|Year|Month|Day|Hour|Minute
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

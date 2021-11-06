@@ -1,0 +1,21 @@
+# Default values for diatrack.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  # Public URL, used as the Ingress host
+  hostName: "diatrack.example.com"
+
+  azureAdB2C:
+    instance: "" # https://xxx.b2clogin.com
+    domain: "" # xxx.onmicrosoft.com
+    clientId: "" # <guid>
+    signUpSignInPolicyId: "" # b2c_1_signin_signup
+    knownAuthority: "" # xxx.b2clogin.com
+    scopes: [] #
+
+  ingress:
+    className: nginx
+    annotations: {}
+    tls:
+      secretName: ""

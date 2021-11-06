@@ -5,6 +5,13 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Configuration" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Controllers" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Models" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Properties" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Resources" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Services" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack/Utilities" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

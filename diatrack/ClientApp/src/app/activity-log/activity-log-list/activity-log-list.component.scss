@@ -1,0 +1,143 @@
+@use '~@angular/material' as mat;
+@import '../../theme';
+
+.log-list {
+    mat-list {
+        mat-list-item {
+            height: auto;
+            margin-bottom: 8px;
+
+            .list-item {
+                display: grid;
+                grid-auto-rows: 1fr;
+                grid-template-columns: 3fr 1fr;
+                width: 100%;
+                padding: 2px 0;
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 5px;
+                position: relative;
+
+                .content {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: flex-start;
+                    padding: 5px 8px 5px 10px;
+                    gap: 10px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow-x: hidden;
+
+                    mat-icon {
+                        margin-top: 2px;
+                    }
+
+                    h3 {
+                        margin: 0;
+                        color: mat.get-color-from-palette($diatrack-accent);
+                        cursor: pointer;
+                    }
+
+                    .properties {
+                        display: flex;
+                        flex-direction: column;
+
+                        .property {
+                            font-size: 0.8em;
+
+                            span {
+                                opacity: 0.8;
+
+                                &.bold {
+                                    font-weight: 500;
+                                    opacity: 1;
+                                }
+                            }
+                        }
+                    }
+
+                    .notes {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: flex-start;
+                        gap: 8px;
+                        margin-top: 4px;
+
+                        mat-icon {
+                            font-size: 12px;
+                            line-height: 12px;
+                            height: 12px;
+                            width: 12px;
+                            margin-top: 5px;
+                        }
+
+                        span {
+                            font-size: 0.8em;
+                        }
+                    }
+                }
+
+                .info-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-end;
+                    height: 100%;
+
+                    .info {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        padding-right: 5px;
+                        white-space: nowrap;
+
+                        .bgl {
+                            padding-top: 4px;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+
+                            $bgl-icon-size: 18px;
+                            mat-icon {
+                                font-size: $bgl-icon-size;
+                                line-height: $bgl-icon-size;
+                                height: $bgl-icon-size;
+                                width: $bgl-icon-size;
+                                text-shadow: 0 0 3px rgb(0 0 0);
+                            }
+
+                            span {
+                                font-size: 0.8em;
+                                padding: 0 5px;
+                                text-shadow: 0 0 5px rgb(0 0 0);
+                            }
+                        }
+                    }
+
+                    .spacer {
+                        flex-grow: 1;
+                        width: 1px;
+                        min-height: 1px;
+                    }
+
+                    .time {
+                        font-size: 0.8em;
+                        opacity: 0.6;
+                        padding: 3px 10px;
+                        text-align: right;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.loading-container {
+    padding: 25px;
+    text-align: center;
+    width: 100%;
+
+    mat-progress-spinner {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

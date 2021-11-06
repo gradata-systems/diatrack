@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>Connect Data Source</h2>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+  <mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Display name</mat-label>
+      <input matInput type="text" formControlName="name" placeholder="Nickname for the account, e.g. Ash" required>
+    </mat-form-field>
+    <h3>Account details</h3>
+    <mat-form-field>
+      <mat-label>Data provider</mat-label>
+      <mat-select formControlName="type" required>
+        <mat-option [value]="dataSourceType.Dexcom">Dexcom</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Geographic region</mat-label>
+      <mat-select formControlName="regionId" required>
+        <mat-option value="US">United States of America</mat-option>
+        <mat-option value="EU">EU (all users outside USA)</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Login Id</mat-label>
+      <input matInput id="username" type="text" formControlName="loginId" placeholder="Dexcom account name" required>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput id="password" type="password" formControlName="password" required>
+    </mat-form-field>
+    <h3>Data collection consent</h3>
+    <mat-checkbox class="privacy-policy" #privacyPolicyAck required>I consent to Diatrack collecting information from this account in accordance with the <a [routerLink]="['/privacy']" target="_blank">Privacy Policy</a></mat-checkbox>
+    <mat-error *ngIf="error">{{error}}</mat-error>
+  </mat-dialog-content>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="accent" type="submit" [disabled]="!privacyPolicyAck.checked">Connect</button>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <mat-progress-spinner mode="indeterminate" *ngIf="inProgress" diameter="25"></mat-progress-spinner>
+  </div>
+</form>

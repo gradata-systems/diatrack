@@ -1,0 +1,27 @@
+<div class="page">
+  <div class="content">
+    <h1>Preferences</h1>
+    <div class="body">
+      <mat-card class="data-sources">
+        <div class="header">
+          <mat-icon class="avatar">public</mat-icon>
+          <div class="title">Data Sources</div>
+          <mat-icon class="context-help" matTooltip="Manage Diatrack's connection to continuous glucose monitor (CGM) data sources">help_outline</mat-icon>
+        </div>
+        <div class="content">
+          <app-data-source-prefs></app-data-source-prefs>
+        </div>
+      </mat-card>
+      <mat-card>
+        <div class="header">
+          <mat-icon class="avatar">assignment</mat-icon>
+          <div class="title">Treatment Parameters</div>
+          <mat-icon class="context-help" matTooltip="The parameters set here affect Diatrack features, like the dashboard and activity log">help_outline</mat-icon>
+        </div>
+        <div class="content">
+          <app-treatment-prefs></app-treatment-prefs>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

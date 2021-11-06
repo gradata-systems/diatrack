@@ -1,0 +1,55 @@
+@use '~@angular/material' as mat;
+@import 'theme';
+@import 'media-rules';
+
+$navbar-icon-size: 35px;
+$navbar-max-width: 220px;
+
+:host {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+.navbar-toggle-button-container {
+    position: fixed;
+    top: 20px;
+    left: 15px;
+    z-index: 101;
+
+    button {
+        width: $navbar-icon-size + 20px;
+        height: $navbar-icon-size + 20px;
+
+        mat-icon {
+            color: white;
+            font-size: $navbar-icon-size;
+            line-height: $navbar-icon-size;
+            width: $navbar-icon-size;
+            height: $navbar-icon-size;
+        }
+    }
+}
+
+.nav-container {
+    height: 100%;
+
+    &.expanded {
+        width: $navbar-max-width;
+    }
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .page-container {
+        flex-grow: 1;
+        position: relative;
+        background-color: #1e1c1b;
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+}

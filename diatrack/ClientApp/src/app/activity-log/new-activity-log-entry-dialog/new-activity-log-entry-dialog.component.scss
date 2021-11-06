@@ -1,0 +1,40 @@
+@use '~@angular/material' as mat;
+@import '../../theme';
+
+$category-icon-size: 120px;
+
+mat-icon.dialog-background {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: $category-icon-size;
+    line-height: $category-icon-size;
+    height: $category-icon-size;
+    width: $category-icon-size;
+}
+
+.at-time {
+    font-size: 0.9em;
+    opacity: 0.8;
+    cursor: default;
+}
+
+form {
+    mat-form-field {
+        display: block;
+
+        &.numeric {
+            width: 80px;
+        }
+
+        textarea {
+            min-height: 60px;
+        }
+    }
+}
+
+mat-dialog-actions {
+    button.delete {
+        margin-left: auto;
+    }
+}

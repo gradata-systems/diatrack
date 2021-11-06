@@ -1,0 +1,11 @@
+@import '../page-styles';
+
+.dataflow-diagram {
+    float: right;
+    margin-left: 20px;
+
+    img {
+        border: solid 1px rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+    }
+}

@@ -1,0 +1,111 @@
+@use '~@angular/material' as mat;
+@import '../theme';
+@import '../media-rules';
+
+$status-bar-height: 100px;
+
+:host {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.status-bar-container {
+    height: $status-bar-height;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    background-color: #2b2b2b;
+
+    .status-bar {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+
+        .bgl-stats {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            height: 100%;
+            margin-left: auto;
+            margin-right: auto;
+
+            .bgl {
+                margin-top: auto;
+                margin-bottom: auto;
+                padding-right: 5px;
+
+                .reading {
+                    font-size: 50px;
+                    line-height: 50px;
+                    font-weight: 500;
+                    display: block;
+                }
+
+                .units {
+                    display: block;
+                    font-size: 1em;
+                    color: rgba(255, 255, 255, 0.6);
+                }
+            }
+
+            .trend-arrow {
+                position: relative;
+                top: -8px;
+
+                & > mat-icon {
+                    width: 35px;
+                    height: 35px;
+
+                    ::ng-deep svg > line {
+                        stroke: white;
+                    }
+                }
+            }
+
+            .stats {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding-left: 15px;
+                margin-top: auto;
+                margin-bottom: auto;
+                font-size: 1.1em;
+                text-align: left;
+            }
+        }
+    }
+
+    .links {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+
+        @media (max-width: $media-phone-portrait-breakpoint), (max-height: $media-phone-landscape-breakpoint) {
+            display: none;
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.9em;
+            color: mat.get-color-from-palette($diatrack-primary, 700);
+
+            a {
+                color: rgba(255, 255, 255, 0.5);
+                text-decoration: none;
+
+                &:hover {
+                    color: mat.get-color-from-palette($diatrack-hyperlink);
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}

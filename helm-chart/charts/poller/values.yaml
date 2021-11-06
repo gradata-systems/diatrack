@@ -1,11 +1,11 @@
-# Default values for diatrack-api.
+# Default values for diatrack-poller.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: docker.intranet.gradata.com.au/diatrack-api
+  repository: docker.intranet.gradata.com.au/diatrack-poller
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -14,7 +14,7 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-dexcom:
+dexcomPoller:
   maxAccountQuerySize: 10000
   maxConcurrentRequests: 10
   maxQueryPeriodSeconds: 10
@@ -23,18 +23,8 @@ dexcom:
   bglMaxReadings: 288
 
 elastic:
-  connectionUri: ""
-  apiKey:
-    id: ""
-    secretName: ""
-    secretKey: ""
   forwardingWorkers: 4
   forwardingBatchSize: 1000
-  indices:
-    users: diatrack_v1_users
-    accountBglState: diatrack_v1_account_bgl_state
-    bglReadings: diatrack_v1_bgl_readings
-    activityLog: diatrack_v1_activity_log
 
 logging:
   console:

@@ -39,41 +39,25 @@ spec:
               value: {{ .Values.global.azureAdB2C.clientId | quote }}
             - name: AzureAdB2C__SignUpSignInPolicyId
               value: {{ .Values.global.azureAdB2C.signUpSignInPolicyId | quote }}
-            - name: Dexcom__MaxAccountQuerySize
-              value: {{ .Values.dexcom.maxAccountQuerySize | quote }}
-            - name: Dexcom__MaxConcurrentRequests
-              value: {{ .Values.dexcom.maxConcurrentRequests | quote }}
-            - name: Dexcom__MaxQueryPeriodSeconds
-              value: {{ .Values.dexcom.maxQueryPeriodSeconds | quote }}
-            - name: Dexcom__BglQueryFrequencySeconds
-              value: {{ .Values.dexcom.bglQueryFrequencySeconds | quote }}
-            - name: Dexcom__BglMaxWindowMinutes
-              value: {{ .Values.dexcom.bglMaxWindowMinutes | quote }}
-            - name: Dexcom__BglMaxReadings
-              value: {{ .Values.dexcom.bglMaxReadings | quote }}
             - name: Elastic__ConnectionUri
-              value: {{ .Values.elastic.connectionUri | quote }}
+              value: {{ .Values.global.elastic.connectionUri | quote }}
             - name: Elastic__ApiKeyId
-              value: {{ .Values.elastic.apiKey.id | quote }}
+              value: {{ .Values.global.elastic.apiKey.id | quote }}
             - name: Elastic__ApiKeyValue
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.elastic.apiKey.secretName | quote }}
-                  key: {{ .Values.elastic.apiKey.secretKey | quote }}
-            - name: Elastic__ForwardingWorkers
-              value: {{ .Values.elastic.forwardingWorkers | quote }}
-            - name: Elastic__ForwardingBatchSize
-              value: {{ .Values.elastic.forwardingBatchSize | quote }}
+                  name: {{ .Values.global.elastic.apiKey.secretName | quote }}
+                  key: {{ .Values.global.elastic.apiKey.secretKey | quote }}
             - name: Elastic__Indices__Users
-              value: {{ .Values.elastic.indices.users | quote }}
+              value: {{ .Values.global.elastic.indices.users | quote }}
             - name: Elastic__Indices__AccountBglState
-              value: {{ .Values.elastic.indices.accountBglState | quote }}
+              value: {{ .Values.global.elastic.indices.accountBglState | quote }}
             - name: Elastic__Indices__BglReadings
-              value: {{ .Values.elastic.indices.bglReadings | quote }}
+              value: {{ .Values.global.elastic.indices.bglReadings | quote }}
             - name: Elastic__Indices__ActivityLog
-              value: {{ .Values.elastic.indices.activityLog | quote }}
+              value: {{ .Values.global.elastic.indices.activityLog | quote }}
             - name: Logging__File__Path
-              value: "/var/log/diatrack-.json"
+              value: "/var/log/diatrack/log-.json"
             - name: Logging__File__Enabled
               value: {{ .Values.logging.file.enabled | quote }}
             - name: Logging__File__RollingInterval

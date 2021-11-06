@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "+wQJ2ufjnNcrukz5NW3wEGXU5q0mH3uAImGy+HKwvTKQZ5HmBqhoLPfHq2m0a/v7c7NEKV2xFqE/UfY8oWAg1Q==",
+  "dgSpecHash": "noRaHQ/82cwVWDv8rPveceAIpNmjPe45eGt1TvM7cQkYVb0tQq3f/ZoPj1MeX1VYVeeHimqzSNDrafnWODo5lw==",
   "success": true,
   "projectFilePath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-poller\\diatrack-poller.csproj",
   "expectedPackageFiles": [
@@ -8,7 +8,7 @@
     "C:\\Users\\pkimb\\.nuget\\packages\\azure.identity\\1.3.0\\azure.identity.1.3.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\azure.security.keyvault.certificates\\4.1.0\\azure.security.keyvault.certificates.4.1.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\azure.security.keyvault.secrets\\4.1.0\\azure.security.keyvault.secrets.4.1.0.nupkg.sha512",
-    "C:\\Users\\pkimb\\.nuget\\packages\\elasticsearch.net\\7.15.1\\elasticsearch.net.7.15.1.nupkg.sha512",
+    "C:\\Users\\pkimb\\.nuget\\packages\\elasticsearch.net\\7.15.2\\elasticsearch.net.7.15.2.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\5.0.11\\microsoft.aspnetcore.authentication.jwtbearer.5.0.11.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.authentication.openidconnect\\5.0.11\\microsoft.aspnetcore.authentication.openidconnect.5.0.11.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\5.0.8\\microsoft.aspnetcore.cryptography.internal.5.0.8.nupkg.sha512",
@@ -63,7 +63,7 @@
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.11.1\\microsoft.visualstudio.azure.containers.tools.targets.1.11.1.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
-    "C:\\Users\\pkimb\\.nuget\\packages\\nest\\7.15.1\\nest.7.15.1.nupkg.sha512",
+    "C:\\Users\\pkimb\\.nuget\\packages\\nest\\7.15.2\\nest.7.15.2.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\newtonsoft.json\\9.0.1\\newtonsoft.json.9.0.1.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\runtime.native.system\\4.0.0\\runtime.native.system.4.0.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\serilog\\2.10.0\\serilog.2.10.0.nupkg.sha512",

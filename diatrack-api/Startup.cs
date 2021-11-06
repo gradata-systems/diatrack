@@ -29,7 +29,6 @@ namespace Diatrack
             // Add services, available via DI
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ElasticDataProvider>();
-            services.AddHostedService<DexcomPollerService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAdB2C"));
@@ -50,7 +49,6 @@ namespace Diatrack
             });
 
             services.AddOptions();
-            services.Configure<AppConfiguration>(Configuration.GetSection("App"));
             services.Configure<DexcomConfiguration>(Configuration.GetSection("Dexcom"));
             services.Configure<ElasticConfiguration>(Configuration.GetSection("Elastic"));
             services.Configure<AzureAdB2CConfiguration>(Configuration.GetSection("AzureAdB2C"));

@@ -2221,7 +2221,7 @@
           "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
         }
       },
-      "diatrack/1.0.0": {
+      "diatrack-api/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
@@ -2238,10 +2238,10 @@
           "System.Linq.Async": "5.0.0"
         },
         "compile": {
-          "bin/placeholder/diatrack.dll": {}
+          "bin/placeholder/diatrack-api.dll": {}
         },
         "runtime": {
-          "bin/placeholder/diatrack.dll": {}
+          "bin/placeholder/diatrack-api.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -7817,10 +7817,10 @@
         "system.xml.xpath.xmldocument.nuspec"
       ]
     },
-    "diatrack/1.0.0": {
+    "diatrack-api/1.0.0": {
       "type": "project",
-      "path": "../diatrack/diatrack.csproj",
-      "msbuildProject": "../diatrack/diatrack.csproj"
+      "path": "../diatrack-api/diatrack-api.csproj",
+      "msbuildProject": "../diatrack-api/diatrack-api.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -7829,7 +7829,7 @@
       "NUnit >= 3.13.1",
       "NUnit3TestAdapter >= 3.17.0",
       "coverlet.collector >= 3.0.2",
-      "diatrack >= 1.0.0"
+      "diatrack-api >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -7864,8 +7864,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack\\diatrack.csproj": {
-              "projectPath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack\\diatrack.csproj"
+            "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj": {
+              "projectPath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj"
             }
           }
         }

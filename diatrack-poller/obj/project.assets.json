@@ -68,7 +68,7 @@
           "lib/netstandard2.0/Azure.Security.KeyVault.Secrets.dll": {}
         }
       },
-      "Elasticsearch.Net/7.15.1": {
+      "Elasticsearch.Net/7.15.2": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.6.0",
@@ -821,10 +821,10 @@
           }
         }
       },
-      "NEST/7.15.1": {
+      "NEST/7.15.2": {
         "type": "package",
         "dependencies": {
-          "Elasticsearch.Net": "7.15.1"
+          "Elasticsearch.Net": "7.15.2"
         },
         "compile": {
           "lib/netstandard2.0/Nest.dll": {}
@@ -1824,7 +1824,7 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "diatrack/1.0.0": {
+      "diatrack-api/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
@@ -1841,10 +1841,10 @@
           "System.Linq.Async": "5.0.0"
         },
         "compile": {
-          "bin/placeholder/diatrack.dll": {}
+          "bin/placeholder/diatrack-api.dll": {}
         },
         "runtime": {
-          "bin/placeholder/diatrack.dll": {}
+          "bin/placeholder/diatrack-api.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -1919,14 +1919,14 @@
         "pkgicon.png"
       ]
     },
-    "Elasticsearch.Net/7.15.1": {
-      "sha512": "kfRStGlDbZmPWyjyR6+nltUC8kskXcuTSO5L9T9FU/eQ1J3HocxPZ3zrioHbNe850zN1vn5stE9A230wMfBwDw==",
+    "Elasticsearch.Net/7.15.2": {
+      "sha512": "GGfrON+LgT6YFa7CLZGvzRNumzaQB6HHAuqnNmzR1gQ2nOF7k3uB2V6wxX/+0SeZ00wnBLU4KaWNl5d8qvMwzA==",
       "type": "package",
-      "path": "elasticsearch.net/7.15.1",
+      "path": "elasticsearch.net/7.15.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "elasticsearch.net.7.15.1.nupkg.sha512",
+        "elasticsearch.net.7.15.2.nupkg.sha512",
         "elasticsearch.net.nuspec",
         "lib/net461/Elasticsearch.Net.dll",
         "lib/net461/Elasticsearch.Net.pdb",
@@ -3168,10 +3168,10 @@
         "version.txt"
       ]
     },
-    "NEST/7.15.1": {
-      "sha512": "sGS9UhF2EL/xu8TqY0JVTGgHU93XWLC6r4+rehQ1xHniItv3Bkz9tbyK35PQQNLLGebefF7fXkYMz+CsrkW2Vg==",
+    "NEST/7.15.2": {
+      "sha512": "EJOZmeG5GAYcRnGquY0QL0v0NTRyBWnrTQeH6WySR8K8O51wIlnEvnGsZCK9P/BJS8CMoObd6ug9ZhOk+NVA1w==",
       "type": "package",
-      "path": "nest/7.15.1",
+      "path": "nest/7.15.2",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3182,7 +3182,7 @@
         "lib/netstandard2.0/Nest.pdb",
         "lib/netstandard2.0/Nest.xml",
         "license.txt",
-        "nest.7.15.1.nupkg.sha512",
+        "nest.7.15.2.nupkg.sha512",
         "nest.nuspec",
         "nuget-icon.png"
       ]
@@ -6309,17 +6309,22 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "diatrack/1.0.0": {
+    "diatrack-api/1.0.0": {
       "type": "project",
-      "path": "../diatrack/diatrack.csproj",
-      "msbuildProject": "../diatrack/diatrack.csproj"
+      "path": "../diatrack-api/diatrack-api.csproj",
+      "msbuildProject": "../diatrack-api/diatrack-api.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
       "Microsoft.Extensions.Hosting >= 5.0.0",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.11.1",
-      "diatrack >= 1.0.0"
+      "NEST >= 7.15.2",
+      "Serilog >= 2.10.0",
+      "Serilog.AspNetCore >= 4.1.0",
+      "Serilog.Sinks.Console >= 4.0.0",
+      "System.Linq.Async >= 5.0.0",
+      "diatrack-api >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -6354,8 +6359,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack\\diatrack.csproj": {
-              "projectPath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack\\diatrack.csproj"
+            "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj": {
+              "projectPath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj"
             }
           }
         }
@@ -6377,6 +6382,26 @@
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
             "target": "Package",
             "version": "[1.11.1, )"
+          },
+          "NEST": {
+            "target": "Package",
+            "version": "[7.15.2, )"
+          },
+          "Serilog": {
+            "target": "Package",
+            "version": "[2.10.0, )"
+          },
+          "Serilog.AspNetCore": {
+            "target": "Package",
+            "version": "[4.1.0, )"
+          },
+          "Serilog.Sinks.Console": {
+            "target": "Package",
+            "version": "[4.0.0, )"
+          },
+          "System.Linq.Async": {
+            "target": "Package",
+            "version": "[5.0.0, )"
           }
         },
         "imports": [

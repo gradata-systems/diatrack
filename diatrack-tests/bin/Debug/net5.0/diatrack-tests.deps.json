@@ -12,7 +12,7 @@
           "NUnit": "3.13.1",
           "NUnit3TestAdapter": "3.17.0",
           "coverlet.collector": "3.0.2",
-          "diatrack": "1.0.0"
+          "diatrack-api": "1.0.0"
         },
         "runtime": {
           "diatrack-tests.dll": {}
@@ -1496,7 +1496,7 @@
           }
         }
       },
-      "diatrack/1.0.0": {
+      "diatrack-api/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.11",
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "5.0.11",
@@ -1511,7 +1511,7 @@
           "System.Linq.Async": "5.0.0"
         },
         "runtime": {
-          "diatrack.dll": {}
+          "diatrack-api.dll": {}
         }
       }
     }
@@ -2502,7 +2502,7 @@
       "path": "system.xml.xpath.xmldocument/4.3.0",
       "hashPath": "system.xml.xpath.xmldocument.4.3.0.nupkg.sha512"
     },
-    "diatrack/1.0.0": {
+    "diatrack-api/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

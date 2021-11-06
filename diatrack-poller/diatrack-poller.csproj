@@ -3,16 +3,21 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>dotnet-diatrack_poller-B57770D2-1F85-4A65-8642-A6DF377EE6FE</UserSecretsId>
-    <RootNamespace>diatrack_poller</RootNamespace>
+    <RootNamespace>DiatrackPoller</RootNamespace>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+    <PackageReference Include="NEST" Version="7.15.2" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\diatrack\diatrack.csproj" />
+    <ProjectReference Include="..\diatrack-api\diatrack-api.csproj" />
   </ItemGroup>
 </Project>

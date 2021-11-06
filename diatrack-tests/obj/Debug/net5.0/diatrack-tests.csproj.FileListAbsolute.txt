@@ -158,20 +158,27 @@ C:\Users\pkimb\source\repos\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsea
 C:\Users\pkimb\source\repos\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_bgl_readings.json
 C:\Users\pkimb\source\repos\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_users.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\CoverletSourceRootsMapping
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\testhost.dll
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.deps.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.runtimeconfig.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.runtimeconfig.dev.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\appsettings.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_account_bgl_state.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_bgl_readings.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_users.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_bgl_state.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_activity_log.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_bgl_readings.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_users.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.exe
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\testhost.exe
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\testhost.dll
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Microsoft.TestPlatform.PlatformAbstractions.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\NUnit3.TestAdapter.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\NUnit3.TestAdapter.pdb
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\nunit.engine.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\nunit.engine.api.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\nunit.engine.core.dll
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.deps.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.runtimeconfig.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.runtimeconfig.dev.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.exe
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Microsoft.TestPlatform.PlatformAbstractions.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-tests.deps.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-tests.runtimeconfig.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-tests.runtimeconfig.dev.json
@@ -299,8 +306,8 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\zh-Hant\Mic
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\zh-Hant\Microsoft.TestPlatform.CrossPlatEngine.resources.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\zh-Hant\Microsoft.VisualStudio.TestPlatform.Common.resources.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.dll
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack.pdb
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.dll
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.pdb
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.csproj.AssemblyReference.cache
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack_tests.Resource1.resources
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.csproj.GenerateResource.cache
@@ -313,7 +320,3 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-te
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\ref\diatrack-tests.dll
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.pdb
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.genruntimeconfig.cache
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_bgl_state.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_activity_log.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_bgl_readings.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_users.json

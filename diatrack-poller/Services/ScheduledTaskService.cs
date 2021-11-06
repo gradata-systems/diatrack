@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DiatrackPoller
+namespace DiatrackPoller.Services
 {
     public abstract class ScheduledTaskService : IHostedService, IDisposable
     {

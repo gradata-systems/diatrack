@@ -18,8 +18,8 @@ RUN chown netcore:netcore /var/log/diatrack
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["diatrack.csproj", "."]
-RUN dotnet restore "./diatrack.csproj"
+COPY ["diatrack-api.csproj", "."]
+RUN dotnet restore "./diatrack-api.csproj"
 COPY . .
 WORKDIR "/src/."
 RUN dotnet build "diatrack.csproj" -c Release -o /app/build
@@ -31,4 +31,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-ENTRYPOINT ["dotnet", "diatrack.dll"]
+ENTRYPOINT ["dotnet", "diatrack-api.dll"]

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\diatrack\diatrack.csproj" />
+    <ProjectReference Include="..\diatrack-api\diatrack-api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

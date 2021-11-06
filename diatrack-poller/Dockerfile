@@ -3,12 +3,21 @@
 FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
 WORKDIR /app
 
+# Create a user and group to run the container as
+RUN addgroup --group netcore --gid 1000
+RUN adduser --uid 1000 --gid 1000 netcore
+RUN chown netcore:netcore /app
+
+# Create a directory for logging
+RUN mkdir -p /var/log/diatrack
+RUN chown netcore:netcore /var/log/diatrack
+
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["diatrack-poller/diatrack-poller.csproj", "diatrack-poller/"]
-RUN dotnet restore "diatrack-poller/diatrack-poller.csproj"
+COPY ["diatrack-poller.csproj", "."]
+RUN dotnet restore "diatrack-poller.csproj"
 COPY . .
-WORKDIR "/src/diatrack-poller"
+WORKDIR "/src/."
 RUN dotnet build "diatrack-poller.csproj" -c Release -o /app/build
 
 FROM build AS publish

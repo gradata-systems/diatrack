@@ -1,12 +1,12 @@
 ﻿using Diatrack.Configuration;
 using Diatrack.Models;
 using Diatrack.Services;
+using DiatrackPoller.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Nest;
 using Serilog;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,11 +18,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DiatrackPoller
+namespace DiatrackPoller.Services
 {
     public class DexcomPollerService : ScheduledTaskService
     {
         private readonly DexcomConfiguration _dexConfig;
+        private readonly DexcomPollerConfiguration _dexPollerConfig;
         private readonly ElasticClient _elasticClient;
 
         private readonly HttpClient _httpClient;
@@ -31,10 +32,11 @@ namespace DiatrackPoller
         private IDictionary<string, DateTime> _accountBglState = new Dictionary<string, DateTime>();
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public DexcomPollerService(IOptions<DexcomConfiguration> dexConfig, ElasticDataProvider elasticProvider)
-            :base(TimeSpan.FromSeconds(dexConfig.Value.BglQueryFrequencySeconds))
+        public DexcomPollerService(IOptions<DexcomConfiguration> dexConfig, IOptions<DexcomPollerConfiguration> dexPollerConfig, ElasticDataProvider elasticProvider)
+            :base(TimeSpan.FromSeconds(dexPollerConfig.Value.BglQueryFrequencySeconds))
         {
             _dexConfig = dexConfig.Value;
+            _dexPollerConfig = dexPollerConfig.Value;
             _elasticClient = elasticProvider.NestClient;
 
             _httpClient = new HttpClient();
@@ -42,7 +44,7 @@ namespace DiatrackPoller
             // Set the maximum number of concurrent HTTP requests for each Dexcom server
             foreach (string server in _dexConfig.Regions.Select(r => r.Value.Server))
             {
-                ServicePointManager.FindServicePoint(new Uri($"http://{server}")).ConnectionLimit = dexConfig.Value.MaxConcurrentRequests;
+                ServicePointManager.FindServicePoint(new Uri($"http://{server}")).ConnectionLimit = _dexPollerConfig.MaxConcurrentRequests;
             }
         }
 
@@ -64,7 +66,7 @@ namespace DiatrackPoller
             _accountBglState = await GetAccountBglState();
 
             // Limit concurrent API requests
-            _semaphore = new SemaphoreSlim(_dexConfig.MaxConcurrentRequests, _dexConfig.MaxConcurrentRequests);
+            _semaphore = new SemaphoreSlim(_dexPollerConfig.MaxConcurrentRequests, _dexPollerConfig.MaxConcurrentRequests);
 
             // Get all unique Dexcom logins
             IDictionary<string, DataSource> accounts = await GetDexcomAccounts();
@@ -126,8 +128,8 @@ namespace DiatrackPoller
 
             if (!string.IsNullOrEmpty(account.Id))
             {
-                int queryWindowMins = _dexConfig.BglMaxWindowMinutes;
-                int queryMaxCount = _dexConfig.MaxAccountQuerySize;
+                int queryWindowMins = _dexPollerConfig.BglMaxWindowMinutes;
+                int queryMaxCount = _dexPollerConfig.MaxAccountQuerySize;
 
                 // Get the last sensor data timestamp
                 if (_accountBglState.TryGetValue(account.Id, out DateTime lastBglReading))
@@ -227,7 +229,7 @@ namespace DiatrackPoller
                 .Query(
                     q => q.Exists(u => u.Field(doc => doc.DataSources))
                 )
-                .Size(_dexConfig.MaxAccountQuerySize)
+                .Size(_dexPollerConfig.MaxAccountQuerySize)
             )).Documents;
 
             // For each login, retrieve the account name and ensure all Dexcom account details are complete

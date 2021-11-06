@@ -1,4 +1,5 @@
 ﻿using Diatrack.Configuration;
+using Diatrack.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -8,22 +9,24 @@ namespace Diatrack.Controllers
     [Route("[controller]")]
     public class AppConfigController : Controller
     {
-        private readonly DexcomConfiguration _dexcomConfig;
+        private readonly AzureAdB2CConfiguration _azureConfig;
+        private readonly AppConfiguration _appConfig;
 
-        public AppConfigController(IOptions<DexcomConfiguration> dexcomConfig)
+        public AppConfigController(IOptions<AzureAdB2CConfiguration> azureConfig, IOptions<AppConfiguration> appConfig)
         {
-            _dexcomConfig = dexcomConfig.Value;
+            _azureConfig = azureConfig.Value;
+            _appConfig = appConfig.Value;
         }
 
         [HttpGet]
-        public object Get()
+        public AppConfig Get()
         {
-            return new
+            return new AppConfig
             {
-                Dexcom = new
-                {
-                    ApplicationId = _dexcomConfig.ApplicationId
-                }
+                ClientId = _azureConfig.ClientId,
+                Authority = $"{_azureConfig.Instance}/{_azureConfig.Domain}",
+                RedirectUri = _appConfig.RedirectUri,
+                Scopes = _appConfig.Scopes
             };
         }
     }

@@ -14,35 +14,29 @@ namespace Diatrack.Models
 
         [Required]
         public string EmailAddress { get; set; }
+    }
 
+    public class UserProfile : User
+    {
         [Date(Name = "@created")]
         public DateTime Created { get; set; }
 
+        public bool IsNew { get; set; }
+
         public UserPreferences Preferences { get; set; }
-        public DexcomAccount DexcomAccount { get; set; }
+
+        [Object(Name = "dataSource")]
+        public DataSource[] DataSources { get; set; } = Array.Empty<DataSource>();
 
         /// <summary>
         /// Remove secrets when serialising for the client
         /// </summary>
         public void Sanitise()
         {
-            if (DexcomAccount != null)
+            foreach (DataSource account in DataSources)
             {
-                DexcomAccount.Password = default;
-                DexcomAccount.CryptoKey = default;
-                DexcomAccount.CryptoIv = default;
+                account.Sanitise();
             }
         }
-    }
-
-    public class UserPreferences
-    {
-        public BglUnit BglUnit { get; set; }
-    }
-
-    public enum BglUnit
-    {
-        MgDl,
-        MmolL
     }
 }

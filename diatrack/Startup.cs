@@ -1,4 +1,5 @@
 using Diatrack.Configuration;
+using Diatrack.Models;
 using Diatrack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Diatrack
@@ -32,12 +34,14 @@ namespace Diatrack
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAdB2C"));
 
-            services.AddControllers()
+            services
+                .AddControllers()
                 .AddJsonOptions(opts =>
                 {
                     // Serialise enums as strings, instead as numbers (default)
                     JsonStringEnumConverter enumConverter = new();
                     opts.JsonSerializerOptions.Converters.Add(enumConverter);
+                    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
 
             services.AddSwaggerGen(c =>
@@ -46,8 +50,10 @@ namespace Diatrack
             });
 
             services.AddOptions();
+            services.Configure<AppConfiguration>(Configuration.GetSection("App"));
             services.Configure<DexcomConfiguration>(Configuration.GetSection("Dexcom"));
             services.Configure<ElasticConfiguration>(Configuration.GetSection("Elastic"));
+            services.Configure<AzureAdB2CConfiguration>(Configuration.GetSection("AzureAdB2C"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

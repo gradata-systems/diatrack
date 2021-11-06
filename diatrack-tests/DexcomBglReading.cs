@@ -19,14 +19,14 @@ namespace diatrack_tests
         {
             _serializerOptions = new()
             {
-                Converters = { new DexcomBglReadingJsonConverter() }
+                Converters = { new BglReadingJsonConverter() }
             };
         }
 
         [Test]
         public void ReadFromJson()
         {
-            List<DexcomBglReading> readings = JsonSerializer.Deserialize<IEnumerable<DexcomBglReading>>(_sampleJson, _serializerOptions).ToList();
+            List<BglReading> readings = JsonSerializer.Deserialize<IEnumerable<BglReading>>(_sampleJson, _serializerOptions).ToList();
 
             Assert.IsTrue(readings.Count > 0, "Items were parsed from the sample JSON");
             Assert.AreEqual(readings[0].Timestamp, DateTimeOffset.FromUnixTimeMilliseconds(1634827923000).DateTime);

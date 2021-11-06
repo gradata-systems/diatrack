@@ -31,9 +31,10 @@ namespace Diatrack.Services
                 connectionSettings.ServerCertificateValidationCallback((obj, cert, chain, errors) => true);
 
                 // Map configured index names to CLR types
-                connectionSettings.DefaultMappingFor<User>(m => m.IndexName(_elasticConfig.Indices.Users));
-                connectionSettings.DefaultMappingFor<DexcomBglReading>(m => m.IndexName(_elasticConfig.Indices.BglReadings));
+                connectionSettings.DefaultMappingFor<UserProfile>(m => m.IndexName(_elasticConfig.Indices.Users));
+                connectionSettings.DefaultMappingFor<BglReading>(m => m.IndexName(_elasticConfig.Indices.BglReadings));
                 connectionSettings.DefaultMappingFor<AccountBglState>(m => m.IndexName(_elasticConfig.Indices.AccountBglState));
+                connectionSettings.DefaultMappingFor<ActivityLogEntry>(m => m.IndexName(_elasticConfig.Indices.ActivityLog));
                 // TODO: Add other mappings here
 
                 NestClient = new ElasticClient(connectionSettings);

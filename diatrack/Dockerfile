@@ -2,8 +2,19 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+
+# Use a higher port to allow the container to run under a non-privileged user account
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:8080
+
+# Create a user and group to run the container as
+RUN addgroup --group netcore --gid 1000
+RUN adduser --uid 1000 --gid 1000 netcore
+RUN chown netcore:netcore /app
+
+# Create a directory for logging
+RUN mkdir -p /var/log/diatrack
+RUN chown netcore:netcore /var/log/diatrack
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
@@ -19,4 +30,5 @@ RUN dotnet publish "diatrack.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT ["dotnet", "diatrack.dll"]

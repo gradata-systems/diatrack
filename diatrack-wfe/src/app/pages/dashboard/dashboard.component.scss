@@ -1,0 +1,94 @@
+@import '../page-styles';
+@import '../../media-rules';
+
+:host {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.dashboard-container {
+    padding: 10px 0 10px 0;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    // Do not scroll the entire page, just the log entry list
+    overflow-y: hidden;
+}
+
+button.options {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1;
+
+    .caption {
+      margin-left: 10px;
+    }
+}
+
+.form-container {
+    padding-top: 5px;
+    padding-right: 20px;
+
+    .field {
+        padding: 10px 15px 10px 15px;
+
+        mat-radio-button, mat-checkbox {
+            padding: 4px 8px;
+        }
+
+        &.plot-options {
+            mat-checkbox {
+                display: block;
+            }
+        }
+    }
+}
+
+.chart-container {
+    flex-grow: 1;
+    min-height: 50vh;
+    max-height: 50vh;
+
+    // Fill the entire screen on shorter layouts
+    @media (max-height: $media-phone-portrait-breakpoint) {
+        max-height: 100%;
+    }
+}
+
+.activity-log-container {
+    flex-grow: 1;
+    margin-top: 15px;
+    overflow-y: auto;
+
+    // Hide the activity log on the dashboard for shorter screens
+    @media (max-height: $media-phone-portrait-breakpoint) {
+        display: none;
+    }
+}
+
+.no-datasource-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .no-datasource {
+        margin: auto 0;
+        text-align: center;
+        max-width: 400px;
+
+        $icon-size: 100px;
+        mat-icon {
+            opacity: 0.2;
+            font-size: $icon-size;
+            line-height: $icon-size;
+            height: $icon-size;
+            width: $icon-size;
+        }
+    }
+}

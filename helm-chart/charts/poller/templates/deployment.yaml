@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "diatrack-poller.fullname" . }}
+  labels:
+    {{- include "diatrack-poller.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "diatrack-poller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "diatrack-poller.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DexcomPoller__MaxAccountQuerySize
+              value: {{ .Values.dexcomPoller.maxAccountQuerySize | quote }}
+            - name: DexcomPoller__MaxConcurrentRequests
+              value: {{ .Values.dexcomPoller.maxConcurrentRequests | quote }}
+            - name: DexcomPoller__MaxQueryPeriodSeconds
+              value: {{ .Values.dexcomPoller.maxQueryPeriodSeconds | quote }}
+            - name: DexcomPoller__BglQueryFrequencySeconds
+              value: {{ .Values.dexcomPoller.bglQueryFrequencySeconds | quote }}
+            - name: DexcomPoller__BglMaxWindowMinutes
+              value: {{ .Values.dexcomPoller.bglMaxWindowMinutes | quote }}
+            - name: DexcomPoller__BglMaxReadings
+              value: {{ .Values.dexcomPoller.bglMaxReadings | quote }}
+            - name: Elastic__ConnectionUri
+              value: {{ .Values.global.elastic.connectionUri | quote }}
+            - name: Elastic__ApiKeyId
+              value: {{ .Values.global.elastic.apiKey.id | quote }}
+            - name: Elastic__ApiKeyValue
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.elastic.apiKey.secretName | quote }}
+                  key: {{ .Values.global.elastic.apiKey.secretKey | quote }}
+            - name: Elastic__ForwardingWorkers
+              value: {{ .Values.elastic.forwardingWorkers | quote }}
+            - name: Elastic__ForwardingBatchSize
+              value: {{ .Values.elastic.forwardingBatchSize | quote }}
+            - name: Elastic__Indices__Users
+              value: {{ .Values.global.elastic.indices.users | quote }}
+            - name: Elastic__Indices__AccountBglState
+              value: {{ .Values.global.elastic.indices.accountBglState | quote }}
+            - name: Elastic__Indices__BglReadings
+              value: {{ .Values.global.elastic.indices.bglReadings | quote }}
+            - name: Elastic__Indices__ActivityLog
+              value: {{ .Values.global.elastic.indices.activityLog | quote }}
+            - name: Logging__File__Path
+              value: "/var/log/diatrack/log-.json"
+            - name: Logging__File__Enabled
+              value: {{ .Values.logging.file.enabled | quote }}
+            - name: Logging__File__RollingInterval
+              value: {{ .Values.logging.file.rollingInterval | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

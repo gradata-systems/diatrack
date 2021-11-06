@@ -1,0 +1,47 @@
+<div class="container" [class.expanded]="mainNavService.expanded">
+  <div class="navbar">
+    <div class="buttons">
+      <div class="menu-buttons">
+        <ng-container *ngIf="userService.loggedIn">
+          <a class="menu-button" mat-flat-button [routerLink]="['dashboard']" [routerLinkActive]="['active']" aria-label="Dashboard button" matTooltip="Dashboard" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>ssid_chart</mat-icon>
+            <span class="caption">Dashboard</span>
+          </a>
+          <a class="menu-button" mat-flat-button [routerLink]="['activity']" [routerLinkActive]="['active']" aria-label="Activity log button" matTooltip="Activity log" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>assignment</mat-icon>
+            <span class="caption">Activity log</span>
+          </a>
+          <a class="menu-button" mat-flat-button [routerLink]="['preferences']" [routerLinkActive]="['active']" aria-label="User preferences button" matTooltip="User preferences" [matTooltipDisabled]="mainNavService.expanded">
+            <mat-icon>manage_accounts</mat-icon>
+            <span class="caption">Preferences</span>
+          </a>
+        </ng-container>
+      </div>
+      <div class="footer-buttons">
+        <a class="menu-button" mat-flat-button [matMenuTriggerFor]="accountMenu" matTooltip="Manage your account" [matTooltipDisabled]="mainNavService.expanded">
+          <mat-icon>account_circle</mat-icon>
+          <span class="caption">Profile</span>
+        </a>
+        <a class="menu-button" mat-flat-button [routerLink]="['about']" [routerLinkActive]="['active']" aria-label="About button" matTooltip="About" [matTooltipDisabled]="mainNavService.expanded">
+          <mat-icon>info_outline</mat-icon>
+          <span class="caption">About</span>
+        </a>
+      </div>
+      <mat-menu #accountMenu="matMenu">
+        <div class="account">
+          <ng-container *ngIf="userService.activeUser$ | async; else signin; let user">
+            <mat-icon>account_circle</mat-icon>
+            <div class="info">
+              <div class="name">{{user.name}}</div>
+              <div class="email">{{user.emailAddress}}</div>
+              <a href="#" (click)="authService.logOut()">Sign out</a>
+            </div>
+          </ng-container>
+          <ng-template #signin>
+            <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
+          </ng-template>
+        </div>
+      </mat-menu>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+{
+  "priority": 1,
+  "index_patterns": [
+    "diatrack_v1*_account_bgl_state"
+  ],
+  "template": {
+    "settings": {
+      "number_of_replicas": 1,
+      "number_of_shards": 1,
+      "refresh_interval": "1s"
+    },
+    "mappings": {
+      "dynamic": true,
+      "_source": {
+        "enabled": true
+      },
+      "_routing": {
+        "required": false
+      },
+      "properties": {
+        "accounts": {
+          "type": "object"
+        }
+      },
+      "dynamic_templates": [
+        {
+          "account_entry": {
+            "path_match": "*",
+            "mapping": {
+              "type": "date"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

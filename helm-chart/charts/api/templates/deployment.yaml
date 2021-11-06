@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "diatrack-api.fullname" . }}
+  labels:
+    {{- include "diatrack-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "diatrack-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "diatrack-api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: AzureAdB2C__Instance
+              value: {{ .Values.global.azureAdB2C.instance | quote }}
+            - name: AzureAdB2C__Domain
+              value: {{ .Values.global.azureAdB2C.domain | quote }}
+            - name: AzureAdB2C__ClientId
+              value: {{ .Values.global.azureAdB2C.clientId | quote }}
+            - name: AzureAdB2C__SignUpSignInPolicyId
+              value: {{ .Values.global.azureAdB2C.signUpSignInPolicyId | quote }}
+            - name: Elastic__ConnectionUri
+              value: {{ .Values.global.elastic.connectionUri | quote }}
+            - name: Elastic__ApiKeyId
+              value: {{ .Values.global.elastic.apiKey.id | quote }}
+            - name: Elastic__ApiKeyValue
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.elastic.apiKey.secretName | quote }}
+                  key: {{ .Values.global.elastic.apiKey.secretKey | quote }}
+            - name: Elastic__Indices__Users
+              value: {{ .Values.global.elastic.indices.users | quote }}
+            - name: Elastic__Indices__AccountBglState
+              value: {{ .Values.global.elastic.indices.accountBglState | quote }}
+            - name: Elastic__Indices__BglReadings
+              value: {{ .Values.global.elastic.indices.bglReadings | quote }}
+            - name: Elastic__Indices__ActivityLog
+              value: {{ .Values.global.elastic.indices.activityLog | quote }}
+            - name: Logging__File__Path
+              value: "/var/log/diatrack/log-.json"
+            - name: Logging__File__Enabled
+              value: {{ .Values.logging.file.enabled | quote }}
+            - name: Logging__File__RollingInterval
+              value: {{ .Values.logging.file.rollingInterval | quote }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,41 @@
+@use '~@angular/material' as mat;
+@import '../../page-styles';
+
+.field {
+    padding: 10px 0 10px 0;
+
+    .label {
+        label {
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        mat-icon {
+            display: inline-block;
+            font-size: 12px;
+            margin-left: 5px;
+            color: $heading-1-color;
+        }
+    }
+
+    mat-radio-button {
+        padding: 4px 8px;
+    }
+
+    &.range {
+        mat-form-field {
+            display: inline-block;
+            width: 50px;
+            padding: 10px 10px;
+            height: 35px;
+        }
+    }
+
+    mat-form-field {
+        padding-left: 10px;
+    }
+
+    mat-form-field.bgl {
+        width: 50px;
+    }
+}

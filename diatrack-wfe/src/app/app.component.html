@@ -1,0 +1,15 @@
+<div class="navbar-toggle-button-container">
+  <button class="toggle" mat-icon-button aria-label="Expand or collapse the side menu" color="primary" (click)="mainNavService.toggleNavExpanded()" matTooltip="Expand menu"
+          [matTooltipDisabled]="mainNavService.expanded">
+    <mat-icon>{{ mainNavService.expanded ? "chevron_left" : "menu" }}</mat-icon>
+  </button>
+</div>
+<app-main-nav></app-main-nav>
+<div class="content">
+  <div class="header" *ngIf="userService.loggedIn">
+    <app-main-header></app-main-header>
+  </div>
+  <div class="page-container">
+    <router-outlet></router-outlet>
+  </div>
+</div>

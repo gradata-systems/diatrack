@@ -1,0 +1,25 @@
+@use '~@angular/material' as mat;
+@import '../../../../theme';
+
+mat-form-field {
+    width: 100%;
+}
+
+h3 {
+    color: mat.get-color-from-palette($diatrack-accent, 800);
+}
+
+mat-error {
+    font-size: 0.9em;
+}
+
+mat-checkbox.privacy-policy {
+    ::ng-deep label {
+        white-space: normal;
+        font-size: 0.9em;
+
+        a {
+            color: mat.get-color-from-palette($diatrack-hyperlink);
+        }
+    }
+}

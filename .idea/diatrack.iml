@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/temp" />
+      <excludeFolder url="file://$MODULE_DIR$/.tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Services" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Resources" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Models" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Properties" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Controllers" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Configuration" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api/Utilities" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-api" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-poller" />
+      <excludeFolder url="file://$MODULE_DIR$/diatrack-tests" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

@@ -1,0 +1,34 @@
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+WORKDIR /app
+
+# Use a higher port to allow the container to run under a non-privileged user account
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:8080
+
+# Create a user and group to run the container as
+RUN addgroup --group netcore --gid 1000
+RUN adduser --uid 1000 --gid 1000 netcore
+RUN chown netcore:netcore /app
+
+# Create a directory for logging
+RUN mkdir -p /var/log/diatrack
+RUN chown netcore:netcore /var/log/diatrack
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+WORKDIR /src
+COPY ["diatrack-api.csproj", "."]
+RUN dotnet restore "./diatrack-api.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "diatrack.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "diatrack.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+
+ENTRYPOINT ["dotnet", "diatrack-api.dll"]

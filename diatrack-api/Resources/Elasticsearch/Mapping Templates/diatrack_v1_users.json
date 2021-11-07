@@ -21,6 +21,9 @@
         "@created": {
           "type": "date"
         },
+        "@lastActive": {
+          "type": "date"
+        },
         "dataSource": {
           "type": "object",
           "properties": {

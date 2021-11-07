@@ -21,6 +21,9 @@ namespace Diatrack.Models
         [Date(Name = "@created")]
         public DateTime Created { get; set; }
 
+        [Date(Name = "@lastActive")]
+        public DateTime LastActive { get; set; }
+
         public bool IsNew { get; set; }
 
         public UserPreferences Preferences { get; set; }

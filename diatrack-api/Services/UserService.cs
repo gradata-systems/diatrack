@@ -25,6 +25,7 @@ namespace Diatrack.Services
         public Task<string> AddDexcomAccount(DataSource account);
         public Task RemoveDexcomAccount(DataSource account);
         public Task<UserProfile> UpdatePreferences(UserPreferences preferences);
+        public Task<string> GenerateShareToken(string accountId);
     }
 
     public class UserService : IUserService
@@ -125,7 +126,7 @@ namespace Diatrack.Services
             if (user.IsNew != isNew)
             {
                 user.IsNew = isNew;
-                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync<UserProfile>(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
+                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
 
                 if (response.IsValid)
                 {
@@ -269,6 +270,29 @@ namespace Diatrack.Services
         public async Task<string[]> GetLinkedAccountIds()
         {
             return (await GetUser()).DataSources.Select(d => d.Id).Distinct().ToArray();
+        }
+
+        public async Task<string> GenerateShareToken(string accountId)
+        {
+            UserProfile user = await GetUser();
+            DataSource dataSource = user.DataSources.FirstOrDefault(d => d.Id == accountId);
+
+            if (dataSource == null)
+            {
+                throw new AccountNotFoundException();
+            }
+
+            dataSource.ShareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+            UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u.DocAsUpsert().Doc(user));
+            if (result.IsValid)
+            {
+                return dataSource.ShareToken;
+            }
+            else
+            {
+                throw new Exception("Share token could not be generated");
+            }
         }
     }
 

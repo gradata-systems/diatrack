@@ -10,8 +10,14 @@ namespace Diatrack.Models
 {
     public class DataSource
     {
+        /// <summary>
+        /// Unique ID of the user's data source account
+        /// </summary>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Data provider name (e.g. Dexcom)
+        /// </summary>
         [StringEnum]
         [Required]
         public DataSourceType? Type { get; set; }
@@ -22,9 +28,15 @@ namespace Diatrack.Models
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Geographic region of the server the account is held in, if applicable
+        /// </summary>
         [Required]
         public string RegionId { get; set; }
 
+        /// <summary>
+        /// User's data provider account ID (e.g. Dexcom login)
+        /// </summary>
         [Required]
         public string LoginId { get; set; }
 
@@ -33,6 +45,12 @@ namespace Diatrack.Models
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string Password { get; set; }
+
+        /// <summary>
+        /// A unique token for sharing data from this account with other services, like Sugarmate
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public string ShareToken { get; set; }
 
         /// <summary>
         /// Random key and IV to use for encrypting the account password
@@ -58,6 +76,7 @@ namespace Diatrack.Models
             Password = default;
             CryptoKey = default;
             CryptoIv = default;
+            ShareToken = default;
         }
 
         /// <summary>

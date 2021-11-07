@@ -2,8 +2,10 @@
 using Diatrack.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
 using Serilog;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Diatrack.Controllers
@@ -58,6 +60,27 @@ namespace Diatrack.Controllers
             {
                 Log.Error(ex, "Failed to remove the account for {LoginId} in region {RegionId}", dataSource.LoginId, dataSource.RegionId);
                 return Problem($"Dexcom account could not be removed. {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Generate a token for sharing this data source with another service.
+        /// If a token already exists, it is replaced with this one.
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
+        [HttpGet("{accountId}/shareToken")]
+        public async Task<ActionResult<string>> GenerateShareToken([FromRoute] string accountId)
+        {
+            try
+            {
+                string shareToken = await _userService.GenerateShareToken(accountId);
+                return Ok(shareToken);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Share token could not be generated for account {AccountId}", accountId);
+                return Problem($"Share token could not be generated. {ex.Message}");
             }
         }
     }

@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '../theme';
 
 .page {
@@ -14,6 +14,7 @@
         .body {
             height: 100%;
             display: flex;
+            position: relative;
 
             app-activity-log-list {
                 height: 100%;

@@ -4,7 +4,7 @@
       <span>No log entries to display. Why not create one?</span>
     </div>
   </ng-container>
-  <cdk-virtual-scroll-viewport itemSize="60" class="log-entry-viewport" [class.visible]="logEntries$.value.length > 0" #viewport>
+  <cdk-virtual-scroll-viewport itemSize="70" class="log-entry-viewport" #viewport>
     <mat-list role="list">
       <mat-list-item *cdkVirtualFor="let logEntry of this" role="listitem">
         <div class="list-item">

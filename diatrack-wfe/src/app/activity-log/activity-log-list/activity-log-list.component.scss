@@ -1,4 +1,4 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '../../theme';
 
 .log-list {
@@ -6,10 +6,7 @@
 
     .log-entry-viewport {
         overflow-y: auto;
-
-        &.visible {
-            height: 100%;
-        }
+        height: 100%;
     }
 
     mat-list {
@@ -156,6 +153,7 @@
 
 .empty-placeholder {
     width: 100%;
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;

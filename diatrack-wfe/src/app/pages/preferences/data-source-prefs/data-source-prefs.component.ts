@@ -6,6 +6,7 @@ import {DataSource, DataSourceType} from "../../../api/models/data-source";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../../common-dialog/common-dialog.service";
 import {UserService} from "../../../api/user.service";
+import {GenerateShareTokenDialogComponent} from "./generate-share-token-dialog/generate-share-token-dialog.component";
 
 @Component({
     selector: 'app-data-source-prefs',
@@ -58,5 +59,14 @@ export class DataSourcePrefsComponent {
                 });
             }
         });
+    }
+
+    generateShareToken(dataSource: DataSource) {
+        const dialogRef = this.dialog.open(GenerateShareTokenDialogComponent, {
+            width: '400px',
+            data: dataSource
+        });
+
+        dialogRef.afterClosed().subscribe();
     }
 }

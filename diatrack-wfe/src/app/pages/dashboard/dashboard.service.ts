@@ -1,9 +1,9 @@
 import {Injectable, NgZone} from '@angular/core';
 import {interval, Observable, of, Subject} from "rxjs";
-import {DashboardPreferences, getBglUnitDisplayValue, PlotColour} from "../../api/models/user-preferences";
+import {DashboardPreferences, getBglUnitDisplayValue, PlotColour, UserPreferences} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {filter, map, mergeMap, take} from "rxjs/operators";
+import {catchError, filter, map, mergeMap, take} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point, PointOptionsObject} from "highcharts";
@@ -57,227 +57,235 @@ export class DashboardService {
     }
 
     getBglHistogramChartOptions(): Observable<Options | undefined> {
-        return this.userService.userPreferences$.pipe(take(1), mergeMap(userPrefs => {
-            return this.activityLogService.searchEntries({
-                size: this.appConfigService.initialLogEntryQuerySize,
-                fromDate: DateTime.now().minus({ hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours })
-            }).pipe(mergeMap(logEntries => {
-                const histogramSettings = userPrefs?.dashboard?.bglStatsHistogram;
-                const bglUnit = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
-                const defaults = DEFAULTS.userPreferences.dashboard!.bglStatsHistogram;
-                const fromTime: DateTime = DateTime.now().minus({hours: histogramSettings?.timeRangeHours ?? defaults.timeRangeHours});
-                const toTime: DateTime = DateTime.now();
-                const targetBglRange = userPrefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
-                const targetBglRangeMid = ((targetBglRange.max - targetBglRange.min) / 2) + targetBglRange.min;
-                const bglLowThreshold = userPrefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
-                const pointColourMode = histogramSettings?.plotColour ?? defaults.plotColour;
-                const uniformColour = '#ff3900';
+        return this.userService.userPreferences$.pipe(
+            take(1),
+            mergeMap(userPrefs => {
+                return this.activityLogService.searchEntries({
+                    size: this.appConfigService.initialLogEntryQuerySize,
+                    fromDate: DateTime.now().minus({hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours})
+                }).pipe(mergeMap(logEntries => {
+                    return this.generateBglHistogramChart(userPrefs, logEntries);
+                }));
+            }),
+            catchError(() => of(undefined))
+        );
+    }
 
-                return this.bglStatsService.getAccountStatsHistogram({
-                    start: fromTime.toISO(),
-                    end: toTime.toISO(),
-                    buckets: histogramSettings?.buckets ?? defaults.buckets
-                }).pipe(map(bglStatsResponse => {
-                    const accountId = Object.keys(bglStatsResponse)[0];
-                    let previousStat: BglDataPoint | undefined = undefined;
-                    let maxBgl = 0;
+    private generateBglHistogramChart(userPrefs: UserPreferences | undefined, logEntries: ActivityLogEntry[]) {
+        const histogramSettings = userPrefs?.dashboard?.bglStatsHistogram;
+        const bglUnit = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
+        const defaults = DEFAULTS.userPreferences.dashboard!.bglStatsHistogram;
+        const fromTime: DateTime = DateTime.now().minus({hours: histogramSettings?.timeRangeHours ?? defaults.timeRangeHours});
+        const toTime: DateTime = DateTime.now();
+        const targetBglRange = userPrefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
+        const targetBglRangeMid = ((targetBglRange.max - targetBglRange.min) / 2) + targetBglRange.min;
+        const bglLowThreshold = userPrefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
+        const pointColourMode = histogramSettings?.plotColour ?? defaults.plotColour;
+        const uniformColour = '#ff3900';
 
-                    const bglSeriesData = bglStatsResponse[accountId].stats.map(stat => {
-                        const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(stat.stats.average, bglUnit);
-                        const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
-                        previousStat = stat;
+        return this.bglStatsService.getAccountStatsHistogram({
+            start: fromTime.toISO(),
+            end: toTime.toISO(),
+            buckets: histogramSettings?.buckets ?? defaults.buckets
+        }).pipe(map(bglStatsResponse => {
+            const accountId = Object.keys(bglStatsResponse)[0];
+            let previousStat: BglDataPoint | undefined = undefined;
+            let maxBgl = 0;
 
-                        maxBgl = Math.max(maxBgl, scaledBgl);
+            const bglSeriesData = bglStatsResponse[accountId].stats.map(stat => {
+                const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(stat.stats.average, bglUnit);
+                const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
+                previousStat = stat;
 
-                        return {
-                            x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
-                            y: scaledBgl,
-                            color: pointColourMode === PlotColour.Uniform ? uniformColour : this.bglStatsService.getBglColour(scaledBgl),
-                            options: {
-                                custom: {
-                                    delta: delta ? this.bglStatsService.scaleBglValueFromMgDl(delta, bglUnit) : null
-                                } as any
-                            }
-                        } as Point;
-                    });
+                maxBgl = Math.max(maxBgl, scaledBgl);
 
-                    let activityLogSeriesData: PointOptionsObject[] = [];
-                    if (histogramSettings?.activityLog === true || (histogramSettings?.activityLog === undefined && defaults.activityLog)) {
-                        activityLogSeriesData = logEntries.map(logEntry => {
-                            const iconId = this.activityLogService.getLogEntryIcon(logEntry);
-                            let scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(logEntry.bgl !== undefined ? logEntry.bgl : 0, bglUnit);
+                return {
+                    x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
+                    y: scaledBgl,
+                    color: pointColourMode === PlotColour.Uniform ? uniformColour : this.bglStatsService.getBglColour(scaledBgl),
+                    options: {
+                        custom: {
+                            delta: delta ? this.bglStatsService.scaleBglValueFromMgDl(delta, bglUnit) : null
+                        } as any
+                    }
+                } as Point;
+            });
 
-                            // If a manual BGL reading, prefer the recorded BGL over the data source reading
-                            if (logEntry.category === ActivityLogEntryCategory.BglReading && logEntry.properties.bglReading && logEntry.properties.bglUnits) {
-                                scaledBgl = this.bglStatsService.scaleBglValue(logEntry.properties.bglReading, logEntry.properties.bglUnits, bglUnit);
-                            }
+            let activityLogSeriesData: PointOptionsObject[] = [];
+            if (histogramSettings?.activityLog === true || (histogramSettings?.activityLog === undefined && defaults.activityLog)) {
+                activityLogSeriesData = logEntries.map(logEntry => {
+                    const iconId = this.activityLogService.getLogEntryIcon(logEntry);
+                    let scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(logEntry.bgl !== undefined ? logEntry.bgl : 0, bglUnit);
 
-                            return {
-                                x: DateTime.fromISO(logEntry.created, {zone: 'UTC'}).toLocal().toMillis(),
-                                y: scaledBgl,
-                                marker: {
-                                    symbol: iconId ? `url(${this.appIconService.getLogActivityIconUrl(iconId)})` : undefined
-                                },
-                                options: {
-                                    custom: {
-                                        id: logEntry.id,
-                                        category: this.activityLogService.getLogEntryCategoryName(logEntry),
-                                        value: DashboardService.getLogEntryDataLabel(logEntry),
-                                        notes: logEntry.notes
-                                    }
-                                }
-                            } as PointOptionsObject;
-                        });
+                    // If a manual BGL reading, prefer the recorded BGL over the data source reading
+                    if (logEntry.category === ActivityLogEntryCategory.BglReading && logEntry.properties.bglReading && logEntry.properties.bglUnits) {
+                        scaledBgl = this.bglStatsService.scaleBglValue(logEntry.properties.bglReading, logEntry.properties.bglUnits, bglUnit);
                     }
 
-                    const self = this;
                     return {
-                        chart: {
-                            type: 'line'
+                        x: DateTime.fromISO(logEntry.created, {zone: 'UTC'}).toLocal().toMillis(),
+                        y: scaledBgl,
+                        marker: {
+                            symbol: iconId ? `url(${this.appIconService.getLogActivityIconUrl(iconId)})` : undefined
                         },
-                        title: {
-                            text: `Blood glucose level (${getBglUnitDisplayValue(bglUnit)})`
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            max: DateTime.now().toMillis(),
-                            maxPadding: 10
-                        },
-                        yAxis: {
-                            min: 1,
-                            softMax: userPrefs?.treatment?.targetBglRange?.max,
-                            title: undefined,
-                            labels: {
-                                x: 8,
-                                y: -5,
-                                align: 'left'
-                            },
-                            plotLines: [{
-                                color: 'rgba(2, 166, 36, 0.3)',
-                                width: 3,
-                                value: targetBglRange.min
-                            }, {
-                                color: 'rgba(2, 166, 36, 0.3)',
-                                width: 3,
-                                value: targetBglRange.max
-                            }],
-                            plotBands: [{
-                                color: 'rgba(200, 0, 0, 0.1)',
-                                from: 0,
-                                to: bglLowThreshold
-                            }]
-                        },
-                        tooltip: {
-                            useHTML: true,
-                            formatter: function (tooltip) {
-                                if (this.series.type === 'line') {
-                                    const delta = this.point.options.custom ? this.point.options.custom['delta'] : null;
-                                    const datetime = DateTime.fromMillis(this.x);
-                                    const date = datetime.toFormat('dd MMM');
-                                    const time = datetime.toFormat('HH:mm');
-                                    const pointColour = self.bglStatsService.getBglColour(this.y);
+                        options: {
+                            custom: {
+                                id: logEntry.id,
+                                category: this.activityLogService.getLogEntryCategoryName(logEntry),
+                                value: DashboardService.getLogEntryDataLabel(logEntry),
+                                notes: logEntry.notes
+                            }
+                        }
+                    } as PointOptionsObject;
+                });
+            }
 
-                                    return `<div class="chart-tooltip"><table>` +
-                                        `<tr><th>${date}</th><th>${time}</th></tr>` +
-                                        `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
-                                        `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
-                                        `</table></div>`;
+            const self = this;
+            return {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: `Blood glucose level (${getBglUnitDisplayValue(bglUnit)})`
+                },
+                xAxis: {
+                    type: 'datetime',
+                    max: DateTime.now().toMillis(),
+                    maxPadding: 10
+                },
+                yAxis: {
+                    min: 1,
+                    softMax: userPrefs?.treatment?.targetBglRange?.max,
+                    title: undefined,
+                    labels: {
+                        x: 8,
+                        y: -5,
+                        align: 'left'
+                    },
+                    plotLines: [{
+                        color: 'rgba(2, 166, 36, 0.3)',
+                        width: 3,
+                        value: targetBglRange.min
+                    }, {
+                        color: 'rgba(2, 166, 36, 0.3)',
+                        width: 3,
+                        value: targetBglRange.max
+                    }],
+                    plotBands: [{
+                        color: 'rgba(200, 0, 0, 0.1)',
+                        from: 0,
+                        to: bglLowThreshold
+                    }]
+                },
+                tooltip: {
+                    useHTML: true,
+                    formatter: function (tooltip) {
+                        if (this.series.type === 'line') {
+                            const delta = this.point.options.custom ? this.point.options.custom['delta'] : null;
+                            const datetime = DateTime.fromMillis(this.x);
+                            const date = datetime.toFormat('dd MMM');
+                            const time = datetime.toFormat('HH:mm');
+                            const pointColour = self.bglStatsService.getBglColour(this.y);
+
+                            return `<div class="chart-tooltip"><table>` +
+                                `<tr><th>${date}</th><th>${time}</th></tr>` +
+                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
+                                `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
+                                `</table></div>`;
+                        } else {
+                            const properties = this.point.options.custom!;
+                            return `<div class="chart-tooltip"><table>` +
+                                `<tr><th>${properties.category}</th></tr>` +
+                                `<tr><td>${properties.value}</td></tr>` +
+                                `<tr><td>${properties.notes ?? ''}</td></tr>` +
+                                `</table></div>`;
+                        }
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        stickyTracking: false
+                    },
+                    line: {
+                        connectNulls: false,
+                        lineWidth: 2,
+                        allowPointSelect: true,
+                        marker: {
+                            lineWidth: 1,
+                            lineColor: 'rgba(255, 255, 255, 0.4)',
+                            states: {
+                                select: {
+                                    radius: 8,
+                                    lineColor: '#af0000',
+                                    lineWidth: 2,
+                                    fillColor: 'white'
+                                }
+                            }
+                        },
+                        color: pointColourMode === PlotColour.Uniform ? uniformColour : {
+                            linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+                            stops: [
+                                [0, 'yellow'],
+                                [1 - (targetBglRange.max / maxBgl), 'yellow'],
+                                [1 - (targetBglRangeMid / maxBgl), 'green'],
+                                [1 - (targetBglRange.min / maxBgl), 'green'],
+                                [1, 'orange']
+                            ] as any
+                        },
+                        dataLabels: {
+                            enabled: histogramSettings?.dataLabels !== undefined ? histogramSettings.dataLabels : defaults.dataLabels,
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            padding: 10,
+                            formatter: function (options) {
+                                return this.y ? numberFormat(this.y, 1) : null;
+                            }
+                        },
+                        events: {
+                            click: function (event) {
+                                if (!event.point.selected) {
+                                    // Record the selected point, so it may be used when creating a log entry
+                                    self.selectedPoint = event.point;
                                 } else {
-                                    const properties = this.point.options.custom!;
-                                    return `<div class="chart-tooltip"><table>` +
-                                        `<tr><th>${properties.category}</th></tr>` +
-                                        `<tr><td>${properties.value}</td></tr>` +
-                                        `<tr><td>${properties.notes ?? ''}</td></tr>` +
-                                        `</table></div>`;
+                                    self.selectedPoint = undefined;
                                 }
                             }
-                        },
-                        legend: {
-                            enabled: false
-                        },
-                        plotOptions: {
-                            series: {
-                                stickyTracking: false
-                            },
-                            line: {
-                                connectNulls: false,
-                                lineWidth: 2,
-                                allowPointSelect: true,
-                                marker: {
-                                    lineWidth: 1,
-                                    lineColor: 'rgba(255, 255, 255, 0.4)',
-                                    states: {
-                                        select: {
-                                            radius: 8,
-                                            lineColor: '#af0000',
-                                            lineWidth: 2,
-                                            fillColor: 'white'
-                                        }
+                        }
+                    },
+                    scatter: {
+                        events: {
+                            click: function(event) {
+                                // Trigger the display of the log entry edit dialog
+                                self.ngZone.run(() => {
+                                    if (event.point.options.custom?.id) {
+                                        self.activityLogMarkerClicked$.next(event.point.options.custom.id);
                                     }
-                                },
-                                color: pointColourMode === PlotColour.Uniform ? uniformColour : {
-                                    linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
-                                    stops: [
-                                        [0, 'yellow'],
-                                        [1 - (targetBglRange.max / maxBgl), 'yellow'],
-                                        [1 - (targetBglRangeMid / maxBgl), 'green'],
-                                        [1 - (targetBglRange.min / maxBgl), 'green'],
-                                        [1, 'orange']
-                                    ] as any
-                                },
-                                dataLabels: {
-                                    enabled: histogramSettings?.dataLabels !== undefined ? histogramSettings.dataLabels : defaults.dataLabels,
-                                    color: 'rgba(255, 255, 255, 0.6)',
-                                    padding: 10,
-                                    formatter: function (options) {
-                                        return this.y ? numberFormat(this.y, 1) : null;
-                                    }
-                                },
-                                events: {
-                                    click: function (event) {
-                                        if (!event.point.selected) {
-                                            // Record the selected point, so it may be used when creating a log entry
-                                            self.selectedPoint = event.point;
-                                        } else {
-                                            self.selectedPoint = undefined;
-                                        }
-                                    }
-                                }
-                            },
-                            scatter: {
-                                events: {
-                                    click: function(event) {
-                                        // Trigger the display of the log entry edit dialog
-                                        self.ngZone.run(() => {
-                                            if (event.point.options.custom?.id) {
-                                                self.activityLogMarkerClicked$.next(event.point.options.custom.id);
-                                            }
-                                        });
-                                    }
-                                },
-                                dataLabels: {
-                                    enabled: true,
-                                    y: -15,
-                                    formatter: function (options) {
-                                        return `${this.point.options.custom!.value}`;
-                                    }
-                                }
+                                });
                             }
                         },
-                        series: [{
-                            name: 'Blood glucose level',
-                            data: bglSeriesData
-                        },{
-                            type: 'scatter',
-                            name: 'Log entries',
-                            opacity: 0.6,
-                            cursor: 'pointer',
-                            allowPointSelect: true,
-                            data: activityLogSeriesData
-                        }],
-                    } as Options;
-                }));
-            }));
+                        dataLabels: {
+                            enabled: true,
+                            y: -15,
+                            formatter: function (options) {
+                                return `${this.point.options.custom!.value}`;
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Blood glucose level',
+                    data: bglSeriesData
+                },{
+                    type: 'scatter',
+                    name: 'Log entries',
+                    opacity: 0.6,
+                    cursor: 'pointer',
+                    allowPointSelect: true,
+                    data: activityLogSeriesData
+                }],
+            } as Options;
         }));
     }
 

@@ -88,6 +88,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         ).subscribe(() => {}, () => {
             this.loading$.next(false);
             this.snackBar.open('Error retrieving BGL chart data');
+        }, () => {
+            console.log('dashboard refresh$ complete');
         });
 
         this.dashboardService.triggerRefresh();
@@ -95,11 +97,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private updateView(): Observable<void> {
         this.loading$.next(true);
-        return this.dashboardService.getBglHistogramChartOptions().pipe(
-            map(chartData => {
-                this.loading$.next(false);
+        return this.dashboardService.getBglHistogramChartOptions().pipe(map(chartData => {
+            this.loading$.next(false);
+            if (chartData !== undefined) {
+                // Only update chart options if they were obtained successfully. Else keep the existing options.
                 this.bglHistogramChartOptions$.next(chartData);
-            }));
+            }
+        }));
     }
 
     ngAfterViewInit() {

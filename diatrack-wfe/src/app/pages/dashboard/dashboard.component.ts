@@ -85,12 +85,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
             takeUntil(this.destroying$),
             mergeMap(() => this.updateView())
-        ).subscribe(() => {}, () => {
-            this.loading$.next(false);
-            this.snackBar.open('Error retrieving BGL chart data');
-        }, () => {
-            console.log('dashboard refresh$ complete');
-        });
+        ).subscribe();
 
         this.dashboardService.triggerRefresh();
     }
@@ -102,6 +97,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             if (chartData !== undefined) {
                 // Only update chart options if they were obtained successfully. Else keep the existing options.
                 this.bglHistogramChartOptions$.next(chartData);
+            } else {
+                this.snackBar.open('Error getting the latest chart data');
             }
         }));
     }

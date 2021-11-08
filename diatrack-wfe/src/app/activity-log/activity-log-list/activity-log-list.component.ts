@@ -7,7 +7,7 @@ import {DialogService} from "../../common-dialog/common-dialog.service";
 import {DateTime} from "luxon";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {UserService} from "../../api/user.service";
-import {catchError, map, mergeMap, takeUntil, tap} from "rxjs/operators";
+import {catchError, map, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
@@ -45,6 +45,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
             this.activityLogService.changed$
         ).pipe(
             takeUntil(this.destroying$),
+            throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
             mergeMap(() => {
                 this.loading = true;
                 return this.activityLogService.searchEntries({
@@ -54,9 +55,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                     tap(() => {
                         this.loading = false;
                     }),
-                    catchError(() => {
-                        return of(undefined)
-                    })
+                    catchError(() => of(undefined))
                 );
             })
         ).subscribe(entries => {

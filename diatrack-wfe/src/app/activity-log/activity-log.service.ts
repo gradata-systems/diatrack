@@ -1,12 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {DateTime} from "luxon";
-import {combineLatest, interval, Observable, Subject} from "rxjs";
+import {combineLatest, interval, merge, Observable, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../api/models/activity-log-entry";
 import {BASE_PATH} from "../api/variables";
 import {LogActivityIcon} from "../app-icon.service";
 import {AppConfigService} from "../api/app-config.service";
-import {filter} from "rxjs/operators";
+import {filter, throttleTime} from "rxjs/operators";
 import {UserService} from "../api/user.service";
 
 @Injectable({
@@ -32,11 +32,12 @@ export class ActivityLogService {
         private appConfigService: AppConfigService,
         private userService: UserService
     ) {
-        combineLatest([
+        merge(
             interval(this.appConfigService.refreshInterval),
             this.userService.userPreferences$
-        ]).pipe(
-            filter(() => this.appConfigService.autoRefreshEnabled)
+        ).pipe(
+            filter(() => this.appConfigService.autoRefreshEnabled),
+            throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true})
         ).subscribe(() => {
             this.triggerRefresh();
         });

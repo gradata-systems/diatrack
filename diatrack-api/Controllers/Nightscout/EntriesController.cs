@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using System;
+using System.Linq;
 
 namespace Diatrack.Controllers.Nightscout
 {
@@ -54,7 +55,7 @@ namespace Diatrack.Controllers.Nightscout
 
                 if (response.IsValid)
                 {
-                    return Ok(response.Documents);
+                    return Ok(response.Documents.Select(d => new Entry(d)));
                 }
                 else
                 {

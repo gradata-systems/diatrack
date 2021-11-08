@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Nest;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Serilog;
+using System;
 
 namespace Diatrack.Controllers.Nightscout
 {
@@ -16,11 +16,13 @@ namespace Diatrack.Controllers.Nightscout
     public class EntriesController : ControllerBase
     {
         private readonly ElasticClient _elasticClient;
+        private readonly IUserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EntriesController(ElasticDataProvider elasticService, IHttpContextAccessor httpContextAccessor)
+        public EntriesController(ElasticDataProvider elasticService, IUserService userService, IHttpContextAccessor httpContextAccessor)
         {
             _elasticClient = elasticService.NestClient;
+            _userService = userService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -33,24 +35,36 @@ namespace Diatrack.Controllers.Nightscout
         {
             if (string.IsNullOrEmpty(token))
             {
-                return BadRequest("Token not provided");
+                return Unauthorized("Token not provided");
             }
 
-            ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(s => s
-                .Size(count)
-                .Query(q => q
-                    .MatchAll()
-                )
-                .Sort(s => s.Descending(f => f.Timestamp))
-            );
+            try
+            {
+                // Find the first DataSource assigned the share token
+                DataSource dataSource = await _userService.GetDataSourceByShareToken(token);
 
-            if (response.IsValid)
-            {
-                return Ok(response.Documents.Select(d => new Entry(d)));
+                // Retrieve the latest BGL readings associated with the DataSource matching the share token
+                ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(s => s
+                    .Size(count)
+                    .Query(q => q
+                        .Term(t => t.AccountId, dataSource.Id)
+                    )
+                    .Sort(s => s.Descending(f => f.Timestamp))
+                );
+
+                if (response.IsValid)
+                {
+                    return Ok(response.Documents);
+                }
+                else
+                {
+                    return Problem();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Problem(response.OriginalException?.ToString());
+                Log.Error(ex, "Failed to retrieve BGL readings by share token");
+                return NotFound();
             }
         }
 

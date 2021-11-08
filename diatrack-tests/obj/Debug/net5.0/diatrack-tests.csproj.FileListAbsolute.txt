@@ -164,9 +164,6 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-ap
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\diatrack-api.runtimeconfig.dev.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\appsettings.Development.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\appsettings.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_account_bgl_state.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_bgl_readings.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_users.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_bgl_state.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_activity_log.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_bgl_readings.json

@@ -26,6 +26,7 @@ namespace Diatrack.Services
         public Task RemoveDexcomAccount(DataSource account);
         public Task<UserProfile> UpdatePreferences(UserPreferences preferences);
         public Task<string> GenerateShareToken(string accountId);
+        public Task<DataSource> GetDataSourceByShareToken(string token);
     }
 
     public class UserService : IUserService
@@ -126,7 +127,7 @@ namespace Diatrack.Services
             if (user.IsNew != isNew)
             {
                 user.IsNew = isNew;
-                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
+                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync<UserProfile>(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
 
                 if (response.IsValid)
                 {
@@ -184,7 +185,7 @@ namespace Diatrack.Services
             if (!user.DataSources.Any(a => a.LoginId == account.LoginId && a.RegionId == account.RegionId))
                 throw new AccountNotFoundException();
 
-            user.DataSources = user.DataSources.Where(a => 
+            user.DataSources = user.DataSources.Where(a =>
                 a.LoginId != account.LoginId ||
                 a.RegionId != account.RegionId
             ).ToArray();
@@ -272,6 +273,12 @@ namespace Diatrack.Services
             return (await GetUser()).DataSources.Select(d => d.Id).Distinct().ToArray();
         }
 
+        /// <summary>
+        /// Create and assign a new token to the data source matching the specified account ID,
+        /// belonging to the signed-in user.
+        /// 
+        /// If a token is already assigned, it is replaced.
+        /// </summary>
         public async Task<string> GenerateShareToken(string accountId)
         {
             UserProfile user = await GetUser();
@@ -294,6 +301,28 @@ namespace Diatrack.Services
                 throw new Exception("Share token could not be generated");
             }
         }
+
+        /// <summary>
+        /// Find the first user profile containing a data source with the specified share token
+        /// </summary>
+        public async Task<DataSource> GetDataSourceByShareToken(string token)
+        {
+            // Get the first data source that matches the provided token
+            ISearchResponse<UserProfile> userProfileResponse = await _elasticClient.SearchAsync<UserProfile>(s => s
+                .Size(1)
+                .Query(q => q
+                    .Term(u => u.DataSources.First().ShareToken, token)
+                )
+            );
+
+            if (!userProfileResponse.IsValid || userProfileResponse.Documents.Count == 0)
+            {
+                throw new InvalidTokenException();
+            }
+
+            // Get the first DataSource that matches the provided token
+            return userProfileResponse.Documents.First().DataSources.First(ds => ds.ShareToken == token);
+        }
     }
 
     public class UserClaims
@@ -307,5 +336,8 @@ namespace Diatrack.Services
     { }
 
     public class AccountNotFoundException : Exception
+    { }
+
+    public class InvalidTokenException : Exception
     { }
 }

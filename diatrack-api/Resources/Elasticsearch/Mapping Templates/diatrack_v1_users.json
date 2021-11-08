@@ -10,7 +10,7 @@
       "refresh_interval": "1s"
     },
     "mappings": {
-      "dynamic": true,
+      "dynamic": "runtime",
       "_source": {
         "enabled": true
       },
@@ -40,6 +40,9 @@
               "type": "keyword"
             },
             "regionId": {
+              "type": "keyword"
+            },
+            "shareToken": {
               "type": "keyword"
             }
           }

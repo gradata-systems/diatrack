@@ -1,6 +1,6 @@
 <div class="dashboard-container">
   <mat-progress-bar class="page-loading" mode="indeterminate" color="accent" *ngIf="loading$ | async"></mat-progress-bar>
-  <ng-container *ngIf="bglHistogramChartOptions | async; else noData; let chartOptions">
+  <ng-container *ngIf="bglHistogramChartOptions$ | async; else noData; let chartOptions">
     <button class="options" mat-flat-button [matMenuTriggerFor]="optionsMenu" aria-label="Button that opens the Dashboard menu">
       <mat-icon>settings</mat-icon>
       <span class="caption">Options</span>

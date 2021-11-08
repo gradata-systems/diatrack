@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('bglChart') bglChart?: HighchartsChartComponent;
 
     readonly loading$ = new BehaviorSubject<boolean>(false);
-    readonly bglHistogramChartOptions = new BehaviorSubject<Options | undefined>(undefined);
+    readonly bglHistogramChartOptions$ = new BehaviorSubject<Options | undefined>(undefined);
     settingsForm: FormGroup;
 
     // Enum constants
@@ -98,7 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         return this.dashboardService.getBglHistogramChartOptions().pipe(
             map(chartData => {
                 this.loading$.next(false);
-                this.bglHistogramChartOptions.next(chartData);
+                this.bglHistogramChartOptions$.next(chartData);
             }));
     }
 

@@ -5,6 +5,7 @@ import {AppCoreModule} from "../../app-core.module";
 import {HighchartsChartModule} from "../../highcharts-chart/highcharts-chart.module";
 import {ActivityLogModule} from "../../activity-log/activity-log.module";
 import {RouterModule} from "@angular/router";
+import { DashboardSettingsComponent } from './dashboard-settings/dashboard-settings.component';
 
 @NgModule({
     imports: [
@@ -15,7 +16,8 @@ import {RouterModule} from "@angular/router";
         ActivityLogModule
     ],
     declarations: [
-        DashboardComponent
+        DashboardComponent,
+        DashboardSettingsComponent
     ]
 })
 export class DashboardModule {

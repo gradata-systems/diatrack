@@ -1,0 +1,20 @@
+@import '../../page-styles';
+
+.form-container {
+    padding-top: 5px;
+    padding-right: 20px;
+
+    .field {
+        padding: 10px 15px 10px 15px;
+
+        mat-radio-button, mat-checkbox {
+            padding: 4px 8px;
+        }
+
+        &.plot-options {
+            mat-checkbox {
+                display: block;
+            }
+        }
+    }
+}

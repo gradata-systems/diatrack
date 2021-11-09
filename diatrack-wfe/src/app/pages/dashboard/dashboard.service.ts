@@ -12,6 +12,10 @@ import {AppConfigService} from "../../api/app-config.service";
 import {ActivityLogService} from "../../activity-log/activity-log.service";
 import {AppIconService} from "../../app-icon.service";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
+import {mergeDeep} from "../../utilities";
+import {HISTOGRAM_PROFILES} from "./dashboard-settings/histogram-profiles";
+import {HistogramProfile} from "./histogram-profile";
+import {MovingAverageModelType} from "../../api/models/moving-average-params";
 
 @Injectable({
     providedIn: 'root'
@@ -60,9 +64,12 @@ export class DashboardService {
         return this.userService.userPreferences$.pipe(
             take(1),
             mergeMap(userPrefs => {
+                const histogramProfileType = userPrefs?.dashboard?.bglStatsHistogram.profileType ?? DEFAULTS.userPreferences.dashboard!.bglStatsHistogram.profileType;
+                const histogramProfile = HISTOGRAM_PROFILES.get(histogramProfileType);
+
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: DateTime.now().minus({hours: userPrefs?.dashboard?.bglStatsHistogram.timeRangeHours})
+                    fromDate: DateTime.now().minus(histogramProfile!.displayPeriod)
                 }).pipe(mergeMap(logEntries => {
                     return this.generateBglHistogramChart(userPrefs, logEntries);
                 }));
@@ -72,43 +79,81 @@ export class DashboardService {
     }
 
     private generateBglHistogramChart(userPrefs: UserPreferences | undefined, logEntries: ActivityLogEntry[]) {
-        const histogramSettings = userPrefs?.dashboard?.bglStatsHistogram;
-        const bglUnit = userPrefs?.treatment?.bglUnit ?? DEFAULTS.userPreferences.treatment!.bglUnit;
+        const effectiveUserPrefs: UserPreferences = mergeDeep(userPrefs || {}, DEFAULTS.userPreferences);
+        const histogramSettings = effectiveUserPrefs.dashboard!.bglStatsHistogram;
+        const bglUnit = effectiveUserPrefs.treatment!.bglUnit;
+        const movingAverageModelType = histogramSettings.movingAverage!.modelType;
         const defaults = DEFAULTS.userPreferences.dashboard!.bglStatsHistogram;
-        const fromTime: DateTime = DateTime.now().minus({hours: histogramSettings?.timeRangeHours ?? defaults.timeRangeHours});
-        const toTime: DateTime = DateTime.now();
-        const targetBglRange = userPrefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
+        const targetBglRange = effectiveUserPrefs.treatment!.targetBglRange;
         const targetBglRangeMid = ((targetBglRange.max - targetBglRange.min) / 2) + targetBglRange.min;
-        const bglLowThreshold = userPrefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
-        const pointColourMode = histogramSettings?.plotColour ?? defaults.plotColour;
+        const bglLowThreshold = effectiveUserPrefs.treatment!.bglLowThreshold;
+        const pointColourMode = histogramSettings.plotColour;
         const uniformColour = '#ff3900';
 
+        let histogramProfile: HistogramProfile;
+        if (HISTOGRAM_PROFILES.has(histogramSettings.profileType)) {
+            histogramProfile = HISTOGRAM_PROFILES.get(histogramSettings.profileType)!;
+        } else {
+            // Histogram profile type from preferences is invalid (may have been deleted), so fall back to default
+            histogramProfile = HISTOGRAM_PROFILES.get(defaults.profileType)!;
+        }
+
         return this.bglStatsService.getAccountStatsHistogram({
-            start: fromTime.toISO(),
-            end: toTime.toISO(),
-            buckets: histogramSettings?.buckets ?? defaults.buckets
+            queryFrom: DateTime.now().minus(histogramProfile.queryPeriod).toISO(),
+            queryTo: DateTime.now().toISO(),
+            bucketTimeUnit: histogramProfile.bucketTimeUnit,
+            bucketTimeFactor: histogramProfile.bucketTimeFactor,
+            movingAverage: {
+                enabled: histogramSettings.movingAverage!.enabled,
+                modelType: histogramSettings.movingAverage!.modelType,
+                alpha: histogramSettings.movingAverage!.alpha,
+                window: Math.max(histogramSettings.movingAverage!.window ?? 0, histogramProfile.movingAveragePeriod * 2), // Must be at least twice the period, otherwise an error is thrown
+                minimize: movingAverageModelType === MovingAverageModelType.HoltLinear || movingAverageModelType === MovingAverageModelType.HoltWinters,
+                period: histogramProfile.movingAveragePeriod,
+                predictionCount: histogramSettings.movingAverage!.predictionCount
+            }
         }).pipe(map(bglStatsResponse => {
             const accountId = Object.keys(bglStatsResponse)[0];
             let previousStat: BglDataPoint | undefined = undefined;
             let maxBgl = 0;
+            const bglDataPoints: Point[] = [];
+            const trendDataPoints: Point[] = [];
 
-            const bglSeriesData = bglStatsResponse[accountId].stats.map(stat => {
-                const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(stat.stats.average, bglUnit);
-                const delta = previousStat !== undefined ? (stat.stats.average - previousStat?.stats.average) : null;
-                previousStat = stat;
+            bglStatsResponse[accountId].stats.forEach(stat => {
+                const x = DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis()
 
-                maxBgl = Math.max(maxBgl, scaledBgl);
+                if (stat.average?.value !== undefined) {
+                    // Scaled BGL data point
+                    const scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(stat.average.value, bglUnit);
+                    const delta = previousStat?.average?.value !== undefined ? (stat.average.value - previousStat?.average.value) : null;
+                    previousStat = stat;
 
-                return {
-                    x: DateTime.fromISO(stat.timestamp, {zone: 'UTC'}).toLocal().toMillis(),
-                    y: scaledBgl,
-                    color: pointColourMode === PlotColour.Uniform ? uniformColour : this.bglStatsService.getBglColour(scaledBgl),
-                    options: {
-                        custom: {
-                            delta: delta ? this.bglStatsService.scaleBglValueFromMgDl(delta, bglUnit) : null
-                        } as any
-                    }
-                } as Point;
+                    maxBgl = Math.max(maxBgl, scaledBgl);
+
+                    bglDataPoints.push({
+                        x: x,
+                        y: scaledBgl,
+                        color: pointColourMode === PlotColour.Uniform ? uniformColour : this.bglStatsService.getBglColour(scaledBgl),
+                        options: {
+                            custom: {
+                                delta: delta ? this.bglStatsService.scaleBglValueFromMgDl(delta, bglUnit) : null
+                            } as any
+                        }
+                    } as Point);
+                }
+
+                if (stat.movingAverage !== undefined && histogramSettings.movingAverage!.enabled) {
+                    // Moving average statistic
+                    trendDataPoints.push({
+                        x: x,
+                        y: this.bglStatsService.scaleBglValueFromMgDl(stat.movingAverage.value, bglUnit),
+                        options: {
+                            custom: {
+                                future: stat.average === undefined
+                            } as any
+                        }
+                    } as Point);
+                }
             });
 
             let activityLogSeriesData: PointOptionsObject[] = [];
@@ -150,12 +195,12 @@ export class DashboardService {
                 },
                 xAxis: {
                     type: 'datetime',
-                    max: DateTime.now().toMillis(),
-                    maxPadding: 10
+                    min: DateTime.now().minus(histogramProfile.displayPeriod).toMillis(),
+                    max: null
                 },
                 yAxis: {
                     min: 1,
-                    softMax: userPrefs?.treatment?.targetBglRange?.max,
+                    softMax: histogramSettings.plotHeight ?? effectiveUserPrefs.treatment!.targetBglRange!.max,
                     title: undefined,
                     labels: {
                         x: 8,
@@ -180,7 +225,7 @@ export class DashboardService {
                 tooltip: {
                     useHTML: true,
                     formatter: function (tooltip) {
-                        if (this.series.type === 'line') {
+                        if (this.series.index === 0) {
                             const delta = this.point.options.custom ? this.point.options.custom['delta'] : null;
                             const datetime = DateTime.fromMillis(this.x);
                             const date = datetime.toFormat('dd MMM');
@@ -191,6 +236,13 @@ export class DashboardService {
                                 `<tr><th>${date}</th><th>${time}</th></tr>` +
                                 `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
                                 `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
+                                `</table></div>`;
+                        } else if (this.series.index === 1) {
+                            const pointColour = self.bglStatsService.getBglColour(this.y);
+                            const title: string = this.point.options.custom!['future'] === true ? 'Predicted' : 'Trend';
+                            return `<div class="chart-tooltip"><table>` +
+                                `<tr><th>${title}</th></tr>` +
+                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
                                 `</table></div>`;
                         } else {
                             const properties = this.point.options.custom!;
@@ -224,16 +276,6 @@ export class DashboardService {
                                     fillColor: 'white'
                                 }
                             }
-                        },
-                        color: pointColourMode === PlotColour.Uniform ? uniformColour : {
-                            linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
-                            stops: [
-                                [0, 'yellow'],
-                                [1 - (targetBglRange.max / maxBgl), 'yellow'],
-                                [1 - (targetBglRangeMid / maxBgl), 'green'],
-                                [1 - (targetBglRange.min / maxBgl), 'green'],
-                                [1, 'orange']
-                            ] as any
                         },
                         dataLabels: {
                             enabled: histogramSettings?.dataLabels !== undefined ? histogramSettings.dataLabels : defaults.dataLabels,
@@ -276,7 +318,33 @@ export class DashboardService {
                 },
                 series: [{
                     name: 'Blood glucose level',
-                    data: bglSeriesData
+                    data: bglDataPoints,
+                    color: pointColourMode === PlotColour.Uniform ? uniformColour : {
+                        linearGradient: {x1: 0, x2: 0, y1: 0, y2: 1},
+                        stops: [
+                            [0, 'yellow'],
+                            [1 - (targetBglRange.max / maxBgl), 'yellow'],
+                            [1 - (targetBglRangeMid / maxBgl), 'green'],
+                            [1 - (targetBglRange.min / maxBgl), 'green'],
+                            [1, 'orange']
+                        ] as any
+                    }
+                },{
+                    name: 'Trend',
+                    data: trendDataPoints,
+                    opacity: 0.6,
+                    zIndex: -1,
+                    color: '#00dbff',
+                    zoneAxis: 'x',
+                    zones: [{
+                        value: DateTime.now().toMillis(),
+                        dashStyle: 'Solid'
+                    }, {
+                        dashStyle: 'Dot'
+                    }],
+                    marker: {
+                        enabled: false
+                    }
                 },{
                     type: 'scatter',
                     name: 'Log entries',

@@ -52,7 +52,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                     size: this.appConfigService.initialLogEntryQuerySize,
                     fromDate: this.dateFrom ?? undefined
                 }).pipe(
-                    tap(() => {
+                    tap((entries) => {
                         this.loading = false;
                     }),
                     catchError(() => of(undefined))

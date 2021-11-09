@@ -4,7 +4,9 @@ import {debounceTime, mergeMap, takeUntil, tap} from "rxjs/operators";
 import {AppConfigService} from "../../../api/app-config.service";
 import {Subject} from "rxjs";
 import {DashboardSettingsService} from "./dashboard-settings.service";
-import {PlotColour} from "../../../api/models/user-preferences";
+import {DashboardPreferences, PlotColour} from "../../../api/models/user-preferences";
+import {MovingAverageModelType} from "../../../api/models/moving-average-params";
+import {HISTOGRAM_PROFILES} from "./histogram-profiles";
 
 @Component({
     selector: 'app-dashboard-settings',
@@ -17,6 +19,8 @@ export class DashboardSettingsComponent implements OnInit, OnDestroy {
 
     // Enum constants
     readonly plotColour = PlotColour;
+    readonly movingAverageModelType = MovingAverageModelType;
+    readonly histogramProfiles = Array.from(HISTOGRAM_PROFILES.keys());
 
     constructor(
         private userService: UserService,
@@ -29,9 +33,7 @@ export class DashboardSettingsComponent implements OnInit, OnDestroy {
             takeUntil(this.destroying$)
         ).subscribe(prefs => {
             if (prefs?.dashboard) {
-                this.dashboardSettingsService.settingsForm.patchValue(prefs.dashboard, {
-                    emitEvent: false
-                });
+                this.dashboardSettingsService.updateForm(prefs.dashboard);
             }
         });
 
@@ -39,7 +41,7 @@ export class DashboardSettingsComponent implements OnInit, OnDestroy {
         this.dashboardSettingsService.settingsForm.valueChanges.pipe(
             debounceTime(this.appConfigService.formDebounceInterval),
             takeUntil(this.destroying$),
-            mergeMap(value => this.userService.savePreferences({
+            mergeMap((value: DashboardPreferences) => this.userService.savePreferences({
                 dashboard: value
             }).pipe(
                 tap(() => this.dashboardSettingsService.settingsChanged$.next(value))

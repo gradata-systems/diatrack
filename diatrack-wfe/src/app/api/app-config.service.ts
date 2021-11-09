@@ -13,6 +13,11 @@ export class AppConfigService {
     readonly maxNoteLength = 1000;
     readonly initialLogEntryQuerySize = 100;
 
+    /**
+     * How often CGM data is generated
+     */
+    readonly cgmFrequencyMinutes = 5;
+
     constructor(
         @Inject(BASE_PATH) private basePath: string
     ) { }

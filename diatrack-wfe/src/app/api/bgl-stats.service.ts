@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BglReading, BglTrend} from "./models/bgl-reading";
 import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
 import {BASE_PATH} from "./variables";
-import {BglAccountStats} from "./models/bgl-account-stats";
+import {BglAccountStats, TimeUnit} from "./models/bgl-account-stats";
 import {BglUnit} from "./models/user-preferences";
 import {DateTime} from "luxon";
 import {filter} from "rxjs/operators";
@@ -11,6 +11,7 @@ import {AppConfigService} from "./app-config.service";
 import {UserService} from "./user.service";
 import * as chroma from "chroma-js";
 import {DEFAULTS} from "../defaults";
+import {MovingAverageParams} from "./models/moving-average-params";
 
 @Injectable({
     providedIn: 'root'
@@ -85,7 +86,7 @@ export class BglStatsService {
         });
     }
 
-    getAccountStatsHistogram(params: GetLatestReadingsParams): Observable<BglAccountStats> {
+    getAccountStatsHistogram(params: GetBglForPeriodParams): Observable<BglAccountStats> {
         return this.httpClient.post<BglAccountStats>(`${this.basePath}/bgl/accountStatsHistogram`, params);
     }
 
@@ -139,10 +140,12 @@ type LatestReadings = {
     [accountId: string]: BglReading[];
 }
 
-interface GetLatestReadingsParams {
-    start: string;
-    end: string;
-    buckets: number;
+interface GetBglForPeriodParams {
+    queryFrom: string;
+    queryTo: string;
+    bucketTimeUnit: TimeUnit;
+    bucketTimeFactor: number;
+    movingAverage: MovingAverageParams;
 }
 
 export interface BglStatus {

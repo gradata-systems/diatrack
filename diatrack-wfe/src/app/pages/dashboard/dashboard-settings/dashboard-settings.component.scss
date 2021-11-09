@@ -1,8 +1,12 @@
 @import '../../page-styles';
 
 .form-container {
-    padding-top: 5px;
-    padding-right: 20px;
+    max-height: 600px;
+
+    .tab-body {
+        padding-top: 5px;
+        padding-right: 20px;
+    }
 
     .field {
         padding: 10px 15px 10px 15px;
@@ -16,5 +20,17 @@
                 display: block;
             }
         }
+
+        &.numeric mat-form-field {
+            width: 80px;
+        }
+    }
+
+    .slider-grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        align-items: center;
+        padding-top: 0;
+        padding-right: 0;
     }
 }

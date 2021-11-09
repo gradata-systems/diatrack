@@ -6,13 +6,15 @@
       <span class="caption">Options</span>
     </button>
     <mat-menu #optionsMenu="matMenu">
-      <app-dashboard-settings></app-dashboard-settings>
+      <ng-template matMenuContent>
+        <app-dashboard-settings></app-dashboard-settings>
+      </ng-template>
     </mat-menu>
     <div class="chart-container">
       <highcharts-chart #bglChart [options]="chartOptions"></highcharts-chart>
     </div>
     <div class="activity-log-container">
-      <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="dashboardSettingsService.getDateFrom()"></app-activity-log-list>
+      <app-activity-log-list *ngIf="userService.userPreferences$ | async; let userPrefs" [dateFrom]="dashboardSettingsService.getDateFrom()"></app-activity-log-list>
     </div>
     <app-new-activity-log-entry-fab></app-new-activity-log-entry-fab>
   </ng-container>

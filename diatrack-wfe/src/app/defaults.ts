@@ -1,14 +1,22 @@
 import {BglUnit, PlotColour, TimeFormat, UserPreferences} from "./api/models/user-preferences";
+import {MovingAverageModelType} from "./api/models/moving-average-params";
 
-export var DEFAULTS = {
+export const DEFAULTS = {
     userPreferences: {
         dashboard: {
             bglStatsHistogram: {
-                timeRangeHours: 12,
+                profileType: '6 hours',
                 plotColour: PlotColour.ScaledByBgl,
+                movingAverage: {
+                    enabled: true,
+                    modelType: MovingAverageModelType.HoltWinters,
+                    window: 10,
+                    period: 1,
+                    alpha: 0.8,
+                    predictionCount: 10
+                },
                 activityLog: true,
-                dataLabels: false,
-                buckets: 1000
+                dataLabels: false
             }
         },
         treatment: {

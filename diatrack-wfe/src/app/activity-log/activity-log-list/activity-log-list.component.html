@@ -1,5 +1,10 @@
 <div class="log-list">
   <mat-list role="list" *ngIf="logEntries$ | async; let logEntries; else loading">
+    <ng-container *ngIf="logEntries.length === 0">
+      <div class="empty-placeholder">
+        <span>No log entries to display. Why not create one?</span>
+      </div>
+    </ng-container>
     <mat-list-item *ngFor="let logEntry of logEntries" role="listitem">
       <div class="list-item">
         <div class="content">

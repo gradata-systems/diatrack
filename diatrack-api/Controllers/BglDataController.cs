@@ -1,5 +1,6 @@
 ﻿using Diatrack.Models;
 using Diatrack.Services;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nest;
@@ -92,7 +93,7 @@ namespace Diatrack.Controllers
         /// For each account ID associated with the logged-in user, get a date histogram of statistics
         /// </summary>
         [HttpPost("AccountStatsHistogram")]
-        public async Task<ActionResult<Dictionary<string, BglAccountStats>>> GetBglReadingsForPeriod([FromBody] GetBglForPeriodParams period)
+        public async Task<ActionResult<Dictionary<string, BglAccountStats>>> GetBglReadingsForPeriod([FromBody] GetBglForPeriodParams requestParams)
         {
             try
             {
@@ -104,6 +105,8 @@ namespace Diatrack.Controllers
                     return BadRequest();
                 }
 
+                IMovingAverageModel movingAverageModel = requestParams.MovingAverage?.ToModel();
+
                 ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(r => r
                     .Size(0)
                     .Query(q => q
@@ -111,8 +114,8 @@ namespace Diatrack.Controllers
                             .Must(
                                 mu1 => mu1.DateRange(d => d
                                     .Field(f => f.Timestamp)
-                                    .GreaterThanOrEquals(period.Start)
-                                    .LessThanOrEquals(period.End)
+                                    .GreaterThanOrEquals(requestParams.QueryFrom)
+                                    .LessThanOrEquals(requestParams.QueryTo ?? DateTime.UtcNow)
                                 ),
                                 mu2 => mu2.Terms(t => t
                                     .Field(f => f.AccountId)
@@ -127,12 +130,19 @@ namespace Diatrack.Controllers
                             .Field(f => f.AccountId)
                             .Size(accountIds.Length)
                             .Aggregations(agg2 => agg2
-                                .AutoDateHistogram("date", adh => adh
+                                .DateHistogram("date", dh => dh
                                     .Field(f => f.Timestamp)
-                                    .Buckets(period.Buckets)
+                                    .FixedInterval(new Time(requestParams.BucketTimeFactor, requestParams.BucketTimeUnit))
                                     .Aggregations(agg3 => agg3
-                                        .Stats("stats", stats => stats
+                                        .Average("average", stats => stats
                                             .Field(f => f.Value)
+                                        )
+                                        .MovingAverage("movingAverage", movingAvg => movingAvg
+                                            .BucketsPath("average")
+                                            .Model(model => movingAverageModel ?? model.Simple())
+                                            .Window(requestParams.MovingAverage?.Window)
+                                            .Minimize(requestParams.MovingAverage?.Minimize)
+                                            .Predict(requestParams.MovingAverage?.PredictionCount)
                                         )
                                     )
                                 )
@@ -157,16 +167,13 @@ namespace Diatrack.Controllers
                     AutoDateHistogramAggregate dateAgg = accountBucket.AutoDateHistogram("date");
                     foreach (DateHistogramBucket dateBucket in dateAgg.Buckets)
                     {
-                        // Ignore empty buckets
-                        if (dateBucket.DocCount == 0)
-                            continue;
-
                         interval = dateAgg.AutoInterval;
                         
                         dataPoints.Add(new BglDataPoint
                         {
                             Timestamp = dateBucket.Date,
-                            Stats = dateBucket.Stats("stats")
+                            Average = dateBucket.Average("average"),
+                            MovingAverage = dateBucket.MovingAverage("movingAverage")
                         });
                     }
 
@@ -198,18 +205,26 @@ namespace Diatrack.Controllers
     public class GetBglForPeriodParams
     {
         /// <summary>
-        /// Return BGL readings occurring on or after this date/time
+        /// Query BGL readings occurring on or after this date/time
         /// </summary>
-        public DateTime Start { get; set; }
+        public DateTime QueryFrom { get; set; }
 
         /// <summary>
-        /// Return BGL readings occurring before or on this date/time
+        /// Query BGL readings occurring before or on this date/time
         /// </summary>
-        public DateTime End { get; set; }
+        public DateTime? QueryTo { get; set; }
+        
+        /// <summary>
+        /// Create buckets using this time unit
+        /// </summary>
+        [StringEnum]
+        public TimeUnit BucketTimeUnit { get; set; }
 
         /// <summary>
-        /// Number of buckets to return as part of the auto-interval date histogram aggregation
+        /// Each bucket encompasses this number of time units
         /// </summary>
-        public int Buckets { get; set; }
+        public int BucketTimeFactor { get; set; }
+
+        public MovingAverageParams MovingAverage { get; set; }
     }
 }

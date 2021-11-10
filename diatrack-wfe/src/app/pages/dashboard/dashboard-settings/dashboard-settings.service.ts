@@ -1,18 +1,19 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {DashboardPreferences} from "../../../api/models/user-preferences";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {DEFAULTS} from "../../../defaults";
 import {DateTime} from "luxon";
 import {AppConfigService} from "../../../api/app-config.service";
 import {HISTOGRAM_PROFILES, HistogramProfileType} from "./histogram-profiles";
-import {debounceTime, map, mergeMap, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {UserService} from "../../../api/user.service";
 
 @Injectable()
 export class DashboardSettingsService implements OnDestroy {
 
     tabIndex = 0;
+    dateFrom: DateTime | undefined;
     readonly settingsForm: FormGroup;
     readonly dashboardSettings$ = new BehaviorSubject<DashboardPreferences | undefined>(undefined);
     readonly histogramIntervals = HISTOGRAM_PROFILES;
@@ -46,9 +47,12 @@ export class DashboardSettingsService implements OnDestroy {
             })
         });
 
-        this.userService.userPreferences$.subscribe(prefs => {
+        this.userService.userPreferences$.pipe(
+            takeUntil(this.destroying$)
+        ).subscribe(prefs => {
             if (prefs?.dashboard) {
                 this.updateForm(prefs.dashboard);
+                this.updateDashboardSettings(prefs.dashboard);
             }
         });
 
@@ -56,11 +60,10 @@ export class DashboardSettingsService implements OnDestroy {
         this.settingsForm.valueChanges.pipe(
             debounceTime(this.appConfigService.formDebounceInterval),
             takeUntil(this.destroying$),
-            mergeMap((value: DashboardPreferences) => this.userService.savePreferences({
-                dashboard: value
-            }).pipe(
-                tap(() => this.dashboardSettings$.next(value))
-            ))
+            tap(dashboardPrefs => this.updateDashboardSettings(dashboardPrefs)),
+            mergeMap((dashboardPrefs: DashboardPreferences) => this.userService.savePreferences({
+                dashboard: dashboardPrefs
+            }))
         ).subscribe();
     }
 
@@ -69,19 +72,22 @@ export class DashboardSettingsService implements OnDestroy {
             emitEvent: false
         });
 
-        this.dashboardSettings$.next(dashboardPrefs);
+        this.updateDashboardSettings(dashboardPrefs);
     }
 
-    getDateFrom(): Observable<DateTime | undefined> {
-        return this.dashboardSettings$.pipe(map(dashboardSettings => {
-            const profileType: HistogramProfileType | undefined = dashboardSettings?.bglStatsHistogram.profileType;
-            if (profileType !== undefined && HISTOGRAM_PROFILES.has(profileType)) {
-                const histogramProfile = HISTOGRAM_PROFILES.get(profileType)!;
-                return DateTime.utc().minus(histogramProfile.displayPeriod);
-            } else {
-                return undefined;
-            }
-        }));
+    private updateDashboardSettings(dashboardPrefs: DashboardPreferences | undefined) {
+        this.dashboardSettings$.next(dashboardPrefs);
+        this.dateFrom = this.getDateFrom(dashboardPrefs);
+    }
+
+    getDateFrom(dashboardPrefs: DashboardPreferences | undefined): DateTime | undefined {
+        const profileType: HistogramProfileType | undefined = dashboardPrefs?.bglStatsHistogram.profileType;
+        if (profileType !== undefined && HISTOGRAM_PROFILES.has(profileType)) {
+            const histogramProfile = HISTOGRAM_PROFILES.get(profileType)!;
+            return DateTime.utc().minus(histogramProfile.displayPeriod);
+        } else {
+            return undefined;
+        }
     }
 
     ngOnDestroy() {

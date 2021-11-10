@@ -14,9 +14,7 @@
       <highcharts-chart #bglChart [options]="chartOptions"></highcharts-chart>
     </div>
     <div class="activity-log-container">
-      <ng-container *ngIf="dashboardSettingsService.getDateFrom() | async; let dateFrom">
-        <app-activity-log-list *ngIf="userService.userPreferences$ | async; let userPrefs" [dateFrom]="dateFrom"></app-activity-log-list>
-      </ng-container>
+      <app-activity-log-list *ngIf="userService.userPreferences$ | async" [dateFrom]="dashboardSettingsService.dateFrom"></app-activity-log-list>
     </div>
     <app-new-activity-log-entry-fab></app-new-activity-log-entry-fab>
   </ng-container>

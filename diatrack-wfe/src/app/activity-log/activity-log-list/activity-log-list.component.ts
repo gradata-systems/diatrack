@@ -20,7 +20,13 @@ import {DEFAULTS} from "../../defaults";
     styleUrls: ['./activity-log-list.component.scss']
 })
 export class ActivityLogListComponent implements OnInit, OnDestroy {
-    @Input() dateFrom: DateTime | undefined;
+    private readonly dateFromChanged$ = new Subject<DateTime | undefined>();
+    private _dateFrom: DateTime | undefined;
+    get dateFrom() { return this._dateFrom; }
+    @Input() set dateFrom(value: DateTime | undefined) {
+        this._dateFrom = value;
+        this.dateFromChanged$.next(value);
+    }
 
     readonly logEntries$: Subject<ActivityLogEntry[]> = new Subject<ActivityLogEntry[]>();
     readonly destroying$ = new Subject<boolean>();
@@ -42,7 +48,8 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
     ngOnInit() {
         merge(
             this.activityLogService.refresh$,
-            this.activityLogService.changed$
+            this.activityLogService.changed$,
+            this.dateFromChanged$
         ).pipe(
             takeUntil(this.destroying$),
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),

@@ -93,6 +93,11 @@ namespace DiatrackPoller.Services
 
                     _accountState.Add(account.Id, accountState);
                 }
+                else if (!accountState.PollingEnabled)
+                {
+                    Log.Information("Skipped disabled account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                    continue;
+                }
 
                 tasks.Add(Task.Run(async () => {
                     string sessionId;
@@ -164,16 +169,13 @@ namespace DiatrackPoller.Services
             Task.WaitAll(tasks.ToArray(), cancellationToken);
 
             stopwatch.Stop();
-            Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {accounts.Count} accounts");
+            Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {tasks.Count} accounts");
         }
 
         private async Task<IDictionary<string, AccountStateRecord>> GetAccountState()
         {
             ISearchResponse<AccountStateRecord> result = await _elasticClient.SearchAsync<AccountStateRecord>(s => s
                 .Size(_dexPollerConfig.MaxAccountQuerySize)
-                .Query(q => q
-                    .Term(t => t.PollingEnabled, true)
-                )
             );
 
             if (result.IsValid)

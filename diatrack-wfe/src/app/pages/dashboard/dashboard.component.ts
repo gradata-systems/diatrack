@@ -3,11 +3,9 @@ import {AppAuthService} from "../../auth/app-auth.service";
 import {UserService} from "../../api/user.service";
 import {BehaviorSubject, merge, Observable, Subject} from "rxjs";
 import {filter, map, mergeMap, takeUntil, throttleTime} from "rxjs/operators";
-import {PlotColour} from "../../api/models/user-preferences";
 import {DashboardService} from "./dashboard.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
-import {DateTime} from "luxon";
 import {AppConfigService} from "../../api/app-config.service";
 import {ActivityLogService} from "../../activity-log/activity-log.service";
 import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
@@ -44,7 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         // Query data for the main BGL display chart on auto-refresh or when an activity log change occurs
         merge(
             this.dashboardService.refresh$,
-            this.dashboardSettingsService.settingsChanged$,
+            this.dashboardSettingsService.dashboardSettings$,
             this.activityLogService.changed$
         ).pipe(
             filter(() => this.userService.loggedIn),

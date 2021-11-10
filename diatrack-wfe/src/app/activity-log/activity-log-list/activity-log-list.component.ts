@@ -20,7 +20,7 @@ import {DEFAULTS} from "../../defaults";
     styleUrls: ['./activity-log-list.component.scss']
 })
 export class ActivityLogListComponent implements OnInit, OnDestroy {
-    @Input() dateFrom?: DateTime;
+    @Input() dateFrom: DateTime | undefined;
 
     readonly logEntries$: Subject<ActivityLogEntry[]> = new Subject<ActivityLogEntry[]>();
     readonly destroying$ = new Subject<boolean>();
@@ -50,7 +50,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                 this.loading = true;
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: this.dateFrom ?? undefined
+                    fromDate: this.dateFrom
                 }).pipe(
                     tap((entries) => {
                         this.loading = false;

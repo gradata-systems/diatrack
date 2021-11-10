@@ -52,7 +52,6 @@ export class DashboardSettingsService implements OnDestroy {
         ).subscribe(prefs => {
             if (prefs?.dashboard) {
                 this.updateForm(prefs.dashboard);
-                this.updateDashboardSettings(prefs.dashboard);
             }
         });
 
@@ -60,11 +59,12 @@ export class DashboardSettingsService implements OnDestroy {
         this.settingsForm.valueChanges.pipe(
             debounceTime(this.appConfigService.formDebounceInterval),
             takeUntil(this.destroying$),
-            tap(dashboardPrefs => this.updateDashboardSettings(dashboardPrefs)),
             mergeMap((dashboardPrefs: DashboardPreferences) => this.userService.savePreferences({
                 dashboard: dashboardPrefs
             }))
-        ).subscribe();
+        ).subscribe(dashboardPrefs => {
+            this.updateDashboardSettings(dashboardPrefs.dashboard);
+        });
     }
 
     updateForm(dashboardPrefs: DashboardPreferences) {
@@ -72,7 +72,7 @@ export class DashboardSettingsService implements OnDestroy {
             emitEvent: false
         });
 
-        this.updateDashboardSettings(dashboardPrefs);
+
     }
 
     private updateDashboardSettings(dashboardPrefs: DashboardPreferences | undefined) {

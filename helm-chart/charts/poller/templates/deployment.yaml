@@ -58,8 +58,8 @@ spec:
               value: {{ .Values.elastic.forwardingBatchSize | quote }}
             - name: Elastic__Indices__Users
               value: {{ .Values.global.elastic.indices.users | quote }}
-            - name: Elastic__Indices__AccountBglState
-              value: {{ .Values.global.elastic.indices.accountBglState | quote }}
+            - name: Elastic__Indices__AccountState
+              value: {{ .Values.global.elastic.indices.accountState | quote }}
             - name: Elastic__Indices__BglReadings
               value: {{ .Values.global.elastic.indices.bglReadings | quote }}
             - name: Elastic__Indices__ActivityLog

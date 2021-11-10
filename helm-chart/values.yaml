@@ -22,9 +22,9 @@ global:
       secretKey: ""
     indices:
       users: diatrack_v1_users
-      accountBglState: diatrack_v1_account_bgl_state
       bglReadings: diatrack_v1_bgl_readings
       activityLog: diatrack_v1_activity_log
+      accountState: diatrack_v1_account_state
 
   ingress:
     className: nginx

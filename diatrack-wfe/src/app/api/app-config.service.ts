@@ -7,7 +7,7 @@ import {DateTime, Duration} from "luxon";
     providedIn: 'root'
 })
 export class AppConfigService {
-    readonly appUpdateCheckInterval = Duration.fromObject({seconds: 10});
+    readonly appUpdateCheckInterval = Duration.fromObject({minutes: 1});
     readonly autoRefreshEnabled = true;
     readonly refreshInterval = 10000;
     readonly formDebounceInterval = 500;

@@ -1,6 +1,6 @@
 import {ApplicationRef, Injectable, NgZone, OnDestroy} from '@angular/core';
-import {concat, Subject, timer} from "rxjs";
-import {filter, first, takeUntil} from "rxjs/operators";
+import {AsyncSubject, concat, interval, Subject} from "rxjs";
+import {filter, first, takeUntil, tap} from "rxjs/operators";
 import {AppConfigService} from "./api/app-config.service";
 
 @Injectable({
@@ -8,6 +8,7 @@ import {AppConfigService} from "./api/app-config.service";
 })
 export class AppCoreService implements OnDestroy {
 
+    readonly isStable$ = new AsyncSubject<boolean>();
     readonly autoRefresh$ = new Subject<void>();
     private readonly destroying$ = new Subject<boolean>();
 
@@ -18,8 +19,16 @@ export class AppCoreService implements OnDestroy {
     ) {
         // Once the app is stable, start the auto-refresh timer to trigger app-wide data refreshes
         concat(
-            appRef.isStable.pipe(first(stable => stable)),
-            timer(appConfigService.refreshInterval, appConfigService.refreshInterval)
+            appRef.isStable.pipe(
+                first(stable => stable),
+                tap(() => {
+                    ngZone.run(() => {
+                        this.isStable$.next(true);
+                        this.isStable$.complete();
+                    });
+                })
+            ),
+            interval(appConfigService.refreshInterval)
         ).pipe(
             takeUntil(this.destroying$),
             filter(() => appConfigService.autoRefreshEnabled)

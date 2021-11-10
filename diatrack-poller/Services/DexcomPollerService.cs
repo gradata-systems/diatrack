@@ -29,7 +29,8 @@ namespace DiatrackPoller.Services
         private readonly HttpClient _httpClient;
         private SemaphoreSlim _semaphore;
 
-        private IDictionary<string, DateTime> _accountBglState = new Dictionary<string, DateTime>();
+        private readonly IDictionary<string, string> _accountSessions = new Dictionary<string, string>();
+        private IDictionary<string, AccountStateRecord> _accountState = new Dictionary<string, AccountStateRecord>();
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
         public DexcomPollerService(IOptions<DexcomConfiguration> dexConfig, IOptions<DexcomPollerConfiguration> dexPollerConfig, ElasticDataProvider elasticProvider)
@@ -63,7 +64,7 @@ namespace DiatrackPoller.Services
         private async Task GetBglReadings(CancellationToken cancellationToken)
         {
             // Get the last BGL reading from each account ID, so we know when to start querying from
-            _accountBglState = await GetAccountBglState();
+            _accountState = await GetAccountState();
 
             // Limit concurrent API requests
             _semaphore = new SemaphoreSlim(_dexPollerConfig.MaxConcurrentRequests, _dexPollerConfig.MaxConcurrentRequests);
@@ -81,8 +82,52 @@ namespace DiatrackPoller.Services
             {
                 await _semaphore.WaitAsync(cancellationToken);
 
+                // If an account state record doesn't exist, create it
+                if (!_accountState.TryGetValue(account.Id, out AccountStateRecord accountState))
+                {
+                    accountState = new AccountStateRecord()
+                    {
+                        Id = account.Id,
+                        PollingEnabled = true
+                    };
+
+                    _accountState.Add(account.Id, accountState);
+                }
+
                 tasks.Add(Task.Run(async () => {
-                    IEnumerable<BglReading> readings = (await QueryBglDataForAccount(account, cancellationToken)).Select(reading =>
+                    string sessionId;
+                    IEnumerable<BglReading> bglReadings;
+                    try
+                    {
+                        sessionId = _accountSessions[account.Id];
+                        bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            // Session probably expired or invalid so retry, this time logging in first
+                            sessionId = await LoginPublisherAccount(account, accountState);
+                            if (sessionId == null)
+                            {
+                                // Disable polling as login failed and we want to avoid locking the user's account
+                                accountState.PollingEnabled = false;
+                                bglReadings = Enumerable.Empty<BglReading>();
+                            }
+                            else
+                            {
+                                _accountSessions[account.Id] = sessionId;
+                                bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // Still failed, so return an empty result
+                            bglReadings = Enumerable.Empty<BglReading>();
+                        }
+                    }
+
+                    IEnumerable<BglReading> readings = bglReadings.Select(reading =>
                     {
                         // Attribute the reading to the user's account
                         reading.AccountId = account.Id;
@@ -98,7 +143,7 @@ namespace DiatrackPoller.Services
 
                             if (!response.Errors)
                             {
-                                await PutAccountBglState(_accountBglState);
+                                await PutAccountState(accountState);
                             }
                             else
                             {
@@ -122,8 +167,43 @@ namespace DiatrackPoller.Services
             Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {accounts.Count} accounts");
         }
 
-        private async Task<IEnumerable<BglReading>> QueryBglDataForAccount(DataSource account, CancellationToken cancellationToken)
+        private async Task<IDictionary<string, AccountStateRecord>> GetAccountState()
         {
+            ISearchResponse<AccountStateRecord> result = await _elasticClient.SearchAsync<AccountStateRecord>(s => s
+                .Size(_dexPollerConfig.MaxAccountQuerySize)
+                .Query(q => q
+                    .Term(t => t.PollingEnabled, true)
+                )
+            );
+
+            if (result.IsValid)
+            {
+                return result.Documents.ToDictionary(d => d.Id);
+            }
+            else
+            {
+                return new Dictionary<string, AccountStateRecord>();
+            }
+        }
+
+        private async Task PutAccountState(AccountStateRecord accountState)
+        {
+            UpdateResponse<AccountStateRecord> result = await _elasticClient.UpdateAsync(new DocumentPath<AccountStateRecord>(accountState.Id), q => q
+                .Doc(accountState)
+                .DocAsUpsert()
+            );
+
+            if (!result.IsValid)
+            {
+                throw new Exception("Failed to write account state");
+            }
+        }
+
+        private async Task<IEnumerable<BglReading>> QueryBglDataForAccount(string sessionId, DataSource account, AccountStateRecord accountState, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(sessionId))
+                return null;
+
             Log.Information("Querying BGL readings for {AccountId} in region {RegionId}", account.LoginId, account.RegionId);
 
             if (!string.IsNullOrEmpty(account.Id))
@@ -132,17 +212,15 @@ namespace DiatrackPoller.Services
                 int queryMaxCount = _dexPollerConfig.MaxAccountQuerySize;
 
                 // Get the last sensor data timestamp
-                if (_accountBglState.TryGetValue(account.Id, out DateTime lastBglReading))
+                DateTime? lastBglReading = accountState.LastReceived;
+                if (lastBglReading.HasValue)
                 {
                     Log.Debug("Last BGL reading for account {LoginId} in region {RegionId} was {Timestamp}", account.LoginId, account.RegionId, lastBglReading);
 
                     // Calculate how much data we need to query in order to get back up-to-date
-                    queryWindowMins = (int)Math.Floor(DateTime.UtcNow.Subtract(lastBglReading.AddSeconds(1)).TotalMinutes);
+                    queryWindowMins = (int)Math.Floor(DateTime.UtcNow.Subtract(lastBglReading.Value.AddSeconds(1)).TotalMinutes);
                     queryMaxCount = (int)Math.Floor(queryWindowMins / 5.0) + 1;
                 }
-
-                // Log on, returning a session ID
-                string sessionId = await LoginPublisherAccount(account);
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
@@ -169,10 +247,10 @@ namespace DiatrackPoller.Services
                             // Update state using the timestamp from the most recent reading
                             if (readings.Count > 0)
                             {
-                                _accountBglState[account.Id] = readings[0].Timestamp;
-
-                                return readings;
+                                accountState.LastReceived = readings[0].Timestamp;
                             }
+
+                            return readings;
                         }
                     }
                     catch (InvalidRegionException ex)
@@ -186,36 +264,7 @@ namespace DiatrackPoller.Services
                 }
             }
 
-            return Enumerable.Empty<BglReading>();
-        }
-
-        /// <summary>
-        /// Get a dictionary of all accounts IDs and for each, the last CGM reading obtained.
-        /// Collection will pick up from that timestamp.
-        /// </summary>
-        private async Task<IDictionary<string, DateTime>> GetAccountBglState()
-        {
-            GetResponse<AccountBglState> result = await _elasticClient.GetAsync(new DocumentPath<AccountBglState>(1));
-            if (result.Found)
-            {
-                return result.Source.Accounts;
-            }
-            else
-            {
-                return new Dictionary<string, DateTime>();
-            }
-        }
-
-        /// <summary>
-        /// Update the timestamp of the last BGL reading for each account ID
-        /// </summary>
-        private async Task PutAccountBglState(IDictionary<string, DateTime> state)
-        {
-            IndexResponse result = await _elasticClient.IndexDocumentAsync(new AccountBglState() { Id = 1, Accounts = state });
-            if (result.Result == Result.Error)
-            {
-                Log.Error("Failed to update account BGL state", result.ServerError);
-            }
+            throw new Exception("Error querying sensor data");
         }
 
         /// <summary>
@@ -254,7 +303,7 @@ namespace DiatrackPoller.Services
         /// </summary>
         /// <param name="account"></param>
         /// <returns>Session ID</returns>
-        private async Task<string> LoginPublisherAccount(DataSource account)
+        private async Task<string> LoginPublisherAccount(DataSource account, AccountStateRecord accountState)
         {
             try
             {
@@ -273,7 +322,15 @@ namespace DiatrackPoller.Services
                     Match sessionIdMatch = _quotedPattern.Match(rawSessionId);
                     if (sessionIdMatch.Success)
                     {
-                        return sessionIdMatch.Groups[1].Value;
+                        string sessionId = sessionIdMatch.Groups[1].Value;
+
+                        // Reuse the session ID for future BGL data queries
+                        if (!_accountSessions.TryAdd(account.Id, sessionId))
+                        {
+                            _accountSessions[account.Id] = sessionId;
+                        }
+
+                        return sessionId;
                     }
                     else
                     {
@@ -282,6 +339,9 @@ namespace DiatrackPoller.Services
                 }
                 else
                 {
+                    // Disable polling for this account
+                    accountState.PollingEnabled = false;
+
                     Log.Error("Failed to log on account {LoginId} in region {RegionId}. Status code: {StatusCode}. Reason: {Reason}",
                             account.LoginId, account.RegionId, response.StatusCode, response.ReasonPhrase);
                 }

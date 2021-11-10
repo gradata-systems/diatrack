@@ -1,7 +1,7 @@
 {
   "priority": 1,
   "index_patterns": [
-    "diatrack_v1*_account_bgl_state"
+    "diatrack_v1*_account_state"
   ],
   "template": {
     "settings": {
@@ -10,7 +10,7 @@
       "refresh_interval": "1s"
     },
     "mappings": {
-      "dynamic": true,
+      "dynamic": false,
       "_source": {
         "enabled": true
       },
@@ -18,20 +18,13 @@
         "required": false
       },
       "properties": {
-        "accounts": {
-          "type": "object"
+        "pollingEnabled": {
+          "type": "boolean"
+        },
+        "lastReceived": {
+          "type": "date"
         }
-      },
-      "dynamic_templates": [
-        {
-          "account_entry": {
-            "path_match": "*",
-            "mapping": {
-              "type": "date"
-            }
-          }
-        }
-      ]
+      }
     }
   }
 }

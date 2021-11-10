@@ -1,13 +1,14 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {DateTime} from "luxon";
-import {combineLatest, interval, merge, Observable, Subject} from "rxjs";
+import {merge, Observable, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../api/models/activity-log-entry";
 import {BASE_PATH} from "../api/variables";
 import {LogActivityIcon} from "../app-icon.service";
 import {AppConfigService} from "../api/app-config.service";
 import {filter, throttleTime} from "rxjs/operators";
 import {UserService} from "../api/user.service";
+import {AppCoreService} from "../app-core.service";
 
 @Injectable({
     providedIn: 'root',
@@ -28,12 +29,13 @@ export class ActivityLogService {
 
     constructor(
         @Inject(BASE_PATH) private basePath: string,
+        private appCoreService: AppCoreService,
         private httpClient: HttpClient,
         private appConfigService: AppConfigService,
         private userService: UserService
     ) {
         merge(
-            interval(this.appConfigService.refreshInterval),
+            this.appCoreService.autoRefresh$,
             this.userService.userPreferences$
         ).pipe(
             filter(() => this.appConfigService.autoRefreshEnabled),

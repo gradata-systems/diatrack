@@ -1,9 +1,9 @@
-import {Injectable, NgZone} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {interval, Observable, of, Subject} from "rxjs";
 import {DashboardPreferences, getBglUnitDisplayValue, PlotColour, UserPreferences} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {catchError, filter, map, mergeMap, take} from "rxjs/operators";
+import {catchError, filter, map, mergeMap, take, takeUntil} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point, PointOptionsObject} from "highcharts";
@@ -16,22 +16,25 @@ import {mergeDeep} from "../../utilities";
 import {HISTOGRAM_PROFILES} from "./dashboard-settings/histogram-profiles";
 import {HistogramProfile} from "./histogram-profile";
 import {MovingAverageModelType} from "../../api/models/moving-average-params";
+import {AppCoreService} from "../../app-core.service";
 
 @Injectable({
     providedIn: 'root'
 })
-export class DashboardService {
+export class DashboardService implements OnDestroy {
 
     dashboardSettings?: DashboardPreferences;
     selectedPoint: Point | undefined;
 
     // How often (in milliseconds) to check for new data
     readonly refresh$ = new Subject<void>();
+    private readonly destroying$ = new Subject<boolean>();
 
     // Used to trigger the log entry edit dialog
     readonly activityLogMarkerClicked$: Subject<string> = new Subject<string>();
 
     constructor(
+        private appCoreService: AppCoreService,
         private appConfigService: AppConfigService,
         private userService: UserService,
         private bglStatsService: BglStatsService,
@@ -48,10 +51,7 @@ export class DashboardService {
             this.dashboardSettings = prefs?.dashboard;
         });
 
-        // Trigger refresh on timer
-        interval(this.appConfigService.refreshInterval).pipe(
-            filter(x => this.appConfigService.autoRefreshEnabled)
-        ).subscribe(x => {
+        this.appCoreService.autoRefresh$.subscribe(() => {
             this.triggerRefresh();
         });
     }
@@ -372,5 +372,10 @@ export class DashboardService {
             default:
                 return '';
         }
+    }
+
+    ngOnDestroy() {
+        this.destroying$.next(true);
+        this.destroying$.complete();
     }
 }

@@ -141,7 +141,6 @@ namespace Diatrack.Controllers
                                             .BucketsPath("average")
                                             .Model(model => movingAverageModel ?? model.Simple())
                                             .Window(requestParams.MovingAverage?.Window)
-                                            .Minimize(requestParams.MovingAverage?.Minimize)
                                             .Predict(requestParams.MovingAverage?.PredictionCount)
                                         )
                                     )

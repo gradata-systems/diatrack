@@ -1,9 +1,9 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core';
-import {interval, Observable, of, Subject} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 import {DashboardPreferences, getBglUnitDisplayValue, PlotColour, UserPreferences} from "../../api/models/user-preferences";
 import {UserService} from "../../api/user.service";
 import {BglStatsService} from "../../api/bgl-stats.service";
-import {catchError, filter, map, mergeMap, take, takeUntil} from "rxjs/operators";
+import {catchError, map, mergeMap, take} from "rxjs/operators";
 import {DateTime} from "luxon";
 import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point, PointOptionsObject} from "highcharts";
@@ -98,14 +98,15 @@ export class DashboardService implements OnDestroy {
             histogramProfile = HISTOGRAM_PROFILES.get(defaults.profileType)!;
         }
 
+        const movingAverageEnabled = histogramSettings.movingAverage!.enabled;
         return this.bglStatsService.getAccountStatsHistogram({
             queryFrom: DateTime.now().minus(histogramProfile.queryPeriod).toISO(),
             queryTo: DateTime.now().toISO(),
             bucketTimeUnit: histogramProfile.bucketTimeUnit,
             bucketTimeFactor: histogramProfile.bucketTimeFactor,
             movingAverage: {
-                enabled: histogramSettings.movingAverage!.enabled,
-                modelType: histogramSettings.movingAverage!.modelType,
+                enabled: movingAverageEnabled,
+                modelType: movingAverageEnabled ? histogramSettings.movingAverage!.modelType : MovingAverageModelType.Simple, // If not enabled, just use simple type for efficiency
                 alpha: histogramSettings.movingAverage!.alpha,
                 window: Math.max(histogramSettings.movingAverage!.window ?? 0, histogramProfile.movingAveragePeriod * 2), // Must be at least twice the period, otherwise an error is thrown
                 minimize: movingAverageModelType === MovingAverageModelType.HoltLinear || movingAverageModelType === MovingAverageModelType.HoltWinters,
@@ -332,15 +333,16 @@ export class DashboardService implements OnDestroy {
                 },{
                     name: 'Trend',
                     data: trendDataPoints,
-                    opacity: 0.6,
+                    opacity: 1,
                     zIndex: -1,
-                    color: '#00dbff',
                     zoneAxis: 'x',
                     zones: [{
                         value: DateTime.now().toMillis(),
-                        dashStyle: 'Solid'
+                        dashStyle: 'Solid',
+                        color: 'rgba(0,219,255,0.3)'
                     }, {
-                        dashStyle: 'Dot'
+                        dashStyle: 'Dot',
+                        color: '#00dbff'
                     }],
                     marker: {
                         enabled: false

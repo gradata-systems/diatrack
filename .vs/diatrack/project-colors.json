@@ -10,7 +10,17 @@
       "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
       "DisplayName": "Miscellaneous Files",
       "ColorIndex": -1
+    },
+    "46c4e752-a589-4f66-ab58-e71ce372aac6": {
+      "ProjectGuid": "46c4e752-a589-4f66-ab58-e71ce372aac6",
+      "DisplayName": "diatrack-poller",
+      "ColorIndex": 1
+    },
+    "45a28a9e-2eda-44b1-afa4-7d06865d2b3c": {
+      "ProjectGuid": "45a28a9e-2eda-44b1-afa4-7d06865d2b3c",
+      "DisplayName": "diatrack-tests",
+      "ColorIndex": 2
     }
   },
-  "NextColorIndex": 1
+  "NextColorIndex": 3
 }

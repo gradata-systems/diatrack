@@ -289,7 +289,11 @@ namespace Diatrack.Services
                 throw new AccountNotFoundException();
             }
 
-            dataSource.ShareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            // Generate a random, URL-safe base-64 string
+            dataSource.ShareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .Replace("=", "");
 
             UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u.DocAsUpsert().Doc(user));
             if (result.IsValid)
@@ -317,6 +321,7 @@ namespace Diatrack.Services
 
             if (!userProfileResponse.IsValid || userProfileResponse.Documents.Count == 0)
             {
+                Log.Error("Token {Token} could not be matched against any data sources", token, userProfileResponse);
                 throw new InvalidTokenException();
             }
 

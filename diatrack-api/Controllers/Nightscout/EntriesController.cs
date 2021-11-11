@@ -65,7 +65,7 @@ namespace Diatrack.Controllers.Nightscout
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to retrieve BGL readings by share token");
-                return NotFound();
+                return NotFound(ex.Message);
             }
         }
 

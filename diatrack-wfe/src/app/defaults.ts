@@ -9,8 +9,8 @@ export const DEFAULTS = {
                 plotColour: PlotColour.ScaledByBgl,
                 movingAverage: {
                     enabled: true,
-                    modelType: MovingAverageModelType.HoltWinters,
-                    window: 100,
+                    modelType: MovingAverageModelType.Linear,
+                    window: 15,
                     period: 1,
                     alpha: 0.8,
                     predictionCount: 10

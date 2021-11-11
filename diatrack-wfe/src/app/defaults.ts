@@ -10,7 +10,7 @@ export const DEFAULTS = {
                 movingAverage: {
                     enabled: true,
                     modelType: MovingAverageModelType.HoltWinters,
-                    window: 10,
+                    window: 100,
                     period: 1,
                     alpha: 0.8,
                     predictionCount: 10

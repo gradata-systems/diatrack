@@ -34,15 +34,17 @@ namespace Diatrack.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ElasticClient _elasticClient;
+        private readonly AppConfiguration _appConfig;
         private readonly DexcomConfiguration _dexConfig;
 
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<DexcomConfiguration> dexConfig)
+        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig)
         {
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
             _elasticClient = elasticProvider.NestClient;
+            _appConfig = appConfig.Value;
             _dexConfig = dexConfig.Value;
         }
 
@@ -150,6 +152,9 @@ namespace Diatrack.Services
         /// </summary>
         public async Task<string> AddDexcomAccount(DataSource account)
         {
+            // Password is in plaintext, so encrypt it
+            await account.SetPasswordFromPlainText(account.Password, _appConfig);
+
             UserProfile user = await GetUser();
             string accountId = await GetDexcomAccountId(account);
 
@@ -204,10 +209,7 @@ namespace Diatrack.Services
             if (!string.IsNullOrEmpty(account.Id))
                 return account.Id;
 
-            // Password is in plaintext, so encrypt it
-            account.CryptoKey = Crypto.GenerateKey();
-            account.CryptoIv = Crypto.GenerateIv();
-            account.Password = Crypto.EncryptString(account.Password, account.CryptoKey, account.CryptoIv);
+            string plainTextPassword = await account.GetPlainTextPassword(_appConfig);
 
             // Not cached, so query the Dexcom API for the account ID
             HttpRequestMessage request = new(HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
@@ -215,7 +217,7 @@ namespace Diatrack.Services
             {
                 ApplicationId = _dexConfig.ApplicationId,
                 AccountName = account.LoginId,
-                Password = account.GetPlainTextPassword()
+                Password = plainTextPassword
             });
 
             using (HttpClient httpClient = _httpClientFactory.CreateClient())

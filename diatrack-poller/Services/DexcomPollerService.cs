@@ -22,6 +22,7 @@ namespace DiatrackPoller.Services
 {
     public class DexcomPollerService : ScheduledTaskService
     {
+        private readonly AppConfiguration _appConfig;
         private readonly DexcomConfiguration _dexConfig;
         private readonly DexcomPollerConfiguration _dexPollerConfig;
         private readonly ElasticClient _elasticClient;
@@ -33,9 +34,10 @@ namespace DiatrackPoller.Services
         private IDictionary<string, AccountStateRecord> _accountState = new Dictionary<string, AccountStateRecord>();
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public DexcomPollerService(IOptions<DexcomConfiguration> dexConfig, IOptions<DexcomPollerConfiguration> dexPollerConfig, ElasticDataProvider elasticProvider)
+        public DexcomPollerService(IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig, IOptions<DexcomPollerConfiguration> dexPollerConfig, ElasticDataProvider elasticProvider)
             :base(TimeSpan.FromSeconds(dexPollerConfig.Value.BglQueryFrequencySeconds))
         {
+            _appConfig = appConfig.Value;
             _dexConfig = dexConfig.Value;
             _dexPollerConfig = dexPollerConfig.Value;
             _elasticClient = elasticProvider.NestClient;
@@ -309,12 +311,13 @@ namespace DiatrackPoller.Services
         {
             try
             {
+                string plainTextPassword = await account.GetPlainTextPassword(_appConfig);
                 HttpRequestMessage request = new(HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.LoginEndpoint, _dexConfig.Regions));
                 request.Content = JsonContent.Create(new
                 {
                     ApplicationId = _dexConfig.ApplicationId,
                     AccountId = account.Id,
-                    Password = account.GetPlainTextPassword()
+                    Password = plainTextPassword
                 });
 
                 HttpResponseMessage response = await _httpClient.SendAsync(request);

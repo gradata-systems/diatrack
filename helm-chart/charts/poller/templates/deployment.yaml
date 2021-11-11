@@ -31,6 +31,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: App__EncryptionKeyFile
+              value: "/app/secrets/aes.key"
             - name: DexcomPoller__MaxAccountQuerySize
               value: {{ .Values.dexcomPoller.maxAccountQuerySize | quote }}
             - name: DexcomPoller__MaxConcurrentRequests
@@ -70,8 +72,17 @@ spec:
               value: {{ .Values.logging.file.enabled | quote }}
             - name: Logging__File__RollingInterval
               value: {{ .Values.logging.file.rollingInterval | quote }}
+          volumeMounts:
+            - name: encryption-key
+              subPath: {{ .Values.global.encryptionKey.secretKey }}
+              mountPath: /app/secrets/aes.key
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: encryption-key
+          secret:
+            secretName: {{ .Values.global.encryptionKey.secretName }}
+            defaultMode: 0400
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

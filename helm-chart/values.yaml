@@ -6,6 +6,11 @@ global:
   # Public URL, used as the Ingress host
   hostName: "diatrack.example.com"
 
+  # Encryption key used for app secrets
+  encryptionKey:
+    secretName: ""
+    secretKey: ""
+
   azureAdB2C:
     instance: "" # https://xxx.b2clogin.com
     domain: "" # xxx.onmicrosoft.com

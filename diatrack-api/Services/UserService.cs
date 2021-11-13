@@ -317,7 +317,7 @@ namespace Diatrack.Services
             ISearchResponse<UserProfile> userProfileResponse = await _elasticClient.SearchAsync<UserProfile>(s => s
                 .Size(1)
                 .Query(q => q
-                    .Term(u => u.DataSources.First().ShareToken, token)
+                    .Term(new Field("dataSource.shareToken"), token)
                 )
             );
 

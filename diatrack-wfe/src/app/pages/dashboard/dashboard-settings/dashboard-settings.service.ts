@@ -32,7 +32,7 @@ export class DashboardSettingsService implements OnDestroy {
         this.settingsForm = fb.group({
             bglStatsHistogram: fb.group({
                 profileType: fb.control(histogramDefaults.profileType, Validators.required),
-                plotHeight: fb.control(undefined),
+                plotHeight: fb.control(histogramDefaults.plotHeight),
                 plotColour: fb.control(histogramDefaults.plotColour, Validators.required),
                 activityLog: fb.control(histogramDefaults.activityLog),
                 dataLabels: fb.control(histogramDefaults.dataLabels),

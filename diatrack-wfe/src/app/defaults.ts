@@ -7,6 +7,7 @@ export const DEFAULTS = {
             bglStatsHistogram: {
                 profileType: '6 hours',
                 plotColour: PlotColour.ScaledByBgl,
+                plotHeight: 16,
                 movingAverage: {
                     enabled: true,
                     modelType: MovingAverageModelType.Linear,

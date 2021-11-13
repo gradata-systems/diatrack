@@ -2,8 +2,6 @@
 @import '../theme';
 @import '../media-rules';
 
-$status-bar-height: 100px;
-
 :host {
     display: flex;
     flex-direction: row;
@@ -13,30 +11,36 @@ $status-bar-height: 100px;
 }
 
 .status-bar-container {
-    height: $status-bar-height;
     width: 100%;
     text-align: center;
     position: relative;
-    background-color: #2b2b2b;
+    background-color: $app-background-color;
+    padding-top: 15px;
+    padding-bottom: 15px;
 
     .status-bar {
         width: 100%;
         height: 100%;
         display: flex;
         flex-direction: row;
+        padding-top: env(safe-area-inset-top);
+        min-height: $status-bar-height;
 
         .bgl-stats {
             display: flex;
             flex-direction: row;
             align-items: center;
             height: 100%;
-            margin-left: auto;
-            margin-right: auto;
+            margin: auto;
+
+            @media (max-device-width: $media-phone-portrait-breakpoint) {
+                padding-left: 20px;
+            }
 
             .bgl {
                 margin-top: auto;
                 margin-bottom: auto;
-                padding-right: 5px;
+                padding-right: 10px;
 
                 .reading {
                     font-size: 50px;
@@ -53,8 +57,8 @@ $status-bar-height: 100px;
             }
 
             .trend-arrow {
-                position: relative;
-                top: -8px;
+                margin-top: auto;
+                margin-bottom: auto;
 
                 & > mat-icon {
                     width: 35px;

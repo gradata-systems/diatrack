@@ -208,7 +208,7 @@ namespace DiatrackPoller.Services
             if (string.IsNullOrEmpty(sessionId))
                 return null;
 
-            Log.Information("Querying BGL readings for {AccountId} in region {RegionId}", account.LoginId, account.RegionId);
+            Log.Information("Querying BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
 
             if (!string.IsNullOrEmpty(account.Id))
             {
@@ -357,7 +357,7 @@ namespace DiatrackPoller.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to log on account {LoginId} in region {RegionId}", account.Id, account.LoginId, account.RegionId);
+                Log.Error(ex, "Failed to log on account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
             }
 
             return null;

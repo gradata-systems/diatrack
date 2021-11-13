@@ -6,7 +6,7 @@ import {DEFAULTS} from "../../../defaults";
 import {DateTime} from "luxon";
 import {AppConfigService} from "../../../api/app-config.service";
 import {HISTOGRAM_PROFILES, HistogramProfileType} from "./histogram-profiles";
-import {debounceTime, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
+import {debounceTime, mergeMap, takeUntil} from "rxjs/operators";
 import {UserService} from "../../../api/user.service";
 
 @Injectable()
@@ -72,7 +72,7 @@ export class DashboardSettingsService implements OnDestroy {
             emitEvent: false
         });
 
-
+        this.dateFrom = this.getDateFrom(dashboardPrefs);
     }
 
     private updateDashboardSettings(dashboardPrefs: DashboardPreferences | undefined) {

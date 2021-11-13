@@ -16,5 +16,7 @@ namespace Diatrack.Models.Nightscout
         public string Name { get; set; }
 
         public string Version { get; set; }
+
+        public object Settings { get; set; }
     }
 }

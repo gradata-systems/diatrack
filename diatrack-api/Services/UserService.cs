@@ -1,6 +1,7 @@
 ﻿using Diatrack.Configuration;
 using Diatrack.Models;
 using Diatrack.Utilities;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -212,7 +213,7 @@ namespace Diatrack.Services
             string plainTextPassword = await account.GetPlainTextPassword(_appConfig);
 
             // Not cached, so query the Dexcom API for the account ID
-            HttpRequestMessage request = new(HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
+            HttpRequestMessage request = new(System.Net.Http.HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
             request.Content = JsonContent.Create(new
             {
                 ApplicationId = _dexConfig.ApplicationId,
@@ -292,15 +293,25 @@ namespace Diatrack.Services
             }
 
             // Generate a random, URL-safe base-64 string
-            dataSource.ShareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+            string shareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
                 .Replace('+', '-')
                 .Replace('/', '_')
                 .Replace("=", "");
 
-            UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u.DocAsUpsert().Doc(user));
+            // Hash the token and persist the hash
+            string hashedToken = Crypto.Sha1Hash(shareToken);
+            dataSource.ShareToken = hashedToken;
+
+            UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u
+                .DocAsUpsert()
+                .Doc(user)
+                .Refresh(Refresh.WaitFor)
+            );
+
             if (result.IsValid)
             {
-                return dataSource.ShareToken;
+                Log.Information("Generated share token for {UserId}, datasource {LoginId} in region {RegionId}", user.Id, dataSource.LoginId, dataSource.RegionId);
+                return shareToken;
             }
             else
             {

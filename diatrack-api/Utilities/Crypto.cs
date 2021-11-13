@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Diatrack.Utilities
 {
@@ -105,6 +107,17 @@ namespace Diatrack.Utilities
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Generates a SHA-1 hash of the specified string
+        /// </summary>
+        /// <returns>UTF-8 encoded hash</returns>
+        public static string Sha1Hash(string source)
+        {
+            using SHA1Managed sha1 = new();
+            byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(source));
+            return string.Concat(hash.Select(b => b.ToString("x2")));
         }
     }
 }

@@ -9,10 +9,15 @@ using Microsoft.AspNetCore.Http;
 using Serilog;
 using System;
 using System.Linq;
+using Microsoft.Extensions.Primitives;
+using System.Text.RegularExpressions;
+using System.Text;
+using Diatrack.Utilities;
 
 namespace Diatrack.Controllers.Nightscout
 {
     [Route("Nightscout")]
+    [Route("")]
     [ApiController]
     public class EntriesController : ControllerBase
     {
@@ -30,13 +35,46 @@ namespace Diatrack.Controllers.Nightscout
         /// <summary>
         /// Get BGL readings in a Nightscout compatible format
         /// </summary>
-        /// <returns></returns>
         [HttpGet("v1/entries.json")]
-        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries([FromQuery] string token, [FromQuery] int count)
+        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries([FromQuery(Name = "token")] string plainTextToken, [FromQuery] int count = 1)
         {
-            if (string.IsNullOrEmpty(token))
+            string token;
+
+            // First try and get the token from the query string
+            if (!string.IsNullOrEmpty(plainTextToken))
             {
-                return Unauthorized("Token not provided");
+                // If the token is provided via query string parameter, assume it is the plaintext, unhashed version (i.e. Sugarmate).
+                // It therefore needs to be hashed before lookup.
+                token = Crypto.Sha1Hash(plainTextToken);
+            }
+            else
+            {
+                IHeaderDictionary headers = _httpContextAccessor.HttpContext.Request.Headers;
+
+                if (headers.TryGetValue("Authorization", out StringValues authHeader))
+                {
+                    // Plain-text token passed in `Authorization` header
+                    Match basicAuthMatch = Regex.Match(authHeader.First(), "^Basic (.+)$");
+                    if (basicAuthMatch.Success)
+                    {
+                        token = Crypto.Sha1Hash(Encoding.UTF8.GetString(Convert.FromBase64String(basicAuthMatch.Groups[1].Value)).TrimEnd(':'));
+                    }
+                    else
+                    {
+                        Log.Warning("Invalid token {Token} provided in Authorization header {Headers}", authHeader.First(), _httpContextAccessor.HttpContext.Request.Headers);
+                        return Unauthorized("Invalid authentication header");
+                    }
+                }
+                else if (headers.TryGetValue("api-secret", out StringValues apiSecretHeader))
+                {
+                    // SHA-1 hashed token provided in `api-secret` header (such as by xDrip)
+                    token = apiSecretHeader.First();
+                }
+                else
+                {
+                    Log.Warning("No token provided {Headers}", _httpContextAccessor.HttpContext.Request.Headers);
+                    return Unauthorized("Token not provided");
+                }
             }
 
             try
@@ -59,12 +97,13 @@ namespace Diatrack.Controllers.Nightscout
                 }
                 else
                 {
+                    Log.Error("Query error occurred when searching BGL readings by token {Token}", token);
                     return Problem();
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to retrieve BGL readings by share token");
+                Log.Warning(ex, "Failed to retrieve BGL readings by share token");
                 return NotFound(ex.Message);
             }
         }
@@ -84,7 +123,9 @@ namespace Diatrack.Controllers.Nightscout
                     CarePortalEnabled = false,
                     Head = "",
                     Name = "Diatrack",
-                    Version = "1"
+                    Version = "1",
+                    Settings = new
+                    { }
                 });
             }
             else

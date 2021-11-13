@@ -12,11 +12,20 @@ namespace diatrack_tests
         [Test]
         public void TestEncrypt()
         {
-            string plainText = "Hello world!";
+            string plainText = "Hello world!_123@#$%";
             string cipherText = Crypto.EncryptString(plainText, key);
             string decryptedText = Crypto.DecryptString(cipherText, key);
 
             Assert.AreEqual(plainText, decryptedText);
+        }
+
+        [Test]
+        public void TestSha1Hash()
+        {
+            const string source = "_o47pf_rn0WrZ_qfNbUDLw";
+            const string hashed = "a2cfa690011ca0b6e71b725dcd596f8252fe886c";
+
+            Assert.AreEqual(hashed, Crypto.Sha1Hash(source));
         }
     }
 }

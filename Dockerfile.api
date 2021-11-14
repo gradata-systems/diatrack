@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 
 # Use a higher port to allow the container to run under a non-privileged user account
@@ -16,7 +16,7 @@ RUN chown netcore:netcore /app
 RUN mkdir -p /var/log/diatrack
 RUN chown netcore:netcore /var/log/diatrack
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ./diatrack-api/diatrack-api.csproj .
 RUN dotnet restore diatrack-api.csproj

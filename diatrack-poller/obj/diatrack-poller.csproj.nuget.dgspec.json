@@ -18,15 +18,15 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {}
           }
         },
@@ -37,16 +37,16 @@
         }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[5.0.11, )"
+              "version": "[6.0.0, )"
             },
             "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
               "target": "Package",
-              "version": "[5.0.11, )"
+              "version": "[6.0.0, )"
             },
             "Microsoft.AspNetCore.Mvc.Versioning": {
               "target": "Package",
@@ -58,11 +58,11 @@
             },
             "Microsoft.Identity.Web": {
               "target": "Package",
-              "version": "[1.18.0, )"
+              "version": "[1.20.0, )"
             },
             "Microsoft.Identity.Web.UI": {
               "target": "Package",
-              "version": "[1.18.0, )"
+              "version": "[1.20.0, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
@@ -70,7 +70,7 @@
             },
             "NEST": {
               "target": "Package",
-              "version": "[7.15.1, )"
+              "version": "[7.15.2, )"
             },
             "Serilog": {
               "target": "Package",
@@ -129,15 +129,15 @@
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {
               "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj": {
                 "projectPath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-api\\diatrack-api.csproj"
@@ -152,12 +152,12 @@
         }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "dependencies": {
             "Microsoft.Extensions.Hosting": {
               "target": "Package",
-              "version": "[5.0.0, )"
+              "version": "[6.0.0, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",

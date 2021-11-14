@@ -3,11 +3,13 @@ using Diatrack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 
 namespace Diatrack
@@ -43,10 +45,25 @@ namespace Diatrack
                     opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
                 });
 
-            services.AddSwaggerGen(c =>
+            services.AddApiVersioning(config =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "diatrack", Version = "v1" });
+                config.DefaultApiVersion = new ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+                config.ReportApiVersions = true;
+                config.ApiVersionReader = ApiVersionReader.Combine(
+                    new QueryStringApiVersionReader("version"),
+                    new UrlSegmentApiVersionReader() // Used for compatibility with emulated APIs like Nightscout
+                );
             });
+
+            services.AddVersionedApiExplorer(config =>
+            {
+                config.GroupNameFormat = "'v'VVV";
+                config.SubstituteApiVersionInUrl = true;
+            });
+
+            services.AddSwaggerGen();
+            services.ConfigureOptions<SwaggerConfiguration>();
 
             services.AddOptions();
             services.Configure<AppConfiguration>(Configuration.GetSection("App"));
@@ -56,7 +73,7 @@ namespace Diatrack
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider versionProvider)
         {
             app.UseResponseCompression();
 
@@ -64,7 +81,13 @@ namespace Diatrack
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "diatrack v1"));
+                app.UseSwaggerUI(config =>
+                {
+                    foreach (ApiVersionDescription description in versionProvider.ApiVersionDescriptions)
+                    {
+                        config.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                    }
+                });
             }
 
             app.UseHttpsRedirection();

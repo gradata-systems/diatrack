@@ -45,10 +45,7 @@ namespace DiatrackPoller.Services
             _httpClient = new HttpClient();
 
             // Set the maximum number of concurrent HTTP requests for each Dexcom server
-            foreach (string server in _dexConfig.Regions.Select(r => r.Value.Server))
-            {
-                ServicePointManager.FindServicePoint(new Uri($"http://{server}")).ConnectionLimit = _dexPollerConfig.MaxConcurrentRequests;
-            }
+            ServicePointManager.DefaultConnectionLimit = _dexPollerConfig.MaxConcurrentRequests;
         }
 
         protected override async Task DoWork(CancellationToken cancellationToken)

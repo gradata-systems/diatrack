@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Diatrack.Controllers.Nightscout
+namespace Diatrack.Controllers.V1
 {
     [Authorize]
     [Route("[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class ActivityLogController : ControllerBase
     {

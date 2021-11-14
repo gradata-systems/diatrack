@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace Diatrack.Controllers.V1
 {
     [Route("[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class HealthcheckController : ControllerBase
     {

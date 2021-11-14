@@ -51,7 +51,10 @@ namespace Diatrack
                 config.DefaultApiVersion = new ApiVersion(1, 0);
                 config.AssumeDefaultVersionWhenUnspecified = true;
                 config.ReportApiVersions = true;
-                config.ApiVersionReader = new HeaderApiVersionReader("api-version");
+                config.ApiVersionReader = ApiVersionReader.Combine(
+                    new QueryStringApiVersionReader("version"),
+                    new UrlSegmentApiVersionReader() // Used for compatibility with emulated APIs like Nightscout
+                );
             });
 
             services.AddVersionedApiExplorer(config =>

@@ -17,7 +17,7 @@ namespace Diatrack
 
         public void Configure(SwaggerGenOptions options)
         {
-            // add swagger document for every API version discovered
+            // Add swagger document for every API version discovered
             foreach (ApiVersionDescription description in _provider.ApiVersionDescriptions)
             {
                 options.SwaggerDoc(description.GroupName, CreateVersionInfo(description));

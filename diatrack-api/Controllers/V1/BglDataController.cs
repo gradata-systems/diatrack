@@ -7,13 +7,13 @@ using Nest;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace Diatrack.Controllers
+namespace Diatrack.Controllers.V1
 {
     [Authorize]
     [Route("Bgl")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class BglDataController : ControllerBase
     {

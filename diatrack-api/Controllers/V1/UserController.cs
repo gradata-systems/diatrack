@@ -6,10 +6,11 @@ using Serilog;
 using System;
 using System.Threading.Tasks;
 
-namespace Diatrack.Controllers
+namespace Diatrack.Controllers.V1
 {
     [Authorize]
     [Route("[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class UserController : ControllerBase
     {

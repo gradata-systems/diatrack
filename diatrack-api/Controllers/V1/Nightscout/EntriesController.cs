@@ -14,10 +14,11 @@ using System.Text.RegularExpressions;
 using System.Text;
 using Diatrack.Utilities;
 
-namespace Diatrack.Controllers.Nightscout
+namespace Diatrack.Controllers.V1.Nightscout
 {
     [Route("Nightscout")]
     [Route("")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class EntriesController : ControllerBase
     {
@@ -35,7 +36,7 @@ namespace Diatrack.Controllers.Nightscout
         /// <summary>
         /// Get BGL readings in a Nightscout compatible format
         /// </summary>
-        [HttpGet("v1/entries.json")]
+        [HttpGet("v{version:apiVersion}/entries.json")]
         public async Task<ActionResult<IEnumerable<Entry>>> GetEntries([FromQuery(Name = "token")] string plainTextToken, [FromQuery] int count = 1)
         {
             string token;
@@ -111,7 +112,7 @@ namespace Diatrack.Controllers.Nightscout
         /// <summary>
         /// Get server status by checking whether the Elasticsearch connection is OK
         /// </summary>
-        [HttpGet("v1/status.json")]
+        [HttpGet("v{version:apiVersion}/status.json")]
         public async Task<ActionResult<ServerStatus>> GetStatus()
         {
             var response = await _elasticClient.PingAsync();

@@ -6,6 +6,7 @@ import {DataSourcePrefsComponent} from './data-source-prefs/data-source-prefs.co
 import {NewDataSourceDialogComponent} from './data-source-prefs/new-data-source-dialog/new-data-source-dialog.component';
 import {TreatmentPrefsComponent} from './treatment-prefs/treatment-prefs.component';
 import {RouterModule} from "@angular/router";
+import {GenerateShareTokenDialogComponent} from './data-source-prefs/generate-share-token-dialog/generate-share-token-dialog.component';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import {RouterModule} from "@angular/router";
         DataSourcePrefsComponent,
         NewDataSourceDialogComponent,
         TreatmentPrefsComponent,
+        GenerateShareTokenDialogComponent,
     ]
 })
 export class PreferencesModule {

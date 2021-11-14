@@ -9,6 +9,7 @@ import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
 import {AppIconService} from "./app-icon.service";
+import {AppUpdateService} from "./app-update.service";
 
 @Component({
     selector: 'app-root',
@@ -28,8 +29,11 @@ export class AppComponent implements OnInit, OnDestroy {
         private router: Router,
         private titleService: Title,
         private bglStatsService: BglStatsService,
-        private appIconService: AppIconService
-    ) { }
+        private appIconService: AppIconService,
+        appUpdateService: AppUpdateService
+    ) {
+        appUpdateService.registerForUpdateCheck();
+    }
 
     ngOnInit() {
         this.appIconService.registerIcons();

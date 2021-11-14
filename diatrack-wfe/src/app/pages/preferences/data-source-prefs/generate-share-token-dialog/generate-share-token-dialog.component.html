@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Generate share token</h2>
+<mat-dialog-content>
+  <ng-container *ngIf="shareToken$ | async; let shareToken; else loading">
+    <ng-container *ngIf="error; else success">
+      <p>Token could not be generated</p>
+    </ng-container>
+    <ng-template #success>
+      <p>A share token has been generated. You should now store this securely, as you cannot retrieve it after you close this dialog.</p>
+      <p>If you forget your token or need to change it, just generate another using the same procedure.</p>
+      <div class="token">
+        <span>{{shareToken}}</span>
+        <button mat-icon-button (click)="copyTokenToClipboard(shareToken)">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </ng-container>
+  <ng-template #loading>
+    <p>Generating token...</p>
+  </ng-template>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close color="accent">Close</button>
+</mat-dialog-actions>

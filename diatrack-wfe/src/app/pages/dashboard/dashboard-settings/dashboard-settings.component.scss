@@ -1,0 +1,36 @@
+@import '../../page-styles';
+
+.form-container {
+    max-height: 600px;
+
+    .tab-body {
+        padding-top: 5px;
+        padding-right: 20px;
+    }
+
+    .field {
+        padding: 10px 15px 10px 15px;
+
+        mat-radio-button, mat-checkbox {
+            padding: 4px 8px;
+        }
+
+        &.plot-options {
+            mat-checkbox {
+                display: block;
+            }
+        }
+
+        &.numeric mat-form-field {
+            width: 80px;
+        }
+    }
+
+    .slider-grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        align-items: center;
+        padding-top: 0;
+        padding-right: 0;
+    }
+}

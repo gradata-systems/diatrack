@@ -19,8 +19,8 @@ dexcomPoller:
   maxConcurrentRequests: 10
   maxQueryPeriodSeconds: 10
   bglQueryFrequencySeconds: 10
-  bglMaxWindowMinutes: 1440
-  bglMaxReadings: 288
+  bglMaxWindowMinutes: 1440 # 24 hours x 60 mins
+  bglMaxReadings: 288 # bglMaxWindowMinutes / 5 (Dexcom data interval)
 
 elastic:
   forwardingWorkers: 4

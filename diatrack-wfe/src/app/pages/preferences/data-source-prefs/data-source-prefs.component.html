@@ -13,6 +13,10 @@
     </div>
     <button mat-icon-button [matMenuTriggerFor]="contextMenu"><mat-icon>more_vert</mat-icon></button>
     <mat-menu #contextMenu="matMenu">
+      <button mat-menu-item (click)="generateShareToken(dataSource)">
+        <mat-icon>key</mat-icon>
+        <span>Generate share token</span>
+      </button>
       <button mat-menu-item (click)="onDeleteClicked(dataSource)">
         <mat-icon>delete</mat-icon>
         <span>Delete</span>

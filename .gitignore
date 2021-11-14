@@ -6,6 +6,5 @@
 **/bin
 .dockerignore
 .git
-.gitignore
 .vs
 .idea

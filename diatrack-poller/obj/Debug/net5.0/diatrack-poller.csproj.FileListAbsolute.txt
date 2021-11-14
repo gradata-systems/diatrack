@@ -1,10 +1,6 @@
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\diatrack-api.deps.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\diatrack-api.runtimeconfig.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\diatrack-api.runtimeconfig.dev.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_account_bgl_state.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_bgl_readings.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_users.json
-C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_bgl_state.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_activity_log.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_bgl_readings.json
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_users.json
@@ -75,3 +71,4 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\ref\diatra
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-poller.pdb
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-poller.genruntimeconfig.cache
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-poller.csproj.CopyComplete
+C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_state.json

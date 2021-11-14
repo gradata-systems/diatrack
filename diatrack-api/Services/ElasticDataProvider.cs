@@ -33,9 +33,8 @@ namespace Diatrack.Services
                 // Map configured index names to CLR types
                 connectionSettings.DefaultMappingFor<UserProfile>(m => m.IndexName(_elasticConfig.Indices.Users));
                 connectionSettings.DefaultMappingFor<BglReading>(m => m.IndexName(_elasticConfig.Indices.BglReadings));
-                connectionSettings.DefaultMappingFor<AccountBglState>(m => m.IndexName(_elasticConfig.Indices.AccountBglState));
                 connectionSettings.DefaultMappingFor<ActivityLogEntry>(m => m.IndexName(_elasticConfig.Indices.ActivityLog));
-                // TODO: Add other mappings here
+                connectionSettings.DefaultMappingFor<AccountStateRecord>(m => m.IndexName(_elasticConfig.Indices.AccountState));
 
                 NestClient = new ElasticClient(connectionSettings);
 

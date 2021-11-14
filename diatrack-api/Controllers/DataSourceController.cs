@@ -2,10 +2,8 @@
 using Diatrack.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Nest;
 using Serilog;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Diatrack.Controllers
@@ -66,9 +64,9 @@ namespace Diatrack.Controllers
         /// <summary>
         /// Generate a token for sharing this data source with another service.
         /// If a token already exists, it is replaced with this one.
+        /// The token is stored as a SHA1 hash.
         /// </summary>
-        /// <param name="accountId"></param>
-        /// <returns></returns>
+        /// <param name="accountId">Data source ID</param>
         [HttpGet("{accountId}/shareToken")]
         public async Task<ActionResult<string>> GenerateShareToken([FromRoute] string accountId)
         {

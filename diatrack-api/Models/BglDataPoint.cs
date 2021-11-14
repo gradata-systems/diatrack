@@ -7,6 +7,8 @@ namespace Diatrack.Models
     {
         public DateTime Timestamp { get; set; }
 
-        public StatsAggregate Stats { get; set; }
+        public ValueAggregate Average { get; set; }
+
+        public ValueAggregate MovingAverage { get; set; }
     }
 }

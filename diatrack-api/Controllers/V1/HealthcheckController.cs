@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nest;
 using System.Threading.Tasks;
 
-namespace Diatrack.Controllers
+namespace Diatrack.Controllers.V1
 {
     [Route("[controller]")]
     [ApiController]

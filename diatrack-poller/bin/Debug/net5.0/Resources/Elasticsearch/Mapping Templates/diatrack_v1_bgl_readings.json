@@ -6,7 +6,7 @@
   "data_stream": {},
   "template": {
     "settings": {
-      "number_of_replicas": 1,
+      "number_of_replicas": 2,
       "number_of_shards": 5,
       "refresh_interval": "1s"
     },

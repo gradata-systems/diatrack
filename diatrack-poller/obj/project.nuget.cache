@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "aekDWIWGh1QnXc8qOnHDiaKMoFbXMOY1tdp5fbnTLDkyK+4zkjslLldfw5MkUIg3Z+6zwvzHzcCLGv14DYQFjA==",
+  "dgSpecHash": "6i1Kt//AypJHdz4rJRYAYk9HsnJUi5oCS7hHhDXYap1F4FU4PdfTlnxVS+3quYJ+k8Bum2IOajAWWzYidg8ajA==",
   "success": true,
   "projectFilePath": "C:\\Users\\pkimb\\source\\repos\\diatrack\\diatrack-poller\\diatrack-poller.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,8 @@
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\5.0.8\\microsoft.aspnetcore.cryptography.internal.5.0.8.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.dataprotection\\5.0.8\\microsoft.aspnetcore.dataprotection.5.0.8.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.dataprotection.abstractions\\5.0.8\\microsoft.aspnetcore.dataprotection.abstractions.5.0.8.nupkg.sha512",
+    "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning\\5.0.0\\microsoft.aspnetcore.mvc.versioning.5.0.0.nupkg.sha512",
+    "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning.apiexplorer\\5.0.0\\microsoft.aspnetcore.mvc.versioning.apiexplorer.5.0.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.0.0\\microsoft.bcl.asyncinterfaces.1.0.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.csharp\\4.6.0\\microsoft.csharp.4.6.0.nupkg.sha512",
     "C:\\Users\\pkimb\\.nuget\\packages\\microsoft.dotnet.platformabstractions\\2.0.4\\microsoft.dotnet.platformabstractions.2.0.4.nupkg.sha512",

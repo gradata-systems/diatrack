@@ -317,3 +317,5 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\ref\diatrac
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.pdb
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\obj\Debug\net5.0\diatrack-tests.genruntimeconfig.cache
 C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_state.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+C:\Users\pkimb\source\repos\diatrack\diatrack-tests\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll

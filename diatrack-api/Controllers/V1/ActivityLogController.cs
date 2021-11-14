@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Diatrack.Controllers
+namespace Diatrack.Controllers.Nightscout
 {
     [Authorize]
     [Route("[controller]")]
@@ -26,7 +26,7 @@ namespace Diatrack.Controllers
             _userService = userService;
         }
 
-        [HttpPost("search")]
+        [HttpPost("Search")]
         public async Task<ActionResult<IEnumerable<ActivityLogEntry>>> GetEntries([FromBody] ActivityLogQueryParams queryParams)
         {
             UserProfile user = await _userService.GetUser();

@@ -72,3 +72,5 @@ C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-p
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-poller.genruntimeconfig.cache
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\obj\Debug\net5.0\diatrack-poller.csproj.CopyComplete
 C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Resources\Elasticsearch\Mapping Templates\diatrack_v1_account_state.json
+C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+C:\Users\pkimb\source\repos\diatrack\diatrack-poller\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll

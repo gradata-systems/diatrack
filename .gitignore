@@ -5,6 +5,6 @@
 **/obj
 **/bin
 .dockerignore
-.git
-.vs
-.idea
+.git/
+.vs/
+.idea/

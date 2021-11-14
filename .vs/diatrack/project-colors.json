@@ -20,7 +20,12 @@
       "ProjectGuid": "45a28a9e-2eda-44b1-afa4-7d06865d2b3c",
       "DisplayName": "diatrack-tests",
       "ColorIndex": 2
+    },
+    "9474c5f0-05af-4e44-91a3-102961fef506": {
+      "ProjectGuid": "9474c5f0-05af-4e44-91a3-102961fef506",
+      "DisplayName": "Solution Items",
+      "ColorIndex": 3
     }
   },
-  "NextColorIndex": 3
+  "NextColorIndex": 4
 }

@@ -29,6 +29,7 @@ namespace DiatrackPoller
                     services.AddHostedService<DexcomPollerService>();
 
                     services.AddOptions();
+                    services.Configure<AppConfiguration>(hostContext.Configuration.GetSection("App"));
                     services.Configure<ElasticConfiguration>(hostContext.Configuration.GetSection("Elastic"));
                     services.Configure<DexcomConfiguration>(hostContext.Configuration.GetSection("Dexcom"));
                     services.Configure<DexcomPollerConfiguration>(hostContext.Configuration.GetSection("DexcomPoller"));

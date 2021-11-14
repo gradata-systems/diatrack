@@ -1,6 +1,7 @@
 ﻿using Diatrack.Configuration;
 using Diatrack.Models;
 using Diatrack.Utilities;
+using Elasticsearch.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -25,6 +26,8 @@ namespace Diatrack.Services
         public Task<string> AddDexcomAccount(DataSource account);
         public Task RemoveDexcomAccount(DataSource account);
         public Task<UserProfile> UpdatePreferences(UserPreferences preferences);
+        public Task<string> GenerateShareToken(string accountId);
+        public Task<DataSource> GetDataSourceByShareToken(string token);
     }
 
     public class UserService : IUserService
@@ -32,15 +35,17 @@ namespace Diatrack.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ElasticClient _elasticClient;
+        private readonly AppConfiguration _appConfig;
         private readonly DexcomConfiguration _dexConfig;
 
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<DexcomConfiguration> dexConfig)
+        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig)
         {
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
             _elasticClient = elasticProvider.NestClient;
+            _appConfig = appConfig.Value;
             _dexConfig = dexConfig.Value;
         }
 
@@ -148,6 +153,9 @@ namespace Diatrack.Services
         /// </summary>
         public async Task<string> AddDexcomAccount(DataSource account)
         {
+            // Password is in plaintext, so encrypt it
+            await account.SetPasswordFromPlainText(account.Password, _appConfig);
+
             UserProfile user = await GetUser();
             string accountId = await GetDexcomAccountId(account);
 
@@ -183,7 +191,7 @@ namespace Diatrack.Services
             if (!user.DataSources.Any(a => a.LoginId == account.LoginId && a.RegionId == account.RegionId))
                 throw new AccountNotFoundException();
 
-            user.DataSources = user.DataSources.Where(a => 
+            user.DataSources = user.DataSources.Where(a =>
                 a.LoginId != account.LoginId ||
                 a.RegionId != account.RegionId
             ).ToArray();
@@ -202,18 +210,15 @@ namespace Diatrack.Services
             if (!string.IsNullOrEmpty(account.Id))
                 return account.Id;
 
-            // Password is in plaintext, so encrypt it
-            account.CryptoKey = Crypto.GenerateKey();
-            account.CryptoIv = Crypto.GenerateIv();
-            account.Password = Crypto.EncryptString(account.Password, account.CryptoKey, account.CryptoIv);
+            string plainTextPassword = await account.GetPlainTextPassword(_appConfig);
 
             // Not cached, so query the Dexcom API for the account ID
-            HttpRequestMessage request = new(HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
+            HttpRequestMessage request = new(System.Net.Http.HttpMethod.Post, account.BuildRegionalUrl(_dexConfig.GetAccountEndpoint, _dexConfig.Regions));
             request.Content = JsonContent.Create(new
             {
                 ApplicationId = _dexConfig.ApplicationId,
                 AccountName = account.LoginId,
-                Password = account.GetPlainTextPassword()
+                Password = plainTextPassword
             });
 
             using (HttpClient httpClient = _httpClientFactory.CreateClient())
@@ -270,6 +275,72 @@ namespace Diatrack.Services
         {
             return (await GetUser()).DataSources.Select(d => d.Id).Distinct().ToArray();
         }
+
+        /// <summary>
+        /// Create and assign a new token to the data source matching the specified account ID,
+        /// belonging to the signed-in user.
+        /// 
+        /// If a token is already assigned, it is replaced.
+        /// </summary>
+        public async Task<string> GenerateShareToken(string accountId)
+        {
+            UserProfile user = await GetUser();
+            DataSource dataSource = user.DataSources.FirstOrDefault(d => d.Id == accountId);
+
+            if (dataSource == null)
+            {
+                throw new AccountNotFoundException();
+            }
+
+            // Generate a random, URL-safe base-64 string
+            string shareToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                .Replace('+', '-')
+                .Replace('/', '_')
+                .Replace("=", "");
+
+            // Hash the token and persist the hash
+            string hashedToken = Crypto.Sha1Hash(shareToken);
+            dataSource.ShareToken = hashedToken;
+
+            UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u
+                .DocAsUpsert()
+                .Doc(user)
+                .Refresh(Refresh.WaitFor)
+            );
+
+            if (result.IsValid)
+            {
+                Log.Information("Generated share token for {UserId}, datasource {LoginId} in region {RegionId}", user.Id, dataSource.LoginId, dataSource.RegionId);
+                return shareToken;
+            }
+            else
+            {
+                throw new Exception("Share token could not be generated");
+            }
+        }
+
+        /// <summary>
+        /// Find the first user profile containing a data source with the specified share token
+        /// </summary>
+        public async Task<DataSource> GetDataSourceByShareToken(string token)
+        {
+            // Get the first data source that matches the provided token
+            ISearchResponse<UserProfile> userProfileResponse = await _elasticClient.SearchAsync<UserProfile>(s => s
+                .Size(1)
+                .Query(q => q
+                    .Term(new Field("dataSource.shareToken"), token)
+                )
+            );
+
+            if (!userProfileResponse.IsValid || userProfileResponse.Documents.Count == 0)
+            {
+                Log.Error("Token {Token} could not be matched against any data sources", token, userProfileResponse);
+                throw new InvalidTokenException();
+            }
+
+            // Get the first DataSource that matches the provided token
+            return userProfileResponse.Documents.First().DataSources.First(ds => ds.ShareToken == token);
+        }
     }
 
     public class UserClaims
@@ -283,5 +354,8 @@ namespace Diatrack.Services
     { }
 
     public class AccountNotFoundException : Exception
+    { }
+
+    public class InvalidTokenException : Exception
     { }
 }

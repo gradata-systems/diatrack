@@ -1,11 +1,13 @@
 import {Inject, Injectable} from '@angular/core';
 import {BASE_PATH} from "./variables";
 import {HttpClient} from "@angular/common/http";
+import {DateTime, Duration} from "luxon";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppConfigService {
+    readonly appUpdateCheckInterval = Duration.fromObject({minutes: 10});
     readonly autoRefreshEnabled = true;
     readonly refreshInterval = 10000;
     readonly formDebounceInterval = 500;

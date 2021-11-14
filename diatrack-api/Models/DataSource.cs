@@ -1,17 +1,27 @@
 ﻿using Diatrack.Configuration;
 using Diatrack.Utilities;
 using Elasticsearch.Net;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Diatrack.Models
 {
     public class DataSource
     {
+        /// <summary>
+        /// Unique ID of the user's data source account
+        /// </summary>
         public string Id { get; set; }
 
+        /// <summary>
+        /// Data provider name (e.g. Dexcom)
+        /// </summary>
         [StringEnum]
         [Required]
         public DataSourceType? Type { get; set; }
@@ -22,9 +32,15 @@ namespace Diatrack.Models
         [Required]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Geographic region of the server the account is held in, if applicable
+        /// </summary>
         [Required]
         public string RegionId { get; set; }
 
+        /// <summary>
+        /// User's data provider account ID (e.g. Dexcom login)
+        /// </summary>
         [Required]
         public string LoginId { get; set; }
 
@@ -35,19 +51,16 @@ namespace Diatrack.Models
         public string Password { get; set; }
 
         /// <summary>
-        /// Random key and IV to use for encrypting the account password
+        /// A unique token for sharing data from this account with other services, like Sugarmate
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string CryptoKey { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string CryptoIv { get; set; }
+        public string ShareToken { get; set; }
 
         [JsonIgnore]
         public bool IsValid
         {
             get =>
-                !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(RegionId) && !string.IsNullOrEmpty(LoginId) &&
-                !string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(CryptoKey) && !string.IsNullOrEmpty(CryptoIv);
+                !string.IsNullOrEmpty(Id) && !string.IsNullOrEmpty(RegionId) && !string.IsNullOrEmpty(LoginId) && !string.IsNullOrEmpty(Password);
         }
 
         /// <summary>
@@ -56,23 +69,74 @@ namespace Diatrack.Models
         public void Sanitise()
         {
             Password = default;
-            CryptoKey = default;
-            CryptoIv = default;
+            ShareToken = default;
+        }
+
+        /// <summary>
+        /// Set the account password by encrypting a provided string
+        /// </summary>
+        public async Task SetPasswordFromPlainText(string plainText, AppConfiguration appConfig)
+        {
+            if (string.IsNullOrEmpty(plainText))
+            {
+                Password = String.Empty;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(appConfig.EncryptionKey))
+            {
+                Password = Crypto.EncryptString(plainText, Convert.FromBase64String(appConfig.EncryptionKey));
+            }
+            else if (!string.IsNullOrEmpty(appConfig.EncryptionKeyFile))
+            {
+                try
+                {
+                    byte[] cryptoKey = await GetEncryptionKeyFromFile(appConfig.EncryptionKeyFile);
+                    Password = Crypto.EncryptString(plainText, cryptoKey);
+                }
+                catch (Exception ex)
+                {
+                    Password = null;
+                    Log.Error(ex, "Failed to decrypt password for user {LoginId} in region {RegionId}", LoginId, RegionId);
+                    throw;
+                }
+            }
+            else
+            {
+                throw new Exception("Encryption key not specified");
+            }
         }
 
         /// <summary>
         /// Get the decrypted account password
         /// </summary>
-        public string GetPlainTextPassword()
+        public async Task<string> GetPlainTextPassword(AppConfiguration appConfig)
         {
-            try
+            if (!string.IsNullOrEmpty(appConfig.EncryptionKey))
             {
-                return Crypto.DecryptString(Password, CryptoKey, CryptoIv);
+                return Crypto.DecryptString(Password, Convert.FromBase64String(appConfig.EncryptionKey));
             }
-            catch (ArgumentNullException)
+            else if (!string.IsNullOrEmpty(appConfig.EncryptionKeyFile))
             {
-                return string.Empty;
+                try
+                {
+                    byte[] cryptoKey = await GetEncryptionKeyFromFile(appConfig.EncryptionKeyFile);
+                    return Crypto.DecryptString(Password, cryptoKey);
+                }
+                catch (ArgumentNullException)
+                {
+                    return string.Empty;
+                }
             }
+            else
+            {
+                throw new Exception("Encryption key not specified");
+            }
+        }
+
+        private static async Task<byte[]> GetEncryptionKeyFromFile(string encryptionKeyFile)
+        {
+            return await File.ReadAllBytesAsync(encryptionKeyFile);
         }
 
         /// <summary>

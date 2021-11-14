@@ -60,5 +60,26 @@ namespace Diatrack.Controllers
                 return Problem($"Dexcom account could not be removed. {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Generate a token for sharing this data source with another service.
+        /// If a token already exists, it is replaced with this one.
+        /// The token is stored as a SHA1 hash.
+        /// </summary>
+        /// <param name="accountId">Data source ID</param>
+        [HttpGet("{accountId}/shareToken")]
+        public async Task<ActionResult<string>> GenerateShareToken([FromRoute] string accountId)
+        {
+            try
+            {
+                string shareToken = await _userService.GenerateShareToken(accountId);
+                return Ok(shareToken);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Share token could not be generated for account {AccountId}", accountId);
+                return Problem($"Share token could not be generated. {ex.Message}");
+            }
+        }
     }
 }

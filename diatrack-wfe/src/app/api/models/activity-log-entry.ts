@@ -33,11 +33,3 @@ export enum ActivityLogEntryCategory
     Exercise = 'exercise',
     Other = 'other'
 }
-
-export enum TimeUnit
-{
-    Second = 'second',
-    Minute = 'minute',
-    Hour = 'hour',
-    Day = 'day'
-}

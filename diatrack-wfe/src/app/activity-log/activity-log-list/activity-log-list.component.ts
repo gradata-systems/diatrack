@@ -1,13 +1,13 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivityLogService} from "../activity-log.service";
-import {merge, Observable, Subject} from "rxjs";
+import {merge, Observable, of, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";
 import {DateTime} from "luxon";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {UserService} from "../../api/user.service";
-import {map, mergeMap, takeUntil, tap} from "rxjs/operators";
+import {catchError, map, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
@@ -20,7 +20,13 @@ import {DEFAULTS} from "../../defaults";
     styleUrls: ['./activity-log-list.component.scss']
 })
 export class ActivityLogListComponent implements OnInit, OnDestroy {
-    @Input() dateFrom?: DateTime;
+    private readonly dateFromChanged$ = new Subject<DateTime | undefined>();
+    private _dateFrom: DateTime | undefined;
+    get dateFrom() { return this._dateFrom; }
+    @Input() set dateFrom(value: DateTime | undefined) {
+        this._dateFrom = value;
+        this.dateFromChanged$.next(value);
+    }
 
     readonly logEntries$: Subject<ActivityLogEntry[]> = new Subject<ActivityLogEntry[]>();
     readonly destroying$ = new Subject<boolean>();
@@ -42,20 +48,28 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
     ngOnInit() {
         merge(
             this.activityLogService.refresh$,
-            this.activityLogService.changed$
+            this.activityLogService.changed$,
+            this.dateFromChanged$
         ).pipe(
             takeUntil(this.destroying$),
+            throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
             mergeMap(() => {
                 this.loading = true;
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: this.dateFrom ?? undefined
-                }).pipe(tap(() => {
-                    this.loading = false;
-                }));
+                    fromDate: this.dateFrom
+                }).pipe(
+                    tap((entries) => {
+                        this.loading = false;
+                    }),
+                    catchError(() => of(undefined))
+                );
             })
         ).subscribe(entries => {
-            this.logEntries$.next(entries);
+            if (entries !== undefined) {
+                // Only update the list if the query succeeded
+                this.logEntries$.next(entries);
+            }
         }, error => {
             this.snackBar.open('Error occurred when querying the activity log');
         });

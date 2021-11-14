@@ -14,19 +14,29 @@
 // that you are using.
 @include mat.all-component-themes($diatrack-theme);
 
+html {
+    min-height: calc(100% + env(safe-area-inset-top));
+}
+
 html, body {
-    height: 100%;
     overflow-x: hidden;
+    background-color: $app-background-color;
 }
 
 body {
-    position: relative;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-color: mat.get-color-from-palette($diatrack-primary);
     color: mat.get-contrast-color-from-palette($diatrack-primary, 900);
+
+    & > .app {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
 }
 
 div {
@@ -91,4 +101,11 @@ mat-icon.context-help {
 
 mat-icon.light > svg {
     fill: rgba(255, 255, 255, 0.9);
+}
+
+// Use the minimum width necessary to display tab headings
+mat-tab-group.compact {
+    .mat-tab-label {
+        min-width: auto;
+    }
 }

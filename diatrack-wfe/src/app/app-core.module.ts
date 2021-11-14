@@ -19,6 +19,9 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {A11yModule} from "@angular/cdk/a11y";
+import {ClipboardModule} from "@angular/cdk/clipboard";
+import {MatSliderModule} from "@angular/material/slider";
+import {MatTabsModule} from "@angular/material/tabs";
 
 @NgModule({
     imports: [
@@ -43,6 +46,9 @@ import {A11yModule} from "@angular/cdk/a11y";
         MatCheckboxModule,
         MatProgressSpinnerModule,
         MatProgressBarModule,
+        MatSliderModule,
+        MatTabsModule,
+        ClipboardModule,
         A11yModule,
         FormsModule,
         ReactiveFormsModule

@@ -1,5 +1,4 @@
 using Diatrack.Configuration;
-using Diatrack.Models;
 using Diatrack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Diatrack
@@ -33,6 +31,8 @@ namespace Diatrack
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAdB2C"));
 
+            services.AddResponseCompression();
+
             services
                 .AddControllers()
                 .AddJsonOptions(opts =>
@@ -49,6 +49,7 @@ namespace Diatrack
             });
 
             services.AddOptions();
+            services.Configure<AppConfiguration>(Configuration.GetSection("App"));
             services.Configure<DexcomConfiguration>(Configuration.GetSection("Dexcom"));
             services.Configure<ElasticConfiguration>(Configuration.GetSection("Elastic"));
             services.Configure<AzureAdB2CConfiguration>(Configuration.GetSection("AzureAdB2C"));
@@ -57,6 +58,8 @@ namespace Diatrack
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

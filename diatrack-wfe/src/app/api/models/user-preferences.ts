@@ -1,3 +1,6 @@
+import {MovingAverageParams} from "./moving-average-params";
+import {HistogramProfileType} from "../../pages/dashboard/dashboard-settings/histogram-profiles";
+
 export interface UserPreferences {
     treatment?: TreatmentPreferences;
     dashboard?: DashboardPreferences;
@@ -15,9 +18,10 @@ export interface TreatmentPreferences {
 
 export interface DashboardPreferences {
     bglStatsHistogram: {
+        profileType: HistogramProfileType;
+        plotHeight?: number;
         plotColour: PlotColour;
-        timeRangeHours: number;
-        buckets: number;
+        movingAverage?: MovingAverageParams;
         activityLog: boolean;
         dataLabels: boolean;
     }

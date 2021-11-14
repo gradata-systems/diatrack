@@ -21,6 +21,8 @@ $diatrack-theme: mat.define-dark-theme((
 ));
 
 // Common styles
+$app-background-color: #2b2b2b;
 $heading-1-color: #e37670;
 $heading-2-color: mat.get-color-from-palette($diatrack-accent, 800);
 $heading-3-color: mat.get-color-from-palette($diatrack-accent, 900);
+$status-bar-height: 8px;

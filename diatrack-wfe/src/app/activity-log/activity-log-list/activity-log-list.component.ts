@@ -77,7 +77,7 @@ export class ActivityLogListComponent extends DataSource<ActivityLogSearchHit> i
 
         if (this.listRange) {
             startPage = Math.floor(this.listRange.start / this.pageSize);
-            endPage = Math.floor((this.listRange.end - 1) / this.pageSize);
+            endPage = Math.max(Math.floor((this.listRange.end - 1) / this.pageSize), 1);
         } else {
             startPage = 0;
             endPage = 1;

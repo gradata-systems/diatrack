@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ActivityLogService} from "../activity-log.service";
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ActivityLogQueryParams, ActivityLogSearchHit, ActivityLogService} from "../activity-log.service";
 import {merge, Observable, of, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -17,19 +17,15 @@ import {DEFAULTS} from "../../defaults";
 @Component({
     selector: 'app-activity-log-list',
     templateUrl: './activity-log-list.component.html',
-    styleUrls: ['./activity-log-list.component.scss']
+    styleUrls: ['./activity-log-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ActivityLogListComponent implements OnInit, OnDestroy {
-    private readonly dateFromChanged$ = new Subject<DateTime | undefined>();
-    private _dateFrom: DateTime | undefined;
-    get dateFrom() { return this._dateFrom; }
-    @Input() set dateFrom(value: DateTime | undefined) {
-        this._dateFrom = value;
-        this.dateFromChanged$.next(value);
-    }
+export class ActivityLogListComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() options?: ActivityLogQueryParams;
 
-    readonly logEntries$: Subject<ActivityLogEntry[]> = new Subject<ActivityLogEntry[]>();
+    readonly logEntries$: Subject<ActivityLogSearchHit[]> = new Subject<ActivityLogSearchHit[]>();
     readonly destroying$ = new Subject<boolean>();
+    private readonly changed$ = new Subject<void>();
     loading = false;
 
     readonly activityLogEntryCategory = ActivityLogEntryCategory;
@@ -49,7 +45,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         merge(
             this.activityLogService.refresh$,
             this.activityLogService.changed$,
-            this.dateFromChanged$
+            this.changed$
         ).pipe(
             takeUntil(this.destroying$),
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
@@ -57,7 +53,7 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
                 this.loading = true;
                 return this.activityLogService.searchEntries({
                     size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: this.dateFrom
+                    ...this.options
                 }).pipe(
                     tap((entries) => {
                         this.loading = false;
@@ -82,6 +78,10 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         });
 
         this.activityLogService.triggerRefresh();
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        this.changed$.next();
     }
 
     ngOnDestroy() {

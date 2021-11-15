@@ -1,8 +1,51 @@
 <div class="page">
   <div class="content">
-    <h1>Activity log</h1>
     <div class="body">
-      <app-activity-log-list></app-activity-log-list>
+      <form [formGroup]="formGroup">
+        <div class="category">
+          <mat-form-field>
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option value="">Any</mat-option>
+              <mat-option *ngFor="let category of categories" [value]="category[0]">
+                {{category[1].name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="filter-controls">
+          <div class="filter-control search">
+            <div class="search-container">
+              <mat-form-field>
+                <input matInput type="text" placeholder="Search" formControlName="searchTerm" cdkFocusInitial>
+              </mat-form-field>
+              <mat-icon>search</mat-icon>
+            </div>
+          </div>
+          <div class="filter-control">
+            <mat-form-field>
+              <mat-label>Sort by</mat-label>
+              <mat-select formControlName="sortField">
+                <mat-option value="@created">Date created</mat-option>
+                <mat-option value="category">Category</mat-option>
+                <mat-option value="bgl">Blood glucose level</mat-option>
+                <mat-option value="properties.foodGrams">Food amount (grams)</mat-option>
+                <mat-option value="properties.insulinUnits">Insulin units</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="filter-control">
+            <mat-form-field>
+              <mat-label>Sort direction</mat-label>
+              <mat-select formControlName="sortOrder">
+                <mat-option [value]="sortOrder.Ascending">Ascending</mat-option>
+                <mat-option [value]="sortOrder.Descending">Descending</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </form>
+      <app-activity-log-list [options]="activityLogOptions"></app-activity-log-list>
     </div>
   </div>
 </div>

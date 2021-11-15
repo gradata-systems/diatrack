@@ -1,1 +1,64 @@
 @import '../page-styles';
+@import '../../media-rules';
+
+.category {
+    display: block;
+
+    @media (max-device-width: $media-phone-portrait-breakpoint) {
+        display: none;
+    }
+}
+
+.filter-controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 10px;
+
+    .filter-control {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        @media (max-device-width: $media-phone-portrait-breakpoint) {
+            display: none;
+        }
+
+        &.search {
+            display: flex;
+            flex-grow: 1;
+
+            .search-container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                position: relative;
+
+                @media (max-device-width: $media-phone-portrait-breakpoint) {
+                    width: 100%;
+                }
+
+                mat-form-field {
+                    width: 100%;
+                }
+
+                mat-icon {
+                    position: absolute;
+                    right: 0;
+                    font-size: 1.5em;
+                    opacity: 0.6;
+                }
+            }
+        }
+    }
+}
+
+// Disable horizontal padding on mat-list-item elements
+app-activity-log-list {
+    ::ng-deep mat-list-item {
+        .mat-list-item-content {
+            padding: 0 !important;
+        }
+    }
+}

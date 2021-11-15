@@ -33,3 +33,9 @@ export enum ActivityLogEntryCategory
     Exercise = 'exercise',
     Other = 'other'
 }
+
+export enum SortOrder
+{
+    Ascending = 'ascending',
+    Descending = 'descending'
+}

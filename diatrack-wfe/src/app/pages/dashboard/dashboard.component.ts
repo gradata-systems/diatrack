@@ -7,7 +7,7 @@ import {DashboardService} from "./dashboard.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
 import {AppConfigService} from "../../api/app-config.service";
-import {ActivityLogService} from "../../activity-log/activity-log.service";
+import {ActivityLogQueryParams, ActivityLogService} from "../../activity-log/activity-log.service";
 import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
 import {DashboardSettingsService} from "./dashboard-settings/dashboard-settings.service";
 

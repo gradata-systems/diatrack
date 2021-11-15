@@ -101,6 +101,11 @@ export interface ActivityLogQueryParams
     size: number;
 
     /**
+     * Offset index, for use when scrolling
+     */
+    from?: number;
+
+    /**
      * Request log entries occurring on or after this date, in local time
      */
     fromDate?: DateTime;

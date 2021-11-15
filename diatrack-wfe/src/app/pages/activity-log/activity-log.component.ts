@@ -1,19 +1,22 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivityLogQueryParams, ActivityLogService} from "../../activity-log/activity-log.service";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {SortOrder} from "../../api/models/activity-log-entry";
 import {debounceTime, takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {AppConfigService} from "../../api/app-config.service";
+import {PageService} from "../page.service";
 
 @Component({
     selector: 'app-activity-log',
     templateUrl: './activity-log.component.html',
-    styleUrls: ['./activity-log.component.scss']
+    styleUrls: ['./activity-log.component.scss'],
+    providers: [PageService],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityLogPageComponent implements OnInit, OnDestroy {
 
-    activityLogOptions?: ActivityLogQueryParams;
+    readonly activityLogOptions$: BehaviorSubject<ActivityLogQueryParams | undefined> = new BehaviorSubject<ActivityLogQueryParams | undefined>(undefined);
     readonly formGroup: FormGroup;
 
     readonly categories = Array.from(this.activityLogService.activityLogCategories);
@@ -23,6 +26,7 @@ export class ActivityLogPageComponent implements OnInit, OnDestroy {
 
     constructor(
         public activityLogService: ActivityLogService,
+        public pageService: PageService,
         private appConfigService: AppConfigService,
         fb: FormBuilder
     ) {
@@ -36,10 +40,10 @@ export class ActivityLogPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.formGroup.valueChanges.pipe(
-            takeUntil(this.destroying$),
-            debounceTime(this.appConfigService.formDebounceInterval)
+            debounceTime(this.appConfigService.formDebounceInterval),
+            takeUntil(this.destroying$)
         ).subscribe(value => {
-            this.activityLogOptions = value;
+            this.activityLogOptions$.next(value);
         });
     }
 

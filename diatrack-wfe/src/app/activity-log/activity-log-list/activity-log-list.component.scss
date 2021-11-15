@@ -2,7 +2,16 @@
 @import '../../theme';
 
 .log-list {
+    height: 100%;
+
+    .log-entry-viewport {
+        height: 100%;
+        overflow-y: auto;
+    }
+
     mat-list {
+        height: 100%;
+
         mat-list-item {
             height: auto;
             margin-bottom: 8px;

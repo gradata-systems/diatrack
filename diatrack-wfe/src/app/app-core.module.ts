@@ -22,6 +22,7 @@ import {A11yModule} from "@angular/cdk/a11y";
 import {ClipboardModule} from "@angular/cdk/clipboard";
 import {MatSliderModule} from "@angular/material/slider";
 import {MatTabsModule} from "@angular/material/tabs";
+import {ScrollingModule} from "@angular/cdk/scrolling";
 
 @NgModule({
     imports: [
@@ -49,6 +50,7 @@ import {MatTabsModule} from "@angular/material/tabs";
         MatSliderModule,
         MatTabsModule,
         ClipboardModule,
+        ScrollingModule,
         A11yModule,
         FormsModule,
         ReactiveFormsModule

@@ -1,4 +1,5 @@
 <div class="page">
+  <mat-progress-bar class="page-loading" *ngIf="pageService.loading$ | async" mode="indeterminate" color="accent"></mat-progress-bar>
   <div class="content">
     <div class="body">
       <form [formGroup]="formGroup">
@@ -45,7 +46,7 @@
           </div>
         </div>
       </form>
-      <app-activity-log-list [options]="activityLogOptions"></app-activity-log-list>
+      <app-activity-log-list [options]="activityLogOptions$ | async"></app-activity-log-list>
     </div>
   </div>
 </div>

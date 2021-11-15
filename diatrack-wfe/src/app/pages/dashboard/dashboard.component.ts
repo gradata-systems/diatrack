@@ -7,16 +7,18 @@ import {DashboardService} from "./dashboard.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
 import {AppConfigService} from "../../api/app-config.service";
-import {ActivityLogQueryParams, ActivityLogService} from "../../activity-log/activity-log.service";
+import {ActivityLogService} from "../../activity-log/activity-log.service";
 import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
 import {DashboardSettingsService} from "./dashboard-settings/dashboard-settings.service";
+import {PageService} from "../page.service";
 
 @Component({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss'],
     providers: [
-        DashboardSettingsService
+        DashboardSettingsService,
+        PageService
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -47,8 +49,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         ).pipe(
             filter(() => this.userService.loggedIn),
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
-            takeUntil(this.destroying$),
-            mergeMap(() => this.updateView())
+            mergeMap(() => this.updateView()),
+            takeUntil(this.destroying$)
         ).subscribe();
 
         this.dashboardService.triggerRefresh();

@@ -59,10 +59,10 @@ export class DashboardSettingsService implements OnDestroy {
         // If a setting is changed via the UI, act on the change and store and updated prefs in the background
         this.settingsForm.valueChanges.pipe(
             debounceTime(this.appConfigService.formDebounceInterval),
-            takeUntil(this.destroying$),
             mergeMap((dashboardPrefs: DashboardPreferences) => this.userService.savePreferences({
                 dashboard: dashboardPrefs
-            }))
+            })),
+            takeUntil(this.destroying$)
         ).subscribe(dashboardPrefs => {
             this.updateDashboardSettings(dashboardPrefs.dashboard);
         });

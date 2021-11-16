@@ -50,11 +50,9 @@ export class ActivityLogListComponent extends DataSource<ActivityLogSearchHit> i
     connect(collectionViewer: CollectionViewer): Observable<readonly (ActivityLogSearchHit)[]> {
         merge(
             collectionViewer.viewChange.pipe(
-                mergeMap(listRange => {
+                tap(listRange => {
                     this.listRange = listRange;
-                    return this.fetchPages();
-                }),
-                takeUntil(this.destroying$)
+                })
             ),
             this.activityLogService.refresh$,
             this.activityLogService.changed$,
@@ -64,6 +62,8 @@ export class ActivityLogListComponent extends DataSource<ActivityLogSearchHit> i
             mergeMap(() => this.fetchPages()),
             takeUntil(this.destroying$)
         ).subscribe();
+
+        this.fetchPages().subscribe();
 
         return this.logEntries$;
     }
@@ -84,7 +84,7 @@ export class ActivityLogListComponent extends DataSource<ActivityLogSearchHit> i
         }
 
         if (endPage - startPage <= 0) {
-            return of([]);
+            return of();
         } else {
             this.pageService.isLoading(true);
             return range(startPage, endPage - startPage).pipe(

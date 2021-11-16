@@ -1,6 +1,10 @@
 @import '../page-styles';
 @import '../../media-rules';
 
+.body {
+    flex-direction: column;
+}
+
 .category {
     display: block;
 

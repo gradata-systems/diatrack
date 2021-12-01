@@ -18,8 +18,6 @@ namespace Diatrack.Models
         [Date(Name = "@received")]
         public DateTime Received { get; set; }
 
-        public int TrendId { get; set; }
-
         [StringEnum]
         public BglTrend Trend { get; set; }
 
@@ -42,7 +40,7 @@ namespace Diatrack.Models
 
     public class BglReadingJsonConverter : JsonConverter<BglReading>
     {
-        private static readonly Regex _datePattern = new(@"^/Date\((\d+)\)/$", RegexOptions.Compiled);
+        private static readonly Regex _datePattern = new(@"^/?Date\((\d+)\)/?$", RegexOptions.Compiled);
 
         public override BglReading Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
@@ -80,10 +78,18 @@ namespace Diatrack.Models
                         }
                         break;
                     case "Trend":
-                        if (reader.TryGetInt32(out int trend))
+                        // Trend can either be an ID or string, depending on region
+                        try
                         {
-                            reading.TrendId = trend;
-                            reading.Trend = (BglTrend)trend;
+                            if (reader.TryGetInt32(out int trendId))
+                            {
+                                reading.Trend = (BglTrend)trendId;
+                            }
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            string trend = reader.GetString();
+                            reading.Trend = (BglTrend)Enum.Parse(typeof(BglTrend), trend);
                         }
                         break;
                     case "Value":

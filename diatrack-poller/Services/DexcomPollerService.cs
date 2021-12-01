@@ -24,28 +24,39 @@ namespace DiatrackPoller.Services
     {
         private readonly AppConfiguration _appConfig;
         private readonly DexcomConfiguration _dexConfig;
-        private readonly DexcomPollerConfiguration _dexPollerConfig;
+        private readonly DexcomPollerConfiguration _pollerConfig;
         private readonly ElasticClient _elasticClient;
+        private readonly IHealthService _healthService;
 
         private readonly HttpClient _httpClient;
         private SemaphoreSlim _semaphore;
 
         private readonly IDictionary<string, string> _accountSessions = new Dictionary<string, string>();
         private IDictionary<string, AccountStateRecord> _accountState = new Dictionary<string, AccountStateRecord>();
+        private IDictionary<string, DateTime> _accountLastQueried = new Dictionary<string, DateTime>();
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public DexcomPollerService(IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig, IOptions<DexcomPollerConfiguration> dexPollerConfig, ElasticDataProvider elasticProvider)
+        public DexcomPollerService(
+            IOptions<AppConfiguration> appConfig,
+            IOptions<DexcomConfiguration> dexConfig,
+            IOptions<DexcomPollerConfiguration> dexPollerConfig,
+            ElasticDataProvider elasticProvider,
+            IHealthService healthService)
             :base(TimeSpan.FromSeconds(dexPollerConfig.Value.BglQueryFrequencySeconds))
         {
             _appConfig = appConfig.Value;
             _dexConfig = dexConfig.Value;
-            _dexPollerConfig = dexPollerConfig.Value;
+            _pollerConfig = dexPollerConfig.Value;
             _elasticClient = elasticProvider.NestClient;
+            _healthService = healthService;
 
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient()
+            {
+                Timeout = TimeSpan.FromSeconds(_pollerConfig.QueryTimeoutSeconds)
+            };
 
             // Set the maximum number of concurrent HTTP requests for each Dexcom server
-            ServicePointManager.DefaultConnectionLimit = _dexPollerConfig.MaxConcurrentRequests;
+            ServicePointManager.DefaultConnectionLimit = _pollerConfig.MaxConcurrentRequests;
         }
 
         protected override async Task DoWork(CancellationToken cancellationToken)
@@ -59,14 +70,13 @@ namespace DiatrackPoller.Services
         /// Retrieve the BGL readings for all accounts. This routine occurs asynchronously and returns BGL results one account at a time,
         /// allowing them to be batched and pushed to Elasticsearch.
         /// </summary>
-        /// <returns></returns>
         private async Task GetBglReadings(CancellationToken cancellationToken)
         {
             // Get the last BGL reading from each account ID, so we know when to start querying from
             _accountState = await GetAccountState();
 
             // Limit concurrent API requests
-            _semaphore = new SemaphoreSlim(_dexPollerConfig.MaxConcurrentRequests, _dexPollerConfig.MaxConcurrentRequests);
+            _semaphore = new SemaphoreSlim(_pollerConfig.MaxConcurrentRequests, _pollerConfig.MaxConcurrentRequests);
 
             // Get all unique Dexcom logins
             IDictionary<string, DataSource> accounts = await GetDexcomAccounts();
@@ -74,9 +84,21 @@ namespace DiatrackPoller.Services
             // Accumulate BGL query tasks
             List<Task> tasks = new();
 
-            // For each account, find out its id (if not cached) and poll for CGM data
+            // For each account, find out its ID (if not cached) and poll for CGM data
             Stopwatch stopwatch = new();
             stopwatch.Start();
+
+            // Mark the service as healthy
+            _healthService.RegisterBglQuery();
+
+            if (accounts.Count == 0)
+            {
+                Log.Information("No accounts to query");
+                return;
+            }
+
+            Log.Information($"Found {accounts.Count} accounts to query");
+
             foreach (DataSource account in accounts.Values)
             {
                 try
@@ -100,8 +122,46 @@ namespace DiatrackPoller.Services
                         continue;
                     }
 
+                    if (accountState.LastReceived.HasValue)
+                    {
+                        TimeSpan timeSinceLastReading = DateTime.UtcNow - accountState.LastReceived.Value;
+
+                        // If we received a BGL reading recently, don't perform the query
+                        if (timeSinceLastReading.TotalSeconds < _pollerConfig.BglAccountRefreshIntervalSeconds)
+                        {
+                            Log.Debug("Skipped account {LoginId} as BGL was received {Seconds} seconds ago", account.LoginId, timeSinceLastReading.TotalSeconds);
+                            continue;
+                        }
+                    }
+
+                    if (_accountLastQueried.TryGetValue(account.Id, out DateTime lastQueryTime))
+                    {
+                        TimeSpan timeSinceLastQuery = DateTime.Now - lastQueryTime;
+
+                        if (accountState.LastReceived.HasValue)
+                        {
+                            // If no BGL reading has been received since 2 x refresh interval, query at a reduced rate
+                            TimeSpan timeSinceLastReading = DateTime.UtcNow - accountState.LastReceived.Value;
+                            if (timeSinceLastReading.TotalSeconds > 2 * _pollerConfig.BglAccountRefreshIntervalSeconds &&
+                                timeSinceLastQuery.TotalSeconds < _pollerConfig.BglStaleAccountQueryFrequencySeconds)
+                            {
+                                Log.Debug("Skipped account {LoginId} as no BGL received since {LastReceived}", account.LoginId, accountState.LastReceived.Value);
+                                continue;
+                            }
+                        }
+                        else if (timeSinceLastQuery.TotalSeconds < _pollerConfig.BglStaleAccountQueryFrequencySeconds)
+                        {
+                            // No BGL ever received and we've already tried querying once
+                            Log.Debug("Skipped account {LoginId} as no BGL received", account.LoginId);
+                            continue;
+                        }
+                    }
+
                     tasks.Add(Task.Run(async () =>
                     {
+                        // Record the fact we're performing a query so the service is recognised as healthy
+                        _healthService.RegisterBglQuery();
+
                         string sessionId;
                         IEnumerable<BglReading> bglReadings;
                         try
@@ -136,8 +196,8 @@ namespace DiatrackPoller.Services
 
                         IEnumerable<BglReading> readings = bglReadings.Select(reading =>
                         {
-                        // Attribute the reading to the user's account
-                        reading.AccountId = account.Id;
+                            // Attribute the reading to the user's account
+                            reading.AccountId = account.Id;
 
                             return reading;
                         });
@@ -163,13 +223,15 @@ namespace DiatrackPoller.Services
                                 Log.Error(ex, "Failed to post BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
                             }
                         }
-
-                        _semaphore.Release();
                     }, cancellationToken));
                 }
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Unexpected error occurred when querying account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                }
+                finally
+                {
+                    _semaphore.Release();
                 }
             }
 
@@ -178,18 +240,18 @@ namespace DiatrackPoller.Services
                 Task.WaitAll(tasks.ToArray(), cancellationToken);
 
                 stopwatch.Stop();
-                Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {tasks.Count} accounts");
+                Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds:0.##} seconds querying {tasks.Count} accounts");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Unexpected error occurred when querying BGL data");
+                Log.Error(ex, "Unexpected error occurred when processing task queue");
             }
         }
 
         private async Task<IDictionary<string, AccountStateRecord>> GetAccountState()
         {
             ISearchResponse<AccountStateRecord> result = await _elasticClient.SearchAsync<AccountStateRecord>(s => s
-                .Size(_dexPollerConfig.MaxAccountQuerySize)
+                .Size(_pollerConfig.MaxAccountQuerySize)
             );
 
             if (result.IsValid)
@@ -218,14 +280,20 @@ namespace DiatrackPoller.Services
         private async Task<IEnumerable<BglReading>> QueryBglDataForAccount(string sessionId, DataSource account, AccountStateRecord accountState, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(sessionId))
-                return null;
-
-            Log.Information("Querying BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+            {
+                return Enumerable.Empty<BglReading>();
+            }
 
             if (!string.IsNullOrEmpty(account.Id))
             {
-                int queryWindowMins = _dexPollerConfig.BglMaxWindowMinutes;
-                int queryMaxCount = _dexPollerConfig.MaxAccountQuerySize;
+                // Mark the account as queried
+                if (!_accountLastQueried.TryAdd(account.Id, DateTime.Now))
+                {
+                    _accountLastQueried[account.Id] = DateTime.Now;
+                }
+
+                int queryWindowMins = _pollerConfig.BglMaxWindowMinutes;
+                int queryMaxCount = _pollerConfig.MaxAccountQuerySize;
 
                 // Get the last sensor data timestamp
                 DateTime? lastBglReading = accountState.LastReceived;
@@ -237,6 +305,8 @@ namespace DiatrackPoller.Services
                     queryWindowMins = (int)Math.Floor(DateTime.UtcNow.Subtract(lastBglReading.Value.AddSeconds(1)).TotalMinutes);
                     queryMaxCount = (int)Math.Floor(queryWindowMins / 5.0) + 1;
                 }
+
+                Log.Information("Querying BGL readings for account {Id} {LoginId} in region {RegionId}", account.Id, account.LoginId, account.RegionId);
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
@@ -294,7 +364,7 @@ namespace DiatrackPoller.Services
                 .Query(
                     q => q.Exists(u => u.Field(doc => doc.DataSources))
                 )
-                .Size(_dexPollerConfig.MaxAccountQuerySize)
+                .Size(_pollerConfig.MaxAccountQuerySize)
             )).Documents;
 
             // For each login, retrieve the account name and ensure all Dexcom account details are complete

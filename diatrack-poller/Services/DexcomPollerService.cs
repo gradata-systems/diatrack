@@ -79,96 +79,111 @@ namespace DiatrackPoller.Services
             stopwatch.Start();
             foreach (DataSource account in accounts.Values)
             {
-                await _semaphore.WaitAsync(cancellationToken);
-
-                // If an account state record doesn't exist, create it
-                if (!_accountState.TryGetValue(account.Id, out AccountStateRecord accountState))
+                try
                 {
-                    accountState = new AccountStateRecord()
-                    {
-                        Id = account.Id,
-                        PollingEnabled = true
-                    };
+                    await _semaphore.WaitAsync(cancellationToken);
 
-                    _accountState.Add(account.Id, accountState);
-                }
-                else if (!accountState.PollingEnabled)
-                {
-                    Log.Information("Skipped disabled account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
-                    continue;
-                }
-
-                tasks.Add(Task.Run(async () => {
-                    string sessionId;
-                    IEnumerable<BglReading> bglReadings;
-                    try
+                    // If an account state record doesn't exist, create it
+                    if (!_accountState.TryGetValue(account.Id, out AccountStateRecord accountState))
                     {
-                        sessionId = _accountSessions[account.Id];
-                        bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
+                        accountState = new AccountStateRecord()
+                        {
+                            Id = account.Id,
+                            PollingEnabled = true
+                        };
+
+                        _accountState.Add(account.Id, accountState);
                     }
-                    catch (Exception)
+                    else if (!accountState.PollingEnabled)
                     {
+                        Log.Information("Skipped disabled account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                        continue;
+                    }
+
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        string sessionId;
+                        IEnumerable<BglReading> bglReadings;
                         try
                         {
-                            // Session probably expired or invalid so retry, this time logging in first
-                            sessionId = await LoginPublisherAccount(account, accountState);
-                            if (sessionId == null)
-                            {
-                                // Disable polling as login failed and we want to avoid locking the user's account
-                                accountState.PollingEnabled = false;
-                                bglReadings = Enumerable.Empty<BglReading>();
-                            }
-                            else
-                            {
-                                _accountSessions[account.Id] = sessionId;
-                                bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
-                            }
+                            sessionId = _accountSessions[account.Id];
+                            bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
                         }
                         catch (Exception)
                         {
-                            // Still failed, so return an empty result
-                            bglReadings = Enumerable.Empty<BglReading>();
+                            try
+                            {
+                                // Session probably expired or invalid so retry, this time logging in first
+                                sessionId = await LoginPublisherAccount(account, accountState);
+                                if (sessionId == null)
+                                {
+                                    // Disable polling as login failed and we want to avoid locking the user's account
+                                    accountState.PollingEnabled = false;
+                                    bglReadings = Enumerable.Empty<BglReading>();
+                                }
+                                else
+                                {
+                                    _accountSessions[account.Id] = sessionId;
+                                    bglReadings = await QueryBglDataForAccount(sessionId, account, accountState, cancellationToken);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // Still failed, so return an empty result
+                                bglReadings = Enumerable.Empty<BglReading>();
+                            }
                         }
-                    }
 
-                    IEnumerable<BglReading> readings = bglReadings.Select(reading =>
-                    {
+                        IEnumerable<BglReading> readings = bglReadings.Select(reading =>
+                        {
                         // Attribute the reading to the user's account
                         reading.AccountId = account.Id;
 
-                        return reading;
-                    });
+                            return reading;
+                        });
 
-                    if (readings.Any())
-                    {
-                        try
+                        if (readings.Any())
                         {
-                            BulkResponse response = await _elasticClient.BulkAsync(b => b.CreateMany(readings), cancellationToken);
+                            try
+                            {
+                                BulkResponse response = await _elasticClient.BulkAsync(b => b.CreateMany(readings), cancellationToken);
 
-                            if (!response.Errors)
-                            {
-                                await PutAccountState(accountState);
+                                if (!response.Errors)
+                                {
+                                    await PutAccountState(accountState);
+                                }
+                                else
+                                {
+                                    Log.Warning("Errors occurred when indexing BGL readings for account {LoginId} in region {RegionId}. {ServerError}",
+                                        account.LoginId, account.RegionId, response.ServerError);
+                                }
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                Log.Warning("Errors occurred when indexing BGL readings for account {LoginId} in region {RegionId}. {ServerError}",
-                                    account.LoginId, account.RegionId, response.ServerError);
+                                Log.Error(ex, "Failed to post BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Failed to post BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
-                        }
-                    }
 
-                    _semaphore.Release();
-                }, cancellationToken));
+                        _semaphore.Release();
+                    }, cancellationToken));
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Unexpected error occurred when querying account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                }
             }
 
-            Task.WaitAll(tasks.ToArray(), cancellationToken);
+            try
+            {
+                Task.WaitAll(tasks.ToArray(), cancellationToken);
 
-            stopwatch.Stop();
-            Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {tasks.Count} accounts");
+                stopwatch.Stop();
+                Log.Information($"Spent {stopwatch.Elapsed.TotalSeconds} seconds querying {tasks.Count} accounts");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Unexpected error occurred when querying BGL data");
+            }
         }
 
         private async Task<IDictionary<string, AccountStateRecord>> GetAccountState()

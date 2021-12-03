@@ -426,7 +426,7 @@
           "lib/netcoreapp3.0/Microsoft.Extensions.Primitives.dll": {}
         }
       },
-      "Microsoft.Identity.Client/4.37.0": {
+      "Microsoft.Identity.Client/4.38.0": {
         "type": "package",
         "compile": {
           "lib/netcoreapp2.1/Microsoft.Identity.Client.dll": {}
@@ -448,13 +448,13 @@
           "lib/netcoreapp2.1/Microsoft.Identity.Client.Extensions.Msal.dll": {}
         }
       },
-      "Microsoft.Identity.Web/1.20.0": {
+      "Microsoft.Identity.Web/1.21.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.0",
-          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "5.0.0",
-          "Microsoft.Identity.Web.Certificate": "1.20.0",
-          "Microsoft.Identity.Web.TokenCache": "1.20.0",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "5.0.12",
+          "Microsoft.AspNetCore.Authentication.OpenIdConnect": "5.0.12",
+          "Microsoft.Identity.Web.Certificate": "1.21.0",
+          "Microsoft.Identity.Web.TokenCache": "1.21.0",
           "Microsoft.IdentityModel.Logging": "6.14.1",
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.14.1",
           "Microsoft.IdentityModel.Validators": "6.14.1",
@@ -468,7 +468,7 @@
           "lib/net5.0/Microsoft.Identity.Web.dll": {}
         }
       },
-      "Microsoft.Identity.Web.Certificate/1.20.0": {
+      "Microsoft.Identity.Web.Certificate/1.21.0": {
         "type": "package",
         "dependencies": {
           "Azure.Identity": "1.3.0",
@@ -483,13 +483,13 @@
           "lib/net5.0/Microsoft.Identity.Web.Certificate.dll": {}
         }
       },
-      "Microsoft.Identity.Web.TokenCache/1.20.0": {
+      "Microsoft.Identity.Web.TokenCache/1.21.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.AspNetCore.DataProtection": "5.0.8",
           "Microsoft.Extensions.Caching.Memory": "5.0.0",
           "Microsoft.Extensions.Logging": "5.0.0",
-          "Microsoft.Identity.Client": "4.37.0",
+          "Microsoft.Identity.Client": "4.38.0",
           "System.Text.Encodings.Web": "5.0.1"
         },
         "compile": {
@@ -499,10 +499,10 @@
           "lib/net5.0/Microsoft.Identity.Web.TokenCache.dll": {}
         }
       },
-      "Microsoft.Identity.Web.UI/1.20.0": {
+      "Microsoft.Identity.Web.UI/1.21.0": {
         "type": "package",
         "dependencies": {
-          "Microsoft.Identity.Web": "1.20.0"
+          "Microsoft.Identity.Web": "1.21.0"
         },
         "compile": {
           "lib/net5.0/Microsoft.Identity.Web.UI.Views.dll": {},
@@ -884,7 +884,7 @@
           "build/netcoreapp2.1/Microsoft.TestPlatform.TestHost.props": {}
         }
       },
-      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.11.1": {
+      "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.14.0": {
         "type": "package",
         "build": {
           "build/_._": {}
@@ -1117,7 +1117,7 @@
           "lib/netstandard2.0/Serilog.Settings.Configuration.dll": {}
         }
       },
-      "Serilog.Sinks.Console/4.0.0": {
+      "Serilog.Sinks.Console/4.0.1": {
         "type": "package",
         "dependencies": {
           "Serilog": "2.10.0"
@@ -1972,13 +1972,13 @@
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "6.0.0",
           "Microsoft.AspNetCore.Mvc.Versioning": "5.0.0",
           "Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer": "5.0.0",
-          "Microsoft.Identity.Web": "1.20.0",
-          "Microsoft.Identity.Web.UI": "1.20.0",
-          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.11.1",
+          "Microsoft.Identity.Web": "1.21.0",
+          "Microsoft.Identity.Web.UI": "1.21.0",
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.14.0",
           "NEST": "7.15.2",
           "Serilog": "2.10.0",
           "Serilog.AspNetCore": "4.1.0",
-          "Serilog.Sinks.Console": "4.0.0",
+          "Serilog.Sinks.Console": "4.0.1",
           "Swashbuckle.AspNetCore": "6.2.3",
           "System.Linq.Async": "5.0.0"
         },
@@ -2747,10 +2747,10 @@
         "version.txt"
       ]
     },
-    "Microsoft.Identity.Client/4.37.0": {
-      "sha512": "r6GCnNOVx/RWyqYvpjNhNXAAip7pgR/ygaUHe4YXlVxZ/ePgN5zf4LB1wZ/dVYfUM6es+QdjK7HSkgpNAPplcw==",
+    "Microsoft.Identity.Client/4.38.0": {
+      "sha512": "fADpikF/MKzS7+aIpZXgXsKZHgILAQ6y6xD4iN7H49F4SvYGgg6CLPigN0zD656NrJd++MBIQh8sZ8nqomVhbw==",
       "type": "package",
-      "path": "microsoft.identity.client/4.37.0",
+      "path": "microsoft.identity.client/4.38.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2775,7 +2775,7 @@
         "lib/xamarinios10/Microsoft.Identity.Client.xml",
         "lib/xamarinmac20/Microsoft.Identity.Client.dll",
         "lib/xamarinmac20/Microsoft.Identity.Client.xml",
-        "microsoft.identity.client.4.37.0.nupkg.sha512",
+        "microsoft.identity.client.4.38.0.nupkg.sha512",
         "microsoft.identity.client.nuspec"
       ]
     },
@@ -2796,10 +2796,10 @@
         "microsoft.identity.client.extensions.msal.nuspec"
       ]
     },
-    "Microsoft.Identity.Web/1.20.0": {
-      "sha512": "+MC996VnqV+PKSNmyql1A393GqGkIoUYJ41EgvvCFTr2UhGxjVEgii6OWYmanzuDVXVCufwyZSeXhaXnoK1UBA==",
+    "Microsoft.Identity.Web/1.21.0": {
+      "sha512": "oomqgquUvJIk9hiiRyRk5IQALxfT9u4QnaBLyvzI+JYrC2i5kr7WbDcOh4yTwUYH6KxLCccaBiyDwAhpCPmJnA==",
       "type": "package",
-      "path": "microsoft.identity.web/1.20.0",
+      "path": "microsoft.identity.web/1.21.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2812,14 +2812,14 @@
         "lib/net5.0/Microsoft.Identity.Web.xml",
         "lib/netcoreapp3.1/Microsoft.Identity.Web.dll",
         "lib/netcoreapp3.1/Microsoft.Identity.Web.xml",
-        "microsoft.identity.web.1.20.0.nupkg.sha512",
+        "microsoft.identity.web.1.21.0.nupkg.sha512",
         "microsoft.identity.web.nuspec"
       ]
     },
-    "Microsoft.Identity.Web.Certificate/1.20.0": {
-      "sha512": "mu8iHoc0S0lqyFt+xIXgeN3L3lNLF7x7x23nBlAW8T/R3sVh/yoE4eu26PbW/1xs1f7RMCh3kcdaxyJnG5lRPA==",
+    "Microsoft.Identity.Web.Certificate/1.21.0": {
+      "sha512": "He3Rv/U9U/JafrC0H/7cVI0qAabzkN8YMqsnWrvzFpSxHMApfLPgwaeWFh+6U3c16l/jmyO7m/oHZeQv2ShyUQ==",
       "type": "package",
-      "path": "microsoft.identity.web.certificate/1.20.0",
+      "path": "microsoft.identity.web.certificate/1.21.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2834,14 +2834,14 @@
         "lib/netcoreapp3.1/Microsoft.Identity.Web.Certificate.xml",
         "lib/netstandard2.0/Microsoft.Identity.Web.Certificate.dll",
         "lib/netstandard2.0/Microsoft.Identity.Web.Certificate.xml",
-        "microsoft.identity.web.certificate.1.20.0.nupkg.sha512",
+        "microsoft.identity.web.certificate.1.21.0.nupkg.sha512",
         "microsoft.identity.web.certificate.nuspec"
       ]
     },
-    "Microsoft.Identity.Web.TokenCache/1.20.0": {
-      "sha512": "tlHuSYpzjaeMUtgscGcOOZtslCILjssJQBgvcI7b3I3ebbTEZ0O20IXdwAAe4/O3NjtAz9VygLpRGDbFfxqVlw==",
+    "Microsoft.Identity.Web.TokenCache/1.21.0": {
+      "sha512": "niktkUvioHBj3BwJ9l9danP3FoGP0LMb7n0U+lZqIHNuPItK6WJ0erJA7PvTlNVFvQ+CwZ3bI7+oSvCz3ww2+Q==",
       "type": "package",
-      "path": "microsoft.identity.web.tokencache/1.20.0",
+      "path": "microsoft.identity.web.tokencache/1.21.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2856,14 +2856,14 @@
         "lib/netcoreapp3.1/Microsoft.Identity.Web.TokenCache.xml",
         "lib/netstandard2.0/Microsoft.Identity.Web.TokenCache.dll",
         "lib/netstandard2.0/Microsoft.Identity.Web.TokenCache.xml",
-        "microsoft.identity.web.tokencache.1.20.0.nupkg.sha512",
+        "microsoft.identity.web.tokencache.1.21.0.nupkg.sha512",
         "microsoft.identity.web.tokencache.nuspec"
       ]
     },
-    "Microsoft.Identity.Web.UI/1.20.0": {
-      "sha512": "RDkQ0I/yOzfGV9Lj6rOQH8CndtdXX64NhYrdZy25P5KBdiuGkyD5K0TR3VsHuWV0e3m8XC/hKsZXz/uGrMp/vw==",
+    "Microsoft.Identity.Web.UI/1.21.0": {
+      "sha512": "XvXIg31SBYH8Dpib+o5wfJwfbNbYdZt9Y3/7RwG2IGwebW9VNGzZ/0ByzULa67eVQrRrmdmvCFuhYJFgzEQ60A==",
       "type": "package",
-      "path": "microsoft.identity.web.ui/1.20.0",
+      "path": "microsoft.identity.web.ui/1.21.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -2874,7 +2874,7 @@
         "lib/netcoreapp3.1/Microsoft.Identity.Web.UI.Views.dll",
         "lib/netcoreapp3.1/Microsoft.Identity.Web.UI.dll",
         "lib/netcoreapp3.1/Microsoft.Identity.Web.UI.xml",
-        "microsoft.identity.web.ui.1.20.0.nupkg.sha512",
+        "microsoft.identity.web.ui.1.21.0.nupkg.sha512",
         "microsoft.identity.web.ui.nuspec"
       ]
     },
@@ -3542,10 +3542,10 @@
         "microsoft.testplatform.testhost.nuspec"
       ]
     },
-    "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.11.1": {
-      "sha512": "1jHxWlSi6/ryWODk6SUjsZPHk/BdsucxqhIi1szEzwc84e8nvZWF45qRXcT2gWPISJ3Ybbyg2LsNG6yX8r7VuA==",
+    "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.14.0": {
+      "sha512": "yORzATlNmCp4kEwkxznLZ3maTaUJc5yTcu3aPufY8Tq4141/bRRWsa91u8I24MR3BTCCJlZO98xuQWB4arlKCw==",
       "type": "package",
-      "path": "microsoft.visualstudio.azure.containers.tools.targets/1.11.1",
+      "path": "microsoft.visualstudio.azure.containers.tools.targets/1.14.0",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -3573,7 +3573,7 @@
         "build/ToolsTarget.props",
         "build/ToolsTarget.targets",
         "icon.png",
-        "microsoft.visualstudio.azure.containers.tools.targets.1.11.1.nupkg.sha512",
+        "microsoft.visualstudio.azure.containers.tools.targets.1.14.0.nupkg.sha512",
         "microsoft.visualstudio.azure.containers.tools.targets.nuspec",
         "tools/Microsoft.VisualStudio.Containers.Tools.Common.dll",
         "tools/Microsoft.VisualStudio.Containers.Tools.Shared.dll",
@@ -4056,10 +4056,10 @@
         "serilog.settings.configuration.nuspec"
       ]
     },
-    "Serilog.Sinks.Console/4.0.0": {
-      "sha512": "yJQit9sTJ4xGLKgCujqDJsaGqBNJwGB/H898z+xYlMG06twy4//6LLnSrsmpduZxcHIG4im7cv+JmXLzXz2EkQ==",
+    "Serilog.Sinks.Console/4.0.1": {
+      "sha512": "apLOvSJQLlIbKlbx+Y2UDHSP05kJsV7mou+fvJoRGs/iR+jC22r8cuFVMjjfVxz/AD4B2UCltFhE1naRLXwKNw==",
       "type": "package",
-      "path": "serilog.sinks.console/4.0.0",
+      "path": "serilog.sinks.console/4.0.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -4072,7 +4072,7 @@
         "lib/netstandard1.3/Serilog.Sinks.Console.xml",
         "lib/netstandard2.0/Serilog.Sinks.Console.dll",
         "lib/netstandard2.0/Serilog.Sinks.Console.xml",
-        "serilog.sinks.console.4.0.0.nupkg.sha512",
+        "serilog.sinks.console.4.0.1.nupkg.sha512",
         "serilog.sinks.console.nuspec"
       ]
     },

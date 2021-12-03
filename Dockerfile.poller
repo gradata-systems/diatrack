@@ -3,6 +3,10 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 
+# Use a higher port to allow the container to run under a non-privileged user account
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:8080
+
 # Create a user and group to run the container as
 RUN addgroup --group netcore --gid 1000
 RUN adduser --uid 1000 --gid 1000 netcore

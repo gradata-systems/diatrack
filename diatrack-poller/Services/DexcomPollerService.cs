@@ -343,6 +343,10 @@ namespace DiatrackPoller.Services
                     {
                         Log.Error(ex, "Invalid region");
                     }
+                    catch (TaskCanceledException)
+                    {
+                        Log.Error("Timed out querying BGL sensor data for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                    }
                     catch (Exception ex)
                     {
                         Log.Error(ex, "BGL sensor data could not be collected for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
@@ -436,6 +440,10 @@ namespace DiatrackPoller.Services
             catch (InvalidRegionException ex)
             {
                 Log.Error(ex, "Invalid region for {LoginId}", account.LoginId);
+            }
+            catch (TaskCanceledException)
+            {
+                Log.Error("Timed out attempting to log on account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
             }
             catch (Exception ex)
             {

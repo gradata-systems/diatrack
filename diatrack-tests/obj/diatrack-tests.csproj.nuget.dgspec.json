@@ -58,15 +58,15 @@
             },
             "Microsoft.Identity.Web": {
               "target": "Package",
-              "version": "[1.20.0, )"
+              "version": "[1.21.0, )"
             },
             "Microsoft.Identity.Web.UI": {
               "target": "Package",
-              "version": "[1.20.0, )"
+              "version": "[1.21.0, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
-              "version": "[1.11.1, )"
+              "version": "[1.14.0, )"
             },
             "NEST": {
               "target": "Package",
@@ -82,7 +82,7 @@
             },
             "Serilog.Sinks.Console": {
               "target": "Package",
-              "version": "[4.0.0, )"
+              "version": "[4.0.1, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

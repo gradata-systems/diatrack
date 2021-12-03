@@ -27,7 +27,7 @@ namespace Diatrack.Controllers.V1
             _userService = userService;
         }
 
-        [HttpPost("Search")]
+        [HttpPost("search")]
         public async Task<ActionResult<IEnumerable<ActivityLogSearchHit>>> GetEntries([FromBody] ActivityLogQueryParams queryParams)
         {
             UserProfile user = await _userService.GetUser();
@@ -87,7 +87,7 @@ namespace Diatrack.Controllers.V1
             try
             {
                 ISearchResponse<ActivityLogEntry> response = (await _elasticClient.SearchAsync<ActivityLogEntry>(s => s
-                    .Size(queryParams.Size)
+                    .Size(queryParams.Count)
                     .From(queryParams.From)
                     .Query(q => q
                         .Terms(t => t
@@ -264,7 +264,7 @@ namespace Diatrack.Controllers.V1
 
     public class ActivityLogQueryParams
     {
-        public int Size { get; set; }
+        public int Count { get; set; }
 
         public int? From { get; set; }
 

@@ -32,7 +32,7 @@ namespace Diatrack.Controllers.V1
             return user;
         }
 
-        [HttpPost("IsNew")]
+        [HttpPost("isNew")]
         public async Task<ActionResult<UserProfile>> SetIsNew(bool isNew)
         {
             UserProfile user = await _userService.GetUser();

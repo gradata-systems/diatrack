@@ -130,7 +130,7 @@ namespace Diatrack.Services
             if (user.IsNew != isNew)
             {
                 user.IsNew = isNew;
-                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync<UserProfile>(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
+                UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), q => q.Doc(user).DocAsUpsert());
 
                 if (response.IsValid)
                 {

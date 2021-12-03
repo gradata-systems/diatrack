@@ -29,9 +29,9 @@ namespace Diatrack.Controllers.V1
         /// <summary>
         /// For each account ID associated with the logged-in user, get the most recent BGL readings
         /// </summary>
-        /// <param name="size">Number of BGL readings to retrieve per account</param>
+        /// <param name="count">Number of BGL readings to retrieve per account</param>
         [HttpGet]
-        public async Task<ActionResult<IDictionary<string, IEnumerable<BglReading>>>> GetLatestReadings([FromQuery] int size = 5)
+        public async Task<ActionResult<IDictionary<string, IEnumerable<BglReading>>>> GetLatestReadings([FromQuery] int count = 5)
         {
             // TODO: Add configurable cap on `size` parameter
 
@@ -57,7 +57,7 @@ namespace Diatrack.Controllers.V1
                             .Size(accountIds.Length)
                             .Aggregations(agg2 => agg2
                                 .TopHits("top_hits", th => th
-                                    .Size(size)
+                                    .Size(count)
                                     .Sort(s => s
                                         .Descending(f => f.Timestamp)
                                     )
@@ -92,7 +92,7 @@ namespace Diatrack.Controllers.V1
         /// <summary>
         /// For each account ID associated with the logged-in user, get a date histogram of statistics
         /// </summary>
-        [HttpPost("AccountStatsHistogram")]
+        [HttpPost("accountStatsHistogram")]
         public async Task<ActionResult<Dictionary<string, BglAccountStats>>> GetBglReadingsForPeriod([FromBody] GetBglForPeriodParams requestParams)
         {
             try

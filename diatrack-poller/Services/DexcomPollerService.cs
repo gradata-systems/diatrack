@@ -2,6 +2,7 @@
 using Diatrack.Models;
 using Diatrack.Services;
 using DiatrackPoller.Configuration;
+using Elastic.Apm.Api;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -26,6 +27,7 @@ namespace DiatrackPoller.Services
         private readonly DexcomConfiguration _dexConfig;
         private readonly DexcomPollerConfiguration _pollerConfig;
         private readonly ElasticClient _elasticClient;
+        private readonly ITracer _apmTracer;
         private readonly IHealthService _healthService;
 
         private readonly HttpClient _httpClient;
@@ -41,6 +43,7 @@ namespace DiatrackPoller.Services
             IOptions<DexcomConfiguration> dexConfig,
             IOptions<DexcomPollerConfiguration> dexPollerConfig,
             ElasticDataProvider elasticProvider,
+            ITracer apmTracer,
             IHealthService healthService)
             :base(TimeSpan.FromSeconds(dexPollerConfig.Value.BglQueryFrequencySeconds))
         {
@@ -48,6 +51,7 @@ namespace DiatrackPoller.Services
             _dexConfig = dexConfig.Value;
             _pollerConfig = dexPollerConfig.Value;
             _elasticClient = elasticProvider.NestClient;
+            _apmTracer = apmTracer;
             _healthService = healthService;
 
             _httpClient = new HttpClient()
@@ -84,10 +88,6 @@ namespace DiatrackPoller.Services
             // Accumulate BGL query tasks
             List<Task> tasks = new();
 
-            // For each account, find out its ID (if not cached) and poll for CGM data
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
             // Mark the service as healthy
             _healthService.RegisterBglQuery();
 
@@ -99,6 +99,11 @@ namespace DiatrackPoller.Services
 
             Log.Information($"Found {accounts.Count} accounts to query");
 
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            ITransaction queryRoundTransaction = _apmTracer.StartTransaction("Process Dexcom accounts", "Account loop");
+
+            // For each account, find out its ID (if not cached) and poll for CGM data
             foreach (DataSource account in accounts.Values)
             {
                 try
@@ -157,6 +162,10 @@ namespace DiatrackPoller.Services
                         }
                     }
 
+                    ISpan accountQuerySpan = queryRoundTransaction.StartSpan("Query account BGL data", "Web service query");
+                    accountQuerySpan.SetLabel("LoginId", account.LoginId);
+                    accountQuerySpan.SetLabel("RegionId", account.RegionId);
+
                     tasks.Add(Task.Run(async () =>
                     {
                         // Record the fact we're performing a query so the service is recognised as healthy
@@ -177,8 +186,6 @@ namespace DiatrackPoller.Services
                                 sessionId = await LoginPublisherAccount(account, accountState);
                                 if (sessionId == null)
                                 {
-                                    // Disable polling as login failed and we want to avoid locking the user's account
-                                    accountState.PollingEnabled = false;
                                     bglReadings = Enumerable.Empty<BglReading>();
                                 }
                                 else
@@ -206,6 +213,7 @@ namespace DiatrackPoller.Services
                         {
                             try
                             {
+                                ISpan elasticQuerySpan = accountQuerySpan.StartSpan("Index account BGL data", "Elasticsearch bulk query");
                                 BulkResponse response = await _elasticClient.BulkAsync(b => b.CreateMany(readings), cancellationToken);
 
                                 if (!response.Errors)
@@ -216,13 +224,23 @@ namespace DiatrackPoller.Services
                                 {
                                     Log.Warning("Errors occurred when indexing BGL readings for account {LoginId} in region {RegionId}. {ServerError}",
                                         account.LoginId, account.RegionId, response.ServerError);
+
+                                    if (response.OriginalException != null)
+                                    {
+                                        accountQuerySpan.CaptureException(response.OriginalException);
+                                    }
                                 }
+
+                                elasticQuerySpan.End();
                             }
                             catch (Exception ex)
                             {
                                 Log.Error(ex, "Failed to post BGL readings for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                                accountQuerySpan.CaptureException(ex);
                             }
                         }
+
+                        accountQuerySpan.End();
                     }, cancellationToken));
                 }
                 catch (Exception ex)
@@ -245,6 +263,10 @@ namespace DiatrackPoller.Services
             catch (Exception ex)
             {
                 Log.Error(ex, "Unexpected error occurred when processing task queue");
+            }
+            finally
+            {
+                queryRoundTransaction.End();
             }
         }
 
@@ -310,6 +332,10 @@ namespace DiatrackPoller.Services
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
+                    ITransaction queryTransaction = _apmTracer.StartTransaction("Query Dexcom BGL data", "Web service query");
+                    queryTransaction.SetLabel("AccountId", account.LoginId);
+                    queryTransaction.SetLabel("RegionId", account.RegionId);
+
                     // Query CGM sensor data
                     try
                     {
@@ -342,14 +368,21 @@ namespace DiatrackPoller.Services
                     catch (InvalidRegionException ex)
                     {
                         Log.Error(ex, "Invalid region");
+                        queryTransaction.CaptureError("Invalid Dexcom region", account.RegionId, new StackTrace().GetFrames());
                     }
                     catch (TaskCanceledException)
                     {
                         Log.Error("Timed out querying BGL sensor data for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                        queryTransaction.CaptureError("Dexcom BGL data query timeout", $"{account.LoginId} ({account.RegionId})", new StackTrace().GetFrames());
                     }
                     catch (Exception ex)
                     {
                         Log.Error(ex, "BGL sensor data could not be collected for account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                        queryTransaction.CaptureException(ex);
+                    }
+                    finally
+                    {
+                        queryTransaction.End();
                     }
                 }
             }
@@ -395,6 +428,10 @@ namespace DiatrackPoller.Services
         /// <returns>Session ID</returns>
         private async Task<string> LoginPublisherAccount(DataSource account, AccountStateRecord accountState)
         {
+            ITransaction queryTransaction = _apmTracer.StartTransaction("Login Dexcom account", "Web service query");
+            queryTransaction.SetLabel("AccountId", account.LoginId);
+            queryTransaction.SetLabel("RegionId", account.RegionId);
+
             try
             {
                 string plainTextPassword = await account.GetPlainTextPassword(_appConfig);
@@ -426,37 +463,51 @@ namespace DiatrackPoller.Services
                     else
                     {
                         Log.Error("Unexpected session ID {SessionId} returned", rawSessionId);
+                        queryTransaction.CaptureError("Unexpected Dexcom session ID", rawSessionId, new StackTrace().GetFrames());
                     }
                 }
                 else
                 {
-                    // Disable polling for this account
-                    accountState.PollingEnabled = false;
+                    string content = await response.Content.ReadAsStringAsync();
 
-                    Log.Error("Failed to log on account {LoginId} in region {RegionId}. Status code: {StatusCode}. Reason: {Reason}",
-                            account.LoginId, account.RegionId, response.StatusCode, response.ReasonPhrase);
+                    if (response.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        if (content != null && content.Contains("AccountPasswordInvalid") || content.Contains("Unauthorized"))
+                        {
+                            // Disable polling as the login attempt failed and we want to avoid locking the user's account
+                            accountState.PollingEnabled = false;
+                            await PutAccountState(accountState);
+                            Log.Information("Polling disabled for account {LoginId} in region {RegionId} due to failed login", account.LoginId, account.RegionId);
+                        }
+                    }
+                    
+                    Log.Error("Failed to log on account {LoginId} in region {RegionId}. Status code: {StatusCode}. Content: {Content}",
+                            account.LoginId, account.RegionId, response.StatusCode, content);
+                    queryTransaction.CaptureError("Dexcom logon failure", $"{account.LoginId} ({account.RegionId})", new StackTrace().GetFrames());
                 }
             }
             catch (InvalidRegionException ex)
             {
                 Log.Error(ex, "Invalid region for {LoginId}", account.LoginId);
+                queryTransaction.CaptureError("Invalid Dexcom region", account.RegionId, new StackTrace().GetFrames());
+
             }
             catch (TaskCanceledException)
             {
                 Log.Error("Timed out attempting to log on account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                queryTransaction.CaptureError("Dexcom logon timeout", $"{account.LoginId} ({account.RegionId})", new StackTrace().GetFrames());
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "Failed to log on account {LoginId} in region {RegionId}", account.LoginId, account.RegionId);
+                queryTransaction.CaptureException(ex);
+            }
+            finally
+            {
+                queryTransaction.End();
             }
 
             return null;
         }
-    }
-
-    enum CircuitStatus
-    {
-        Closed = 0,
-        Tripped = 1
     }
 }

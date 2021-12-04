@@ -1,3 +1,4 @@
+using Elastic.Apm.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,7 @@ namespace DiatrackPoller
         public static IHostBuilder CreateHostBuilder(string[] args) => Host
             .CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+            .UseElasticApm()
             .UseSerilog((hostingContext, loggerConfiguration) => ConfigureLogging(hostingContext, loggerConfiguration));
 
         private static void ConfigureLogging(HostBuilderContext hostingContext, LoggerConfiguration loggerConfiguration)

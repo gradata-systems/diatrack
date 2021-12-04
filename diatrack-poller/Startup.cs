@@ -9,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Elastic.Apm.NetCoreAll;
+using Elastic.Apm.AspNetCore;
+using Elastic.Apm.DiagnosticSource;
 
 namespace DiatrackPoller
 {

@@ -105,8 +105,6 @@ namespace Diatrack.Controllers.V1
                     return BadRequest();
                 }
 
-                IMovingAverageModel movingAverageModel = requestParams.MovingAverage?.ToModel();
-
                 ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(r => r
                     .Size(0)
                     .Query(q => q
@@ -137,11 +135,10 @@ namespace Diatrack.Controllers.V1
                                         .Average("average", stats => stats
                                             .Field(f => f.Value)
                                         )
-                                        .MovingAverage("movingAverage", movingAvg => movingAvg
+                                        .MovingFunction("movingAverage", movingAvg => movingAvg
                                             .BucketsPath("average")
-                                            .Model(model => movingAverageModel ?? model.Simple())
+                                            .Script(requestParams.MovingAverage?.ToScript())
                                             .Window(requestParams.MovingAverage?.Window)
-                                            .Predict(requestParams.MovingAverage?.PredictionCount)
                                         )
                                     )
                                 )

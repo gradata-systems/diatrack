@@ -31,33 +31,22 @@ namespace Diatrack.Models
 
         public int? PredictionCount { get; set; }
 
-        public IMovingAverageModel ToModel()
+        public string ToScript()
         {
             switch (ModelType)
             {
                 case MovingAverageModelType.Simple:
-                    return new SimpleModel();
+                    return "MovingFunctions.unweightedAvg(values)";
                 case MovingAverageModelType.Linear:
-                    return new LinearModel();
+                    return "MovingFunctions.linearWeightedAvg(values)";
                 case MovingAverageModelType.Ewma:
-                    return new EwmaModel()
-                    {
-                        Alpha = Alpha
-                    };
+                    return $"MovingFunctions.ewma(values, {Alpha})";
                 case MovingAverageModelType.HoltLinear:
-                    return new HoltLinearModel()
-                    {
-                        Alpha = Alpha,
-                        Beta = Beta
-                    };
+                    return $"MovingFunctions.holt(values, {Alpha}, {Beta})";
                 case MovingAverageModelType.HoltWinters:
-                    return new HoltWintersModel()
-                    {
-                        Period = Period,
-                        Type = HoltWintersType.Additive
-                    };
+                    return $"MovingFunctions.holtWinters(values, {Alpha}, {Beta}, {Gamma}, {Period}, {false})";
                 default:
-                    return new SimpleModel();
+                    return "MovingFunctions.unweightedAvg(values)";
             }
         }
     }

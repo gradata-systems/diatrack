@@ -87,7 +87,7 @@ namespace Diatrack.Controllers.V1
             try
             {
                 ISearchResponse<ActivityLogEntry> response = (await _elasticClient.SearchAsync<ActivityLogEntry>(s => s
-                    .Size(queryParams.Count)
+                    .Size(queryParams.Size)
                     .From(queryParams.From)
                     .Query(q => q
                         .Terms(t => t
@@ -264,7 +264,7 @@ namespace Diatrack.Controllers.V1
 
     public class ActivityLogQueryParams
     {
-        public int Count { get; set; }
+        public int Size { get; set; }
 
         public int? From { get; set; }
 

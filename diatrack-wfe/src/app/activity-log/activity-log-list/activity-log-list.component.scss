@@ -5,8 +5,11 @@
     height: 100%;
 
     .log-entry-viewport {
-        height: 100%;
         overflow-y: auto;
+
+        &.visible {
+            height: 100%;
+        }
     }
 
     mat-list {
@@ -157,4 +160,5 @@
     flex-direction: column;
     align-items: center;
     padding-top: 50px;
+    user-select: none;
 }

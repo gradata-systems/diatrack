@@ -1,5 +1,15 @@
 @import '../page-styles';
 
+.page {
+    overflow-y: auto;
+
+    .content {
+        .body {
+            flex-direction: column;
+        }
+    }
+}
+
 .dataflow-diagram {
     float: right;
     margin-left: 20px;

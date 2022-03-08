@@ -37,6 +37,7 @@ namespace Diatrack.Controllers.V1.Nightscout
         /// Get BGL readings in a Nightscout compatible format
         /// </summary>
         [HttpGet("v{version:apiVersion}/entries.json")]
+        [HttpGet("v{version:apiVersion}/entries/sgv.json")]
         public async Task<ActionResult<IEnumerable<Entry>>> GetEntries([FromQuery(Name = "token")] string plainTextToken, [FromQuery] int count = 1)
         {
             string token;

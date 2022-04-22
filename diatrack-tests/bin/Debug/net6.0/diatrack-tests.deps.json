@@ -90,7 +90,7 @@
         "runtime": {
           "lib/netstandard2.1/Elasticsearch.Net.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.17.0.0"
+            "fileVersion": "7.15.2.0"
           }
         }
       },
@@ -100,8 +100,8 @@
         },
         "runtime": {
           "lib/net6.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll": {
-            "assemblyVersion": "6.0.2.0",
-            "fileVersion": "6.0.222.6412"
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52608"
           }
         }
       },
@@ -111,8 +111,8 @@
         },
         "runtime": {
           "lib/net6.0/Microsoft.AspNetCore.Authentication.OpenIdConnect.dll": {
-            "assemblyVersion": "6.0.2.0",
-            "fileVersion": "6.0.222.6412"
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52608"
           }
         }
       },
@@ -152,8 +152,8 @@
       "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
-            "assemblyVersion": "6.0.0.0",
-            "fileVersion": "6.0.21.52210"
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "4.700.19.46214"
           }
         }
       },
@@ -274,8 +274,8 @@
       "Microsoft.Identity.Client/4.40.0": {
         "runtime": {
           "lib/netcoreapp2.1/Microsoft.Identity.Client.dll": {
-            "assemblyVersion": "4.40.0.0",
-            "fileVersion": "4.40.0.0"
+            "assemblyVersion": "4.37.0.0",
+            "fileVersion": "4.37.0.0"
           }
         }
       },
@@ -305,8 +305,8 @@
         },
         "runtime": {
           "lib/net5.0/Microsoft.Identity.Web.dll": {
-            "assemblyVersion": "1.22.3.0",
-            "fileVersion": "1.22.3.0"
+            "assemblyVersion": "1.20.0.0",
+            "fileVersion": "1.20.0.0"
           }
         }
       },
@@ -319,8 +319,8 @@
         },
         "runtime": {
           "lib/net5.0/Microsoft.Identity.Web.Certificate.dll": {
-            "assemblyVersion": "1.22.3.0",
-            "fileVersion": "1.22.3.0"
+            "assemblyVersion": "1.20.0.0",
+            "fileVersion": "1.20.0.0"
           }
         }
       },
@@ -334,8 +334,8 @@
         },
         "runtime": {
           "lib/net5.0/Microsoft.Identity.Web.TokenCache.dll": {
-            "assemblyVersion": "1.22.3.0",
-            "fileVersion": "1.22.3.0"
+            "assemblyVersion": "1.20.0.0",
+            "fileVersion": "1.20.0.0"
           }
         }
       },
@@ -345,12 +345,12 @@
         },
         "runtime": {
           "lib/net5.0/Microsoft.Identity.Web.UI.Views.dll": {
-            "assemblyVersion": "1.22.3.0",
-            "fileVersion": "1.22.3.0"
+            "assemblyVersion": "1.20.0.0",
+            "fileVersion": "1.20.0.0"
           },
           "lib/net5.0/Microsoft.Identity.Web.UI.dll": {
-            "assemblyVersion": "1.22.3.0",
-            "fileVersion": "1.22.3.0"
+            "assemblyVersion": "1.20.0.0",
+            "fileVersion": "1.20.0.0"
           }
         }
       },
@@ -360,16 +360,16 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
       "Microsoft.IdentityModel.Logging/6.15.1": {
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Logging.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -380,8 +380,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Protocols.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -392,8 +392,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -405,8 +405,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Tokens.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -418,8 +418,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.Validators.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -719,7 +719,7 @@
         "runtime": {
           "lib/netstandard2.0/Nest.dll": {
             "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.17.0.0"
+            "fileVersion": "7.15.2.0"
           }
         }
       },
@@ -870,8 +870,8 @@
         },
         "runtime": {
           "lib/net5.0/Serilog.Sinks.Console.dll": {
-            "assemblyVersion": "4.0.1.0",
-            "fileVersion": "4.0.1.0"
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.0.0"
           }
         }
       },
@@ -1025,8 +1025,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {
-            "assemblyVersion": "6.15.1.0",
-            "fileVersion": "6.15.1.30119"
+            "assemblyVersion": "6.14.1.0",
+            "fileVersion": "6.14.1.21103"
           }
         }
       },
@@ -1070,9 +1070,9 @@
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0"
         },
         "runtime": {
-          "lib/net6.0/System.Linq.Async.dll": {
-            "assemblyVersion": "6.0.0.0",
-            "fileVersion": "6.0.1.35981"
+          "lib/netcoreapp3.1/System.Linq.Async.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.1"
           }
         }
       },

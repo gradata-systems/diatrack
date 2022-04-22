@@ -11,6 +11,7 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("dotnet-diatrack_poller-B57770D2-1F85-4A65-8642-A6DF377EE6FE")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("diatrack-poller")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]

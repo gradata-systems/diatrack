@@ -1,0 +1,7 @@
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.AssemblyInfoInputs.cache
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.AssemblyInfo.cs
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.csproj.CoreCompileInputs.cache
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\pkimb\source\repos\diatrack\obj\Debug\net5.0\diatrack.csproj.AssemblyReference.cache

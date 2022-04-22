@@ -8,12 +8,13 @@ import {AppConfigService} from "../../../api/app-config.service";
 import {HISTOGRAM_PROFILES, HistogramProfileType} from "./histogram-profiles";
 import {debounceTime, mergeMap, takeUntil} from "rxjs/operators";
 import {UserService} from "../../../api/user.service";
+import {ActivityLogQueryParams} from "../../../activity-log/activity-log.service";
 
 @Injectable()
 export class DashboardSettingsService implements OnDestroy {
 
     tabIndex = 0;
-    dateFrom: DateTime | undefined;
+    activityLogOptions: ActivityLogQueryParams | undefined;
     readonly settingsForm: FormGroup;
     readonly dashboardSettings$ = new BehaviorSubject<DashboardPreferences | undefined>(undefined);
     readonly histogramIntervals = HISTOGRAM_PROFILES;
@@ -58,10 +59,10 @@ export class DashboardSettingsService implements OnDestroy {
         // If a setting is changed via the UI, act on the change and store and updated prefs in the background
         this.settingsForm.valueChanges.pipe(
             debounceTime(this.appConfigService.formDebounceInterval),
-            takeUntil(this.destroying$),
             mergeMap((dashboardPrefs: DashboardPreferences) => this.userService.savePreferences({
                 dashboard: dashboardPrefs
-            }))
+            })),
+            takeUntil(this.destroying$)
         ).subscribe(dashboardPrefs => {
             this.updateDashboardSettings(dashboardPrefs.dashboard);
         });
@@ -72,19 +73,22 @@ export class DashboardSettingsService implements OnDestroy {
             emitEvent: false
         });
 
-        this.dateFrom = this.getDateFrom(dashboardPrefs);
+        this.activityLogOptions = this.getActivityLogOptions(dashboardPrefs);
     }
 
     private updateDashboardSettings(dashboardPrefs: DashboardPreferences | undefined) {
         this.dashboardSettings$.next(dashboardPrefs);
-        this.dateFrom = this.getDateFrom(dashboardPrefs);
+        this.activityLogOptions = this.getActivityLogOptions(dashboardPrefs);
     }
 
-    getDateFrom(dashboardPrefs: DashboardPreferences | undefined): DateTime | undefined {
+    getActivityLogOptions(dashboardPrefs: DashboardPreferences | undefined): ActivityLogQueryParams | undefined {
         const profileType: HistogramProfileType | undefined = dashboardPrefs?.bglStatsHistogram.profileType;
         if (profileType !== undefined && HISTOGRAM_PROFILES.has(profileType)) {
             const histogramProfile = HISTOGRAM_PROFILES.get(profileType)!;
-            return DateTime.utc().minus(histogramProfile.displayPeriod);
+            return {
+                size: this.appConfigService.initialLogEntryQuerySize,
+                fromDate: DateTime.utc().minus(histogramProfile.displayPeriod)
+            }
         } else {
             return undefined;
         }

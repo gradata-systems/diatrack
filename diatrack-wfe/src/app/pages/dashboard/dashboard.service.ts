@@ -9,7 +9,7 @@ import {DEFAULTS} from "../../defaults";
 import {numberFormat, Options, Point, PointOptionsObject} from "highcharts";
 import {BglDataPoint} from "../../api/models/bgl-data-point";
 import {AppConfigService} from "../../api/app-config.service";
-import {ActivityLogService} from "../../activity-log/activity-log.service";
+import {ActivityLogSearchHit, ActivityLogService} from "../../activity-log/activity-log.service";
 import {AppIconService} from "../../app-icon.service";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {mergeDeep} from "../../utilities";
@@ -78,7 +78,7 @@ export class DashboardService implements OnDestroy {
         );
     }
 
-    private generateBglHistogramChart(userPrefs: UserPreferences | undefined, logEntries: ActivityLogEntry[]) {
+    private generateBglHistogramChart(userPrefs: UserPreferences | undefined, logEntryHits: ActivityLogSearchHit[]) {
         const effectiveUserPrefs: UserPreferences = mergeDeep(userPrefs || {}, DEFAULTS.userPreferences);
         const histogramSettings = effectiveUserPrefs.dashboard!.bglStatsHistogram;
         const bglUnit = effectiveUserPrefs.treatment!.bglUnit;
@@ -159,7 +159,8 @@ export class DashboardService implements OnDestroy {
 
             let activityLogSeriesData: PointOptionsObject[] = [];
             if (histogramSettings?.activityLog === true || (histogramSettings?.activityLog === undefined && defaults.activityLog)) {
-                activityLogSeriesData = logEntries.map(logEntry => {
+                activityLogSeriesData = logEntryHits.map(logEntryHit => {
+                    const logEntry = logEntryHit.hit;
                     const iconId = this.activityLogService.getLogEntryIcon(logEntry);
                     let scaledBgl = this.bglStatsService.scaleBglValueFromMgDl(logEntry.bgl !== undefined ? logEntry.bgl : 0, bglUnit);
 

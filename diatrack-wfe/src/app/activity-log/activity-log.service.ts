@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {DateTime} from "luxon";
 import {merge, Observable, Subject} from "rxjs";
-import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../api/models/activity-log-entry";
+import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams, SortOrder} from "../api/models/activity-log-entry";
 import {BASE_PATH} from "../api/variables";
 import {LogActivityIcon} from "../app-icon.service";
 import {AppConfigService} from "../api/app-config.service";
@@ -67,12 +67,16 @@ export class ActivityLogService {
     API methods
      */
 
-    searchEntries(params: LogEntryQueryParams): Observable<ActivityLogEntry[]> {
-        return this.httpClient.post<ActivityLogEntry[]>(`${this.basePath}/activityLog/search`, {
+    searchEntries(params: ActivityLogQueryParams): Observable<ActivityLogSearchHit[]> {
+        return this.httpClient.post<ActivityLogSearchHit[]>(`${this.basePath}/activityLog/search`, {
             size: params.size,
             fromDate: params.fromDate?.toISO(),
-            toDate: params.toDate?.toISO()
-        });
+            toDate: params.toDate?.toISO(),
+            category: params.category,
+            searchTerm: params.searchTerm,
+            sortField: params.sortField,
+            sortOrder: params.sortOrder
+        } as ActivityLogQueryParams);
     }
 
     getEntry(id: string): Observable<ActivityLogEntry> {
@@ -92,9 +96,14 @@ export class ActivityLogService {
     }
 }
 
-interface LogEntryQueryParams
+export interface ActivityLogQueryParams
 {
     size: number;
+
+    /**
+     * Offset index, for use when scrolling
+     */
+    from?: number;
 
     /**
      * Request log entries occurring on or after this date, in local time
@@ -105,4 +114,18 @@ interface LogEntryQueryParams
      * Limit entries to those occurring on or before this date, in local time
      */
     toDate?: DateTime;
+
+    category?: string;
+
+    searchTerm?: string;
+
+    sortField?: string;
+
+    sortOrder?: SortOrder;
+}
+
+export interface ActivityLogSearchHit
+{
+    hit: ActivityLogEntry;
+    highlight: Record<string, string[]>;
 }

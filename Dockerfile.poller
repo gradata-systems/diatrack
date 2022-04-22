@@ -1,6 +1,6 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 
 # Create a user and group to run the container as
@@ -12,14 +12,17 @@ RUN chown netcore:netcore /app
 RUN mkdir -p /var/log/diatrack
 RUN chown netcore:netcore /var/log/diatrack
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
 # Copy project dependency
 WORKDIR /src/diatrack-api
 COPY ./diatrack-api/diatrack-api.csproj .
-RUN dotnet restore ./diatrack-api.csproj
+RUN dotnet restore diatrack-api.csproj
 COPY ./diatrack-api/ .
+
+# Remove project dependency app settings files to avoid conflicts in the publish stage
+RUN rm ./appsettings*.json
 
 # Copy project files
 WORKDIR /src/diatrack-poller

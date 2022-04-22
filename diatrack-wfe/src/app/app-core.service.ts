@@ -30,8 +30,8 @@ export class AppCoreService implements OnDestroy {
             ),
             interval(appConfigService.refreshInterval)
         ).pipe(
-            takeUntil(this.destroying$),
-            filter(() => appConfigService.autoRefreshEnabled)
+            filter(() => appConfigService.autoRefreshEnabled),
+            takeUntil(this.destroying$)
         ).subscribe(() => {
             // `isStable` runs outside the Angular Zone
             ngZone.run(() => {

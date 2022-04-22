@@ -1,91 +1,87 @@
 <div class="log-list">
-  <mat-list role="list" *ngIf="logEntries$ | async; let logEntries; else loading">
-    <ng-container *ngIf="logEntries.length === 0">
-      <div class="empty-placeholder">
-        <span>No log entries to display. Why not create one?</span>
-      </div>
-    </ng-container>
-    <mat-list-item *ngFor="let logEntry of logEntries" role="listitem">
-      <div class="list-item">
-        <div class="content">
-          <mat-icon matListIcon class="light" [svgIcon]="activityLogService.getLogEntryIcon(logEntry)!"></mat-icon>
-          <div class="properties">
-            <h3 matLine (click)="editLogEntry(logEntry)">{{activityLogService.getLogEntryCategoryName(logEntry)}}</h3>
-
-            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.Insulin">
-              <div class="property">
-                <span class="bold">{{logEntry.properties.insulinUnits}} </span>
-                <span>units</span>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.BasalRateChange">
-              <div class="property">
-                <span class="bold">{{logEntry.properties.basalRatePercent}} % </span>
-                <span>for {{logEntry.properties.basalRateDuration}} {{logEntry.properties.basalRateTimeUnit}}s</span>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.Food">
-              <div class="property">
-                <span class="bold">{{logEntry.properties.foodGrams}}g </span>
-                <span *ngIf="logEntry.properties.foodType; let foodType">of {{foodType}}</span>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.BglReading">
-              <div class="property">
-                <span class="bold">{{getScaledManualBglReading(logEntry) | async | number:'1.1-1'}} </span>
-                <span>{{userService.getBglUnitDisplayValue(logEntry.properties.bglUnits)}}</span>
-              </div>
-            </ng-container>
-
-            <ng-container *ngIf="logEntry.category === activityLogEntryCategory.Exercise">
-              <div class="property">
-                <span class="bold">{{logEntry.properties.exerciseDuration}}</span>
-                <span> minutes </span>
-                <span *ngIf="logEntry.properties.exerciseIntensity; let exerciseIntensity">at {{exerciseIntensity}} intensity</span>
-              </div>
-            </ng-container>
-
-            <div class="notes" *ngIf="logEntry.notes; let notes">
-              <mat-icon>speaker_notes</mat-icon>
-              <span>{{notes}}</span>
-            </div>
-
-          </div>
-        </div>
-        <div class="info-container">
-          <div class="info">
-            <div class="bgl" *ngIf="getScaledBgl(logEntry) | async; let bgl">
-              <mat-icon [style]="{color: bglStatsService.getBglColour(bgl)}">water_drop</mat-icon>
-              <span [style]="{color: bglStatsService.getBglColour(bgl)}" matTooltip="Latest blood glucose reading at the time the log entry was created">{{bgl | number:'1.1-1'}}</span>
-            </div>
-            <div class="menu-button-container">
-              <button mat-icon-button [matMenuTriggerFor]="contextMenu">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-              <mat-menu #contextMenu="matMenu">
-                <button mat-menu-item (click)="editLogEntry(logEntry)">
-                  <mat-icon>edit</mat-icon>
-                  <span>Edit</span>
-                </button>
-                <button mat-menu-item (click)="deleteLogEntry(logEntry)">
-                  <mat-icon>delete</mat-icon>
-                  <span>Delete</span>
-                </button>
-              </mat-menu>
-            </div>
-          </div>
-          <div class="spacer"></div>
-          <div class="time" [matTooltip]="getLogEntryFullTime(logEntry)">{{getLogEntryTime(logEntry)}}</div>
-        </div>
-      </div>
-    </mat-list-item>
-  </mat-list>
-  <ng-template #loading>
-    <div class="loading-container">
-      <mat-progress-spinner mode="indeterminate" color="primary" diameter="50"></mat-progress-spinner>
+  <ng-container *ngIf="logEntries$.value.length === 0" #placeholder>
+    <div class="empty-placeholder">
+      <span>No log entries to display. Why not create one?</span>
     </div>
-  </ng-template>
+  </ng-container>
+  <cdk-virtual-scroll-viewport itemSize="70" class="log-entry-viewport" #viewport>
+    <mat-list role="list">
+      <mat-list-item *cdkVirtualFor="let logEntry of this" role="listitem">
+        <div class="list-item">
+          <div class="content">
+            <mat-icon matListIcon class="light" [svgIcon]="activityLogService.getLogEntryIcon(logEntry.hit)!"></mat-icon>
+            <div class="properties">
+              <h3 matLine (click)="editLogEntry(logEntry.hit)">{{activityLogService.getLogEntryCategoryName(logEntry.hit)}}</h3>
+
+              <ng-container *ngIf="logEntry.hit.category === activityLogEntryCategory.Insulin">
+                <div class="property">
+                  <span class="bold">{{logEntry.hit.properties.insulinUnits}} </span>
+                  <span>units</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="logEntry.hit.category === activityLogEntryCategory.BasalRateChange">
+                <div class="property">
+                  <span class="bold">{{logEntry.hit.properties.basalRatePercent}} % </span>
+                  <span>for {{logEntry.hit.properties.basalRateDuration}} {{logEntry.hit.properties.basalRateTimeUnit}}s</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="logEntry.hit.category === activityLogEntryCategory.Food">
+                <div class="property">
+                  <span class="bold">{{logEntry.hit.properties.foodGrams}}g </span>
+                  <span *ngIf="logEntry.hit.properties.foodType; let foodType">of {{foodType}}</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="logEntry.hit.category === activityLogEntryCategory.BglReading">
+                <div class="property">
+                  <span class="bold">{{getScaledManualBglReading(logEntry.hit) | async | number:'1.1-1'}} </span>
+                  <span>{{userService.getBglUnitDisplayValue(logEntry.hit.properties.bglUnits)}}</span>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="logEntry.hit.category === activityLogEntryCategory.Exercise">
+                <div class="property">
+                  <span class="bold">{{logEntry.hit.properties.exerciseDuration}}</span>
+                  <span> minutes </span>
+                  <span *ngIf="logEntry.hit.properties.exerciseIntensity; let exerciseIntensity">at {{exerciseIntensity}} intensity</span>
+                </div>
+              </ng-container>
+
+              <div class="notes" *ngIf="logEntry.hit.notes; let notes">
+                <mat-icon>speaker_notes</mat-icon>
+                <span>{{notes}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-container">
+            <div class="info">
+              <div class="bgl" *ngIf="getScaledBgl(logEntry.hit) | async; let bgl">
+                <mat-icon [style]="{color: bglStatsService.getBglColour(bgl)}">water_drop</mat-icon>
+                <span [style]="{color: bglStatsService.getBglColour(bgl)}" matTooltip="Latest blood glucose reading at the time the log entry was created">{{bgl | number:'1.1-1'}}</span>
+              </div>
+              <div class="menu-button-container">
+                <button mat-icon-button [matMenuTriggerFor]="contextMenu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #contextMenu="matMenu">
+                  <button mat-menu-item (click)="editLogEntry(logEntry.hit)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteLogEntry(logEntry.hit)">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+            <div class="spacer"></div>
+            <div class="time" [matTooltip]="getLogEntryFullTime(logEntry.hit)">{{getLogEntryTime(logEntry.hit)}}</div>
+          </div>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </cdk-virtual-scroll-viewport>
 </div>

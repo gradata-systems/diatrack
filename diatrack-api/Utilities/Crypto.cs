@@ -13,7 +13,7 @@ namespace Diatrack.Utilities
 
         public static string GenerateKey()
         {
-            using (AesManaged aes = new())
+            using (Aes aes = Aes.Create())
             {
                 return Convert.ToBase64String(aes.Key);
             }
@@ -35,7 +35,7 @@ namespace Diatrack.Utilities
             byte[] encrypted;
 
             // Create an AesManaged object with the specified key and IV.
-            using (AesManaged aesAlg = new())
+            using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = key;
                 
@@ -82,7 +82,7 @@ namespace Diatrack.Utilities
                 throw new ArgumentException("Size of the encrypted message must be at least the expected length of the IV");
 
             // Create an AesManaged object with the specified key and IV.
-            using (AesManaged aesAlg = new())
+            using (Aes aesAlg = Aes.Create())
             {
                 aesAlg.Key = key;
                 
@@ -115,7 +115,7 @@ namespace Diatrack.Utilities
         /// <returns>UTF-8 encoded hash</returns>
         public static string Sha1Hash(string source)
         {
-            using SHA1Managed sha1 = new();
+            using SHA1 sha1 = SHA1.Create();
             byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(source));
             return string.Concat(hash.Select(b => b.ToString("x2")));
         }

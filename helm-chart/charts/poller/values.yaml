@@ -18,7 +18,9 @@ dexcomPoller:
   maxAccountQuerySize: 10000
   maxConcurrentRequests: 10
   maxQueryPeriodSeconds: 10
+  queryTimeoutSeconds: 10
   bglQueryFrequencySeconds: 10
+  bglAccountRefreshIntervalSeconds: 60
   bglMaxWindowMinutes: 1440 # 24 hours x 60 mins
   bglMaxReadings: 288 # bglMaxWindowMinutes / 5 (Dexcom data interval)
 
@@ -26,7 +28,13 @@ elastic:
   forwardingWorkers: 4
   forwardingBatchSize: 1000
 
+elasticApm:
+  enabled: false
+  serverUrl: ""
+  secretToken: ""
+
 logging:
+  logLevel: Information
   console:
     enabled: true
   file:

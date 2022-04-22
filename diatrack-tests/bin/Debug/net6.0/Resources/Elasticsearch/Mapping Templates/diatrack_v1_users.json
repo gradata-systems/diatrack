@@ -1,0 +1,67 @@
+{
+  "priority": 1,
+  "index_patterns": [
+    "diatrack_v1*_users"
+  ],
+  "template": {
+    "settings": {
+      "number_of_replicas": 2,
+      "number_of_shards": 1,
+      "refresh_interval": "1s"
+    },
+    "mappings": {
+      "dynamic": "runtime",
+      "_source": {
+        "enabled": true
+      },
+      "_routing": {
+        "required": false
+      },
+      "properties": {
+        "@created": {
+          "type": "date"
+        },
+        "@lastActive": {
+          "type": "date"
+        },
+        "dataSource": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "keyword"
+            },
+            "type": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "loginId": {
+              "type": "keyword"
+            },
+            "regionId": {
+              "type": "keyword"
+            },
+            "shareToken": {
+              "type": "keyword"
+            }
+          }
+        },
+        "emailAddress": {
+          "type": "keyword"
+        },
+        "id": {
+          "type": "keyword"
+        },
+        "name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }
+  }
+}

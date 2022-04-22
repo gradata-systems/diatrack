@@ -1,0 +1,43 @@
+{
+  "priority": 1,
+  "index_patterns": [
+    "diatrack_v1*_bgl_readings"
+  ],
+  "data_stream": {},
+  "template": {
+    "settings": {
+      "number_of_replicas": 2,
+      "number_of_shards": 5,
+      "refresh_interval": "1s"
+    },
+    "mappings": {
+      "dynamic": false,
+      "_source": {
+        "enabled": true
+      },
+      "_routing": {
+        "required": false
+      },
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "@received": {
+          "type": "date"
+        },
+        "accountId": {
+          "type": "keyword"
+        },
+        "trend": {
+          "type": "keyword"
+        },
+        "trendId": {
+          "type": "integer"
+        },
+        "value": {
+          "type": "float"
+        }
+      }
+    }
+  }
+}

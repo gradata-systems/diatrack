@@ -1,0 +1,99 @@
+<div class="form-container" (click)="$event.stopPropagation()">
+  <form [formGroup]="dashboardSettingsService.settingsForm">
+    <div formGroupName="bglStatsHistogram">
+      <mat-tab-group class="compact" [(selectedIndex)]="dashboardSettingsService.tabIndex">
+        <mat-tab label="General">
+          <div class="tab-body">
+            <div class="field">
+              <div class="label">
+                <mat-label>Time range</mat-label>
+                <mat-icon class="context-help" matTooltip="Period of time to include in the plot">help_outline</mat-icon>
+              </div>
+              <mat-form-field>
+                <mat-select formControlName="profileType">
+                  <mat-option *ngFor="let histogramProfile of histogramProfiles" [value]="histogramProfile">{{histogramProfile}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="field numeric">
+              <div class="label">
+                <mat-label>Plot height</mat-label>
+                <mat-icon class="context-help" matTooltip="The preferred height of the chart. BGL values greater than this value will cause the height to be expanded.">help_outline</mat-icon>
+              </div>
+              <mat-form-field class="numeric">
+                <input matInput type="number" formControlName="plotHeight" [min]="1" />
+              </mat-form-field>
+            </div>
+            <div class="field">
+              <div class="label">
+                <mat-label>Plot colour</mat-label>
+              </div>
+              <mat-radio-group formControlName="plotColour">
+                <mat-radio-button [value]="plotColour.Uniform">Uniform</mat-radio-button>
+                <mat-radio-button [value]="plotColour.ScaledByBgl">Scaled by BGL</mat-radio-button>
+              </mat-radio-group>
+            </div>
+            <div class="field plot-options">
+              <div class="label">
+                <mat-label>Plot options</mat-label>
+              </div>
+              <mat-checkbox formControlName="activityLog">Activity log</mat-checkbox>
+              <mat-checkbox formControlName="dataLabels">Data labels</mat-checkbox>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Trend line" formGroupName="movingAverage">
+          <div class="tab-body">
+            <div class="field">
+              <div class="label">
+                <mat-label>Trend line</mat-label>
+                <mat-icon class="context-help" matTooltip="The trend line shows a smoothed plot of blood glucose levels over time, as well as a predicted track of where readings may go, based on the observed trend. Advanced users may also customise trend model type and parameters.">help_outline</mat-icon>
+              </div>
+              <mat-checkbox formControlName="enabled" #trendLineEnabled>Enabled</mat-checkbox>
+            </div>
+            <ng-container *ngIf="trendLineEnabled">
+              <div class="field">
+                <div class="label">
+                  <mat-label>Model type</mat-label>
+                  <mat-icon class="context-help" matTooltip="The trend line shows a smoothed plot of blood glucose levels over time, as well as a predicted track of where readings may go, based on the observed trend. Advanced users may also customise trend model type and parameters.">help_outline</mat-icon>
+                </div>
+                <mat-form-field>
+                  <mat-select formControlName="modelType" #modelType>
+                    <mat-option [value]="movingAverageModelType.Simple">Simple</mat-option>
+                    <mat-option [value]="movingAverageModelType.Linear">Linear</mat-option>
+                    <mat-option [value]="movingAverageModelType.Ewma">Exponentially weighted</mat-option>
+                    <mat-option [value]="movingAverageModelType.HoltLinear">Holt (linear)</mat-option>
+                    <mat-option [value]="movingAverageModelType.HoltWinters">Holt-Winters</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="slider-grid field">
+                <div class="label">
+                  <mat-label>Window size</mat-label>
+                  <mat-icon class="context-help" matTooltip="Number of data points to use in trend calculation. Larger values result in more smoothing.">help_outline</mat-icon>
+                </div>
+                <div class="slider">
+                  <mat-slider formControlName="window" [min]="1" [max]="200" [step]="1" [thumbLabel]="true"></mat-slider>
+                </div>
+                <div class="label">
+                  <mat-label>Alpha</mat-label>
+                  <mat-icon class="context-help" matTooltip="Rate of exponential decay. The larger the value, the less smoothing">help_outline</mat-icon>
+                </div>
+                <div class="slider">
+                  <mat-slider formControlName="alpha" [min]="0" [max]="1" [step]="0.1" [tickInterval]="0.1" [thumbLabel]="true"></mat-slider>
+                </div>
+                <div class="label">
+                  <mat-label>Predictions</mat-label>
+                  <mat-icon class="context-help" matTooltip="Number of future data points to predict">help_outline</mat-icon>
+                </div>
+                <div class="slider">
+                  <mat-slider formControlName="predictionCount" [min]="1" [max]="20" [tickInterval]="1" [thumbLabel]="true"></mat-slider>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

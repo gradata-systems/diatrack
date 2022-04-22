@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams, TimeUnit} from "../../api/models/activity-log-entry";
+import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../../api/models/activity-log-entry";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AppConfigService} from "../../api/app-config.service";
 import {DataSourceService} from "../../api/data-source.service";
@@ -13,6 +13,7 @@ import {BglUnit} from "../../api/models/user-preferences";
 import {take} from "rxjs/operators";
 import {DEFAULTS} from "../../defaults";
 import {DateTime} from "luxon";
+import {TimeUnit} from "../../api/models/bgl-account-stats";
 
 @Component({
     selector: 'app-new-activity-log-entry-dialog',

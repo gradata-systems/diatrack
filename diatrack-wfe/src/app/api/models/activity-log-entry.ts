@@ -34,10 +34,8 @@ export enum ActivityLogEntryCategory
     Other = 'other'
 }
 
-export enum TimeUnit
+export enum SortOrder
 {
-    Second = 'second',
-    Minute = 'minute',
-    Hour = 'hour',
-    Day = 'day'
+    Ascending = 'ascending',
+    Descending = 'descending'
 }

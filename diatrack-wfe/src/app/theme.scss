@@ -1,6 +1,6 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -21,6 +21,8 @@ $diatrack-theme: mat.define-dark-theme((
 ));
 
 // Common styles
+$app-background-color: #2b2b2b;
 $heading-1-color: #e37670;
 $heading-2-color: mat.get-color-from-palette($diatrack-accent, 800);
 $heading-3-color: mat.get-color-from-palette($diatrack-accent, 900);
+$status-bar-height: 8px;

@@ -28,3 +28,34 @@ spec:
                 name: {{ include "diatrack-api.fullname" . }}
                 port:
                   name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "diatrack-api.fullname" . }}-nightscout
+  labels:
+  {{- include "diatrack-api.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /nightscout/$1
+    {{- with .Values.global.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.global.ingress.className }}
+  {{- with .Values.global.ingress.tls.secretName }}
+  tls:
+    - hosts:
+        - {{ $.Values.global.hostName }}
+      secretName: {{ . }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.global.hostName }}
+      http:
+        paths:
+          - path: /nightscout/api/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "diatrack-api.fullname" . }}
+                port:
+                  name: http

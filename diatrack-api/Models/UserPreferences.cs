@@ -48,16 +48,18 @@ namespace Diatrack.Models
 
     public class BglStatsHistogramPreferences
     {
+        public string ProfileType { get; set; }
+
+        public int? PlotHeight { get; set; }
+
         [StringEnum]
         public PlotColour? PlotColour { get; set; }
 
-        public int? TimeRangeHours { get; set; }
+        public MovingAverageParams MovingAverage { get; set; }
 
         public bool? ActivityLog { get; set; }
 
         public bool? DataLabels { get; set; }
-
-        public int? Buckets { get; set; }
     }
 
     public enum PlotColour

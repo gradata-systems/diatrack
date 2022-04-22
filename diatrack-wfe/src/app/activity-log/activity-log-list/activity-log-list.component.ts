@@ -1,30 +1,35 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ActivityLogService} from "../activity-log.service";
-import {merge, Observable, Subject} from "rxjs";
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {ActivityLogQueryParams, ActivityLogSearchHit, ActivityLogService} from "../activity-log.service";
+import {BehaviorSubject, merge, Observable, of, range, Subject} from "rxjs";
 import {ActivityLogEntry, ActivityLogEntryCategory} from "../../api/models/activity-log-entry";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../common-dialog/common-dialog.service";
 import {DateTime} from "luxon";
 import {BglStatsService} from "../../api/bgl-stats.service";
 import {UserService} from "../../api/user.service";
-import {map, mergeMap, takeUntil, tap} from "rxjs/operators";
+import {catchError, concatMap, map, mergeMap, takeUntil, tap, throttleTime} from "rxjs/operators";
 import {MatDialog} from "@angular/material/dialog";
 import {ActivityLogEntryDialogParams, NewActivityLogEntryDialogComponent} from "../new-activity-log-entry-dialog/new-activity-log-entry-dialog.component";
 import {AppConfigService} from "../../api/app-config.service";
 import {DashboardService} from "../../pages/dashboard/dashboard.service";
 import {DEFAULTS} from "../../defaults";
+import {CollectionViewer, DataSource, ListRange} from "@angular/cdk/collections";
+import {PageService} from "../../pages/page.service";
 
 @Component({
     selector: 'app-activity-log-list',
     templateUrl: './activity-log-list.component.html',
-    styleUrls: ['./activity-log-list.component.scss']
+    styleUrls: ['./activity-log-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ActivityLogListComponent implements OnInit, OnDestroy {
-    @Input() dateFrom?: DateTime;
+export class ActivityLogListComponent extends DataSource<ActivityLogSearchHit> implements OnInit, OnChanges, OnDestroy {
+    @Input() options: ActivityLogQueryParams | undefined | null = undefined;
+    @Input() pageSize = 10;
 
-    readonly logEntries$: Subject<ActivityLogEntry[]> = new Subject<ActivityLogEntry[]>();
+    readonly logEntries$ = new BehaviorSubject<ActivityLogSearchHit[]>([]);
     readonly destroying$ = new Subject<boolean>();
-    loading = false;
+    private readonly changed$ = new Subject<void>();
+    listRange?: ListRange;
 
     readonly activityLogEntryCategory = ActivityLogEntryCategory;
 
@@ -32,42 +37,89 @@ export class ActivityLogListComponent implements OnInit, OnDestroy {
         public activityLogService: ActivityLogService,
         public bglStatsService: BglStatsService,
         public userService: UserService,
+        private pageService: PageService,
         private snackBar: MatSnackBar,
         private appConfigService: AppConfigService,
         private appDialogService: DialogService,
         private dialogService: MatDialog,
         private dashboardService: DashboardService
-    ) { }
+    ) {
+        super();
+    }
+
+    connect(collectionViewer: CollectionViewer): Observable<readonly (ActivityLogSearchHit)[]> {
+        merge(
+            collectionViewer.viewChange.pipe(
+                tap(listRange => {
+                    this.listRange = listRange;
+                })
+            ),
+            this.activityLogService.refresh$,
+            this.activityLogService.changed$,
+            this.changed$
+        ).pipe(
+            throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
+            mergeMap(() => this.fetchPages()),
+            takeUntil(this.destroying$)
+        ).subscribe();
+
+        this.fetchPages().subscribe();
+
+        return this.logEntries$;
+    }
+
+    disconnect(collectionViewer: CollectionViewer): void {
+        this.destroying$.next(true);
+    }
+
+    private fetchPages(): Observable<ActivityLogSearchHit[]> {
+        let startPage, endPage: number;
+
+        if (this.listRange) {
+            startPage = Math.floor(this.listRange.start / this.pageSize);
+            endPage = Math.max(Math.floor((this.listRange.end - 1) / this.pageSize), 1);
+        } else {
+            startPage = 0;
+            endPage = 1;
+        }
+
+        if (endPage - startPage <= 0) {
+            return of();
+        } else {
+            this.pageService.isLoading(true);
+            return range(startPage, endPage - startPage).pipe(
+                concatMap(pageIndex => this.activityLogService.searchEntries({
+                    size: this.appConfigService.initialLogEntryQuerySize,
+                    from: pageIndex * this.pageSize,
+                    ...this.options
+                })),
+                tap(entries => {
+                    this.pageService.isLoading(false);
+                    this.logEntries$.next(entries);
+                }),
+                catchError(() => {
+                    this.pageService.isLoading(false);
+                    this.snackBar.open('Error occurred when querying the activity log');
+                    return of([]);
+                })
+            );
+        }
+    }
 
     ngOnInit() {
-        merge(
-            this.activityLogService.refresh$,
-            this.activityLogService.changed$
-        ).pipe(
-            takeUntil(this.destroying$),
-            mergeMap(() => {
-                this.loading = true;
-                return this.activityLogService.searchEntries({
-                    size: this.appConfigService.initialLogEntryQuerySize,
-                    fromDate: this.dateFrom ?? undefined
-                }).pipe(tap(() => {
-                    this.loading = false;
-                }));
-            })
-        ).subscribe(entries => {
-            this.logEntries$.next(entries);
-        }, error => {
-            this.snackBar.open('Error occurred when querying the activity log');
-        });
-
         // If a dashboard log entry marker is clicked, display the edit dialog
         this.dashboardService.activityLogMarkerClicked$.pipe(
             takeUntil(this.destroying$)
         ).subscribe(logEntryId => {
             this.editLogEntryById(logEntryId);
         });
+    }
 
-        this.activityLogService.triggerRefresh();
+    ngOnChanges(changes: SimpleChanges) {
+        // Reset virtual scroll viewport range as we're about to filter or sort the view
+        this.listRange = undefined;
+
+        this.changed$.next();
     }
 
     ngOnDestroy() {

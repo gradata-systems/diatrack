@@ -31,5 +31,6 @@
         public string AccountBglState { get; set; }
         public string BglReadings { get; set; }
         public string ActivityLog { get; set; }
+        public string AccountState { get; set; }
     }
 }

@@ -31,12 +31,18 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: App__EncryptionKeyFile
+              value: "/app/secrets/aes.key"
             - name: DexcomPoller__MaxAccountQuerySize
               value: {{ .Values.dexcomPoller.maxAccountQuerySize | quote }}
             - name: DexcomPoller__MaxConcurrentRequests
               value: {{ .Values.dexcomPoller.maxConcurrentRequests | quote }}
             - name: DexcomPoller__MaxQueryPeriodSeconds
               value: {{ .Values.dexcomPoller.maxQueryPeriodSeconds | quote }}
+            - name: DexcomPoller__QueryTimeoutSeconds
+              value: {{ .Values.dexcomPoller.queryTimeoutSeconds | quote }}
+            - name: DexcomPoller__BglAccountRefreshIntervalSeconds
+              value: {{ .Values.dexcomPoller.bglAccountRefreshIntervalSeconds | quote }}
             - name: DexcomPoller__BglQueryFrequencySeconds
               value: {{ .Values.dexcomPoller.bglQueryFrequencySeconds | quote }}
             - name: DexcomPoller__BglMaxWindowMinutes
@@ -58,20 +64,63 @@ spec:
               value: {{ .Values.elastic.forwardingBatchSize | quote }}
             - name: Elastic__Indices__Users
               value: {{ .Values.global.elastic.indices.users | quote }}
-            - name: Elastic__Indices__AccountBglState
-              value: {{ .Values.global.elastic.indices.accountBglState | quote }}
+            - name: Elastic__Indices__AccountState
+              value: {{ .Values.global.elastic.indices.accountState | quote }}
             - name: Elastic__Indices__BglReadings
               value: {{ .Values.global.elastic.indices.bglReadings | quote }}
             - name: Elastic__Indices__ActivityLog
               value: {{ .Values.global.elastic.indices.activityLog | quote }}
+            - name: Logging__LogLevel__Default
+              value: {{ .Values.logging.logLevel | quote }}
             - name: Logging__File__Path
               value: "/var/log/diatrack/log-.json"
             - name: Logging__File__Enabled
               value: {{ .Values.logging.file.enabled | quote }}
             - name: Logging__File__RollingInterval
               value: {{ .Values.logging.file.rollingInterval | quote }}
+            {{- if .Values.elasticApm.enabled }}
+            - name: ElasticApm__Enabled
+              value: {{ .Values.elasticApm.enabled | quote }}
+            - name: ElasticApm__ServerUrl
+              value: {{ .Values.elasticApm.serverUrl | quote }}
+            - name: ElasticApm__SecretToken
+              value: {{ .Values.elasticApm.secretToken | quote }}
+            - name: ElasticApm__ServiceName
+              value: "Diatrack poller"
+            - name: ElasticApm__Environment
+              value: {{ .Release.Name }}
+            {{- end }}
+          volumeMounts:
+            - name: encryption-key
+              subPath: {{ .Values.global.encryptionKey.secretKey }}
+              mountPath: /app/secrets/aes.key
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 1
+            timeoutSeconds: 3
+            failureThreshold: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: encryption-key
+          secret:
+            secretName: {{ .Values.global.encryptionKey.secretName }}
+            defaultMode: 0400
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

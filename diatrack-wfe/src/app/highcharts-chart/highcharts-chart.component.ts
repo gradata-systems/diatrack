@@ -201,7 +201,6 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
     private regenerate(oldOptions?: Options): Observable<void>
     {
         return this.generate(oldOptions).pipe(
-            takeUntil(this.destroy$),
             map((chartInstance) => {
                 this._chart = chartInstance;
                 if (this.chart)
@@ -216,7 +215,8 @@ export class HighchartsChartComponent implements OnInit, OnDestroy
                 }
 
                 this.subRangeSelected = this.isSubRangeSelected();
-            })
+            }),
+            takeUntil(this.destroy$)
         );
     }
 

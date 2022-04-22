@@ -1,7 +1,12 @@
 @import '../page-styles';
 
+.page {
+    overflow-y: auto;
+}
+
 .video {
     margin-top: 20px;
     border: solid 1px rgba(255, 255, 255, 0.5);
     border-radius: 5px;
+    max-width: 100%;
 }

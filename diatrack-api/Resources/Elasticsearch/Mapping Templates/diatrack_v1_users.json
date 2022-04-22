@@ -5,12 +5,12 @@
   ],
   "template": {
     "settings": {
-      "number_of_replicas": 1,
+      "number_of_replicas": 2,
       "number_of_shards": 1,
       "refresh_interval": "1s"
     },
     "mappings": {
-      "dynamic": true,
+      "dynamic": "runtime",
       "_source": {
         "enabled": true
       },
@@ -40,6 +40,9 @@
               "type": "keyword"
             },
             "regionId": {
+              "type": "keyword"
+            },
+            "shareToken": {
               "type": "keyword"
             }
           }

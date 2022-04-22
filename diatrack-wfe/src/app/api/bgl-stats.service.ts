@@ -1,16 +1,17 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BglReading, BglTrend} from "./models/bgl-reading";
-import {BehaviorSubject, interval, Observable, Subject} from "rxjs";
+import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {BASE_PATH} from "./variables";
-import {BglAccountStats} from "./models/bgl-account-stats";
+import {BglAccountStats, TimeUnit} from "./models/bgl-account-stats";
 import {BglUnit} from "./models/user-preferences";
 import {DateTime} from "luxon";
-import {filter} from "rxjs/operators";
 import {AppConfigService} from "./app-config.service";
 import {UserService} from "./user.service";
 import * as chroma from "chroma-js";
 import {DEFAULTS} from "../defaults";
+import {MovingAverageParams} from "./models/moving-average-params";
+import {AppCoreService} from "../app-core.service";
 
 @Injectable({
     providedIn: 'root'
@@ -24,6 +25,7 @@ export class BglStatsService {
 
     constructor(
         @Inject(BASE_PATH) private basePath: string,
+        private appCoreService: AppCoreService,
         private httpClient: HttpClient,
         private appConfigService: AppConfigService,
         private userService: UserService
@@ -32,6 +34,7 @@ export class BglStatsService {
             this.refresh$.next();
         });
 
+        // If user preferences change, update the colour scale based on the treatment parameters
         this.userService.userPreferences$.subscribe(prefs => {
             const targetBglRange = prefs?.treatment?.targetBglRange ?? DEFAULTS.userPreferences.treatment!.targetBglRange;
             const bglLowThreshold = prefs?.treatment?.bglLowThreshold ?? DEFAULTS.userPreferences.treatment!.bglLowThreshold;
@@ -42,13 +45,9 @@ export class BglStatsService {
         });
 
         // Trigger refresh on timer
-        interval(this.appConfigService.refreshInterval).pipe(
-            filter(x => this.appConfigService.autoRefreshEnabled)
-        ).subscribe(x => this.refresh$.next());
-    }
-
-    refresh() {
-        this.refresh$.next();
+        this.appCoreService.autoRefresh$.subscribe(() => {
+            this.refresh$.next();
+        });
     }
 
     updateBglStatus(size: number) {
@@ -85,7 +84,7 @@ export class BglStatsService {
         });
     }
 
-    getAccountStatsHistogram(params: GetLatestReadingsParams): Observable<BglAccountStats> {
+    getAccountStatsHistogram(params: GetBglForPeriodParams): Observable<BglAccountStats> {
         return this.httpClient.post<BglAccountStats>(`${this.basePath}/bgl/accountStatsHistogram`, params);
     }
 
@@ -139,10 +138,12 @@ type LatestReadings = {
     [accountId: string]: BglReading[];
 }
 
-interface GetLatestReadingsParams {
-    start: string;
-    end: string;
-    buckets: number;
+interface GetBglForPeriodParams {
+    queryFrom: string;
+    queryTo: string;
+    bucketTimeUnit: TimeUnit;
+    bucketTimeFactor: number;
+    movingAverage: MovingAverageParams;
 }
 
 export interface BglStatus {

@@ -48,7 +48,7 @@ export class NewDataSourceDialogComponent implements OnInit {
                 this.dialogRef.close(this.formGroup.value);
             }, (error: HttpErrorResponse) => {
                 this.inProgress = false;
-                this.error = error.error?.detail ?? 'Error occurred when registering account';
+                this.error = 'Could not login. Ensure the region and account details are correct.';
             })
         }
     }

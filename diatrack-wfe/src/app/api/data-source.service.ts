@@ -44,4 +44,10 @@ export class DataSourceService {
             this.userService.reloadUser();
         }));
     }
+
+    generateShareToken(dataSource: DataSource): Observable<string> {
+        return this.httpClient.get(`${this.basePath}/user/dataSource/${dataSource.id}/shareToken`, {
+            responseType: 'text'
+        });
+    }
 }

@@ -1,15 +1,25 @@
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @import '../theme';
 
 .page {
+    position: relative;
     padding: 20px 20px;
     height: 100%;
-    overflow-y: auto;
 
     & > .content {
         max-width: 800px;
         margin: auto;
-        padding-bottom: 50px;
+        height: 100%;
+
+        .body {
+            height: 100%;
+            display: flex;
+            position: relative;
+
+            app-activity-log-list {
+                height: 100%;
+            }
+        }
     }
 
     .banner {
@@ -64,6 +74,10 @@ mat-progress-bar.page-loading {
     top: 0;
     left: 0;
     width: 100%;
+
+    &.hidden {
+        display: none;
+    }
 }
 
 form {

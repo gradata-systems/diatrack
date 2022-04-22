@@ -9,6 +9,7 @@ import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
 import {AppIconService} from "./app-icon.service";
+import {AppUpdateService} from "./app-update.service";
 
 @Component({
     selector: 'app-root',
@@ -28,8 +29,11 @@ export class AppComponent implements OnInit, OnDestroy {
         private router: Router,
         private titleService: Title,
         private bglStatsService: BglStatsService,
-        private appIconService: AppIconService
-    ) { }
+        private appIconService: AppIconService,
+        appUpdateService: AppUpdateService
+    ) {
+        appUpdateService.registerForUpdateCheck();
+    }
 
     ngOnInit() {
         this.appIconService.registerIcons();
@@ -40,7 +44,6 @@ export class AppComponent implements OnInit, OnDestroy {
         // Update the browser title when the BGL status updates
         this.bglStatsService.bglStatus$.pipe(
             filter(() => this.userService.loggedIn),
-            takeUntil(this.destroying$),
             mergeMap(bglStatus => {
                 return this.userService.userPreferences$.pipe(tap(userPreferences => {
                     if (bglStatus.bgl !== undefined && bglStatus.delta !== undefined && bglStatus.lastReading !== undefined) {
@@ -54,7 +57,8 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.titleService.setTitle(this.noDataMessage);
                     }
                 }));
-            })
+            }),
+            takeUntil(this.destroying$)
         ).subscribe(() => {}, error => {
             this.titleService.setTitle(this.noDataMessage);
             return of();

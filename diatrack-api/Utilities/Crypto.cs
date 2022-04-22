@@ -1,22 +1,19 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Diatrack.Utilities
 {
     public class Crypto
     {
-        public static string GenerateIv()
-        {
-            using (AesManaged aes = new())
-            {
-                return Convert.ToBase64String(aes.IV);
-            }
-        }
+        // Length of the AES IV in bytes
+        const int IV_SIZE_BYTES = 16;
 
         public static string GenerateKey()
         {
-            using (AesManaged aes = new())
+            using (Aes aes = Aes.Create())
             {
                 return Convert.ToBase64String(aes.Key);
             }
@@ -26,33 +23,31 @@ namespace Diatrack.Utilities
         /// Encrypts a string using AES
         /// </summary>
         /// <param name="plainText"></param>
-        /// <param name="key">Base-64 encoded key</param>
-        /// <param name="iv">Base-64 encoded initialisation vector</param>
+        /// <param name="key">AES key bytes</param>
         /// <returns></returns>
-        public static string EncryptString(string plainText, string key, string iv)
+        public static string EncryptString(string plainText, byte[] key)
         {
-            // Check arguments.
             if (plainText == null || plainText.Length <= 0)
                 throw new ArgumentNullException(nameof(plainText));
             if (key == null || key.Length <= 0)
                 throw new ArgumentNullException(nameof(key));
-            if (iv == null || iv.Length <= 0)
-                throw new ArgumentNullException(nameof(iv));
-
+            
             byte[] encrypted;
 
             // Create an AesManaged object with the specified key and IV.
-            using (AesManaged aesAlg = new())
+            using (Aes aesAlg = Aes.Create())
             {
-                aesAlg.Key = Convert.FromBase64String(key);
-                aesAlg.IV = Convert.FromBase64String(iv);
-
+                aesAlg.Key = key;
+                
                 // Create an encryptor to perform the stream transform.
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor();
 
                 // Create the streams used for encryption.
                 using (MemoryStream msEncrypt = new())
                 {
+                    // Write the IV to the beginning of the stream
+                    msEncrypt.Write(aesAlg.IV, 0, aesAlg.IV.Length);
+
                     using (CryptoStream csEncrypt = new(msEncrypt, encryptor, CryptoStreamMode.Write))
                     {
                         using (StreamWriter swEncrypt = new(csEncrypt))
@@ -74,45 +69,55 @@ namespace Diatrack.Utilities
         /// Decrypts an AES-encrypted string
         /// </summary>
         /// <param name="cipherText">Base-64 encoded encrypted string</param>
-        /// <param name="key">Base-64 encoded key</param>
-        /// <param name="iv">Base-64 encoded initialisation vector</param>
+        /// <param name="key">AES key bytes</param>
         /// <returns>Plaintext string</returns>
-        public static string DecryptString(string cipherText, string key, string iv)
+        public static string DecryptString(string cipherText, byte[] key)
         {
             // Check arguments.
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException(nameof(cipherText));
             if (key == null || key.Length <= 0)
                 throw new ArgumentNullException(nameof(key));
-            if (iv == null || iv.Length <= 0)
-                throw new ArgumentNullException(nameof(iv));
-
-            string plaintext = null;
+            if (cipherText.Length < IV_SIZE_BYTES)
+                throw new ArgumentException("Size of the encrypted message must be at least the expected length of the IV");
 
             // Create an AesManaged object with the specified key and IV.
-            using (AesManaged aesAlg = new())
+            using (Aes aesAlg = Aes.Create())
             {
-                aesAlg.Key = Convert.FromBase64String(key);
-                aesAlg.IV = Convert.FromBase64String(iv);
-
-                // Create a decryptor to perform the stream transform.
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
+                aesAlg.Key = key;
+                
                 // Create the streams used for decryption.
                 using (MemoryStream msDecrypt = new(Convert.FromBase64String(cipherText)))
                 {
+                    // Read the IV from the stream
+                    byte[] iv = new byte[IV_SIZE_BYTES];
+                    msDecrypt.Read(iv, 0, IV_SIZE_BYTES);
+                    aesAlg.IV = iv;
+
+                    // Create a decryptor to perform the stream transform.
+                    ICryptoTransform decryptor = aesAlg.CreateDecryptor();
+
                     using (CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read))
                     {
                         using (StreamReader srDecrypt = new(csDecrypt))
                         {
                             // Read the decrypted bytes from the decrypting stream and place them in a string
-                            plaintext = srDecrypt.ReadToEnd();
+                            return srDecrypt.ReadToEnd();
                         }
                     }
                 }
             }
+        }
 
-            return plaintext;
+        /// <summary>
+        /// Generates a SHA-1 hash of the specified string
+        /// </summary>
+        /// <returns>UTF-8 encoded hash</returns>
+        public static string Sha1Hash(string source)
+        {
+            using SHA1 sha1 = SHA1.Create();
+            byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(source));
+            return string.Concat(hash.Select(b => b.ToString("x2")));
         }
     }
 }

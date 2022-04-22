@@ -6,6 +6,11 @@ global:
   # Public URL, used as the Ingress host
   hostName: "diatrack.example.com"
 
+  # Encryption key used for app secrets
+  encryptionKey:
+    secretName: ""
+    secretKey: ""
+
   azureAdB2C:
     instance: "" # https://xxx.b2clogin.com
     domain: "" # xxx.onmicrosoft.com
@@ -22,9 +27,9 @@ global:
       secretKey: ""
     indices:
       users: diatrack_v1_users
-      accountBglState: diatrack_v1_account_bgl_state
       bglReadings: diatrack_v1_bgl_readings
       activityLog: diatrack_v1_activity_log
+      accountState: diatrack_v1_account_state
 
   ingress:
     className: nginx

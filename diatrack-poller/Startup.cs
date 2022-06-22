@@ -42,6 +42,8 @@ namespace DiatrackPoller
                 config.ApiVersionReader = new QueryStringApiVersionReader("version");
             });
 
+            services.AddResponseCompression();
+
             services.AddOptions();
             services.Configure<AppConfiguration>(Configuration.GetSection("App"));
             services.Configure<ElasticConfiguration>(Configuration.GetSection("Elastic"));

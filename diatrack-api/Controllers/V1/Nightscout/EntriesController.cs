@@ -121,6 +121,7 @@ namespace Diatrack.Controllers.V1.Nightscout
             {
                 return Ok(new ServerStatus
                 {
+                    Status = "ok",
                     ApiEnabled = true,
                     CarePortalEnabled = false,
                     Head = "",

@@ -27,42 +27,104 @@ namespace Diatrack.Controllers.V1
             _userService = userService;
         }
 
-        [HttpPost("Search")]
-        public async Task<ActionResult<IEnumerable<ActivityLogEntry>>> GetEntries([FromBody] ActivityLogQueryParams queryParams)
+        [HttpPost("search")]
+        public async Task<ActionResult<IEnumerable<ActivityLogSearchHit>>> GetEntries([FromBody] ActivityLogQueryParams queryParams)
         {
             UserProfile user = await _userService.GetUser();
             string[] accountIds = await _userService.GetLinkedAccountIds();
+
+            TermQuery categoryQuery = null;
+            if (!string.IsNullOrEmpty(queryParams.Category))
+            {
+                categoryQuery = new()
+                {
+                    Field = Infer.Field<ActivityLogEntry>(f => f.Category),
+                    Value = queryParams.Category
+                };
+            }
+
+            BoolQuery searchTermQuery = null;
+            Highlight highlight = null;
+            if (!string.IsNullOrEmpty(queryParams.SearchTerm))
+            {
+                Fields searchQueryFields = Infer.Field<ActivityLogEntry>(f => f.Notes, 2)
+                    .And(Infer.Field<ActivityLogEntry>(f => f.Category))
+                    .And(Infer.Field("properties.*"));
+
+                searchTermQuery = new()
+                {
+                    Should = new List<QueryContainer>()
+                    {
+                        new MultiMatchQuery()
+                        {
+                            Fields = searchQueryFields,
+                            Query = queryParams.SearchTerm,
+                            Fuzziness = Fuzziness.Auto,
+                            Lenient = true,
+                            Boost = 1
+                        },
+                        new MultiMatchQuery()
+                        {
+                            Fields = searchQueryFields,
+                            Query = queryParams.SearchTerm,
+                            Lenient = true,
+                            Type = TextQueryType.PhrasePrefix
+                        }
+                    }
+                };
+
+                highlight = new()
+                {
+                    Fields = new Dictionary<Field, IHighlightField>()
+                    {
+                        { Infer.Field<ActivityLogEntry>(f => f.Notes), new HighlightField() },
+                        { Infer.Field<ActivityLogEntry>(f => f.Category), new HighlightField() },
+                        { Infer.Field("properties.*"), new HighlightField() }
+                    }
+                };
+            }
 
             try
             {
                 ISearchResponse<ActivityLogEntry> response = (await _elasticClient.SearchAsync<ActivityLogEntry>(s => s
                     .Size(queryParams.Size)
+                    .From(queryParams.From)
                     .Query(q => q
-                        .Bool(b => b
-                            .Must(
-                                mu => mu
-                                    .Terms(t => t
-                                        .Field(f => f.AccountId)
-                                        .Terms(accountIds)
-                                    ),
-                                mu2 => mu2
-                                    .DateRange(dr => dr
-                                        .Field(f => f.Created)
-                                        .GreaterThanOrEquals(queryParams.FromDate ?? DateTime.MinValue)
-                                        .LessThanOrEquals(queryParams.ToDate ?? DateTime.UtcNow)
-                                    )
-                            )
-                        )
+                        .Terms(t => t
+                            .Field(f => f.AccountId)
+                            .Terms(accountIds)
+                        ) && q
+                        .DateRange(dr => dr
+                            .Field(f => f.Created)
+                            .GreaterThanOrEquals(queryParams.FromDate ?? DateTime.MinValue)
+                            .LessThanOrEquals(queryParams.ToDate ?? DateTime.UtcNow)
+                        ) &&
+                        categoryQuery &&
+                        searchTermQuery
                     )
-                    .Sort(s => s
-                        .Field(f => f.Created, SortOrder.Descending)
-                    )
+                    .Highlight(h => highlight)
+                    .Sort(s => 
+                    {
+                        if (!string.IsNullOrEmpty(queryParams.SortField))
+                        {
+                            return s.Field(Infer.Field(queryParams.SortField), queryParams.SortOrder ?? SortOrder.Descending);
+                        }
+                        else
+                        {
+                            return s.Field(f => f.Created, SortOrder.Descending);
+                        }
+                    })
                 ));
 
                 return Ok(response.Hits.Select(hit =>
                 {
                     hit.Source.Id = hit.Id;
-                    return hit.Source;
+
+                    return new ActivityLogSearchHit()
+                    {
+                        Hit = hit.Source,
+                        Highlight = hit.Highlight
+                    };
                 }));
             }
             catch (Exception ex)
@@ -204,8 +266,26 @@ namespace Diatrack.Controllers.V1
     {
         public int Size { get; set; }
 
+        public int? From { get; set; }
+
         public DateTime? FromDate { get; set; }
 
         public DateTime? ToDate { get; set; }
+
+        public string Category { get; set; }
+
+        public string SearchTerm { get; set; }
+
+        public string SortField { get; set; }
+
+        [StringEnum]
+        public SortOrder? SortOrder { get; set; }
+    }
+
+    public class ActivityLogSearchHit
+    {
+        public ActivityLogEntry Hit { get; set; }
+
+        public IReadOnlyDictionary<string, IReadOnlyCollection<string>> Highlight { get; set; }
     }
 }

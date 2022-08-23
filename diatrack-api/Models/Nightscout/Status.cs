@@ -7,6 +7,8 @@ namespace Diatrack.Models.Nightscout
 {
     public class ServerStatus
     {
+        public string Status { get; set; }
+
         public bool ApiEnabled { get; set; }
 
         public bool CarePortalEnabled { get; set; }

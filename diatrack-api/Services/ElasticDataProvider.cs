@@ -35,6 +35,7 @@ namespace Diatrack.Services
                 connectionSettings.DefaultMappingFor<BglReading>(m => m.IndexName(_elasticConfig.Indices.BglReadings));
                 connectionSettings.DefaultMappingFor<ActivityLogEntry>(m => m.IndexName(_elasticConfig.Indices.ActivityLog));
                 connectionSettings.DefaultMappingFor<AccountStateRecord>(m => m.IndexName(_elasticConfig.Indices.AccountState));
+                connectionSettings.DefaultMappingFor<UserEntity>(m => m.IndexName(_elasticConfig.Indices.UserEntities));
 
                 NestClient = new ElasticClient(connectionSettings);
 

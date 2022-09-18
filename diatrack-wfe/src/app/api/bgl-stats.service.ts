@@ -118,7 +118,7 @@ export class BglStatsService {
      * Get a CSS colour value for displaying a colour-coded BGL value, according to the user's treatment parameters
      * @param scaledBgl - Scaled to the user's BGL units
      */
-    getBglColour(scaledBgl: number): string {
+    getBglColour(scaledBgl?: number): string {
         return this.colourScale(scaledBgl).css();
     }
 

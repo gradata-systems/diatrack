@@ -229,22 +229,22 @@ export class DashboardService implements OnDestroy {
                     formatter: function (tooltip) {
                         if (this.series.index === 0) {
                             const delta = this.point.options.custom ? this.point.options.custom['delta'] : null;
-                            const datetime = DateTime.fromMillis(this.x);
+                            const datetime = DateTime.fromMillis(this.point.x);
                             const date = datetime.toFormat('dd MMM');
                             const time = datetime.toFormat('HH:mm');
-                            const pointColour = self.bglStatsService.getBglColour(this.y);
+                            const pointColour = self.bglStatsService.getBglColour(this.point.y);
 
                             return `<div class="chart-tooltip"><table>` +
                                 `<tr><th>${date}</th><th>${time}</th></tr>` +
-                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
+                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.point.y!, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
                                 `<tr><td>Change</td><td>${numberFormat(delta, 2)}</td></tr>` +
                                 `</table></div>`;
                         } else if (this.series.index === 1) {
-                            const pointColour = self.bglStatsService.getBglColour(this.y);
+                            const pointColour = self.bglStatsService.getBglColour(this.point.y);
                             const title: string = this.point.options.custom!['future'] === true ? 'Predicted' : 'Trend';
                             return `<div class="chart-tooltip"><table>` +
                                 `<tr><th>${title}</th></tr>` +
-                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.y, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
+                                `<tr><td>BGL</td><td style="color: ${pointColour}">${numberFormat(this.point.y!, 1)} ${getBglUnitDisplayValue(bglUnit)}</td></tr>` +
                                 `</table></div>`;
                         } else {
                             const properties = this.point.options.custom!;

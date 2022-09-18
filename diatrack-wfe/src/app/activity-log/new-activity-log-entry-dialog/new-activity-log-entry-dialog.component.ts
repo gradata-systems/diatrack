@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ActivityLogEntry, ActivityLogEntryCategory, ActivityLogEntryCategoryInfo, ActivityLogEntryParams} from "../../api/models/activity-log-entry";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {AppConfigService} from "../../api/app-config.service";
 import {DataSourceService} from "../../api/data-source.service";
 import {ActivityLogService} from "../activity-log.service";
@@ -22,7 +22,7 @@ import {TimeUnit} from "../../api/models/bgl-account-stats";
 })
 export class NewActivityLogEntryDialogComponent implements OnInit {
 
-    readonly formGroup: FormGroup;
+    readonly formGroup: UntypedFormGroup;
     inProgress = false;
 
     readonly activityLogEntryType = ActivityLogEntryCategory;
@@ -32,7 +32,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
     constructor(
         @Inject(MAT_DIALOG_DATA) public readonly dialogData: ActivityLogEntryDialogParams,
         private dialogRef: MatDialogRef<NewActivityLogEntryDialogComponent>,
-        private fb: FormBuilder,
+        private fb: UntypedFormBuilder,
         public appConfigService: AppConfigService,
         public dataSourceService: DataSourceService,
         public userService: UserService,

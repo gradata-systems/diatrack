@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {DataSource, DataSourceType} from "../../../../api/models/data-source";
 import {DataSourceService} from "../../../../api/data-source.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {DialogService} from "../../../../common-dialog/common-dialog.service";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -14,7 +14,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class NewDataSourceDialogComponent implements OnInit {
 
-    readonly formGroup: FormGroup;
+    readonly formGroup: UntypedFormGroup;
     error: string | null = null;
     inProgress = false;
 
@@ -26,7 +26,7 @@ export class NewDataSourceDialogComponent implements OnInit {
         private dataSourceService: DataSourceService,
         private dialogService: DialogService,
         private snackBar: MatSnackBar,
-        fb: FormBuilder
+        fb: UntypedFormBuilder
     ) {
         this.formGroup = fb.group({
             type: fb.control(DataSourceType.Dexcom, Validators.required),

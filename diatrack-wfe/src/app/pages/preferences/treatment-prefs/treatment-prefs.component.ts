@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BglUnit, TimeFormat, TreatmentPreferences, UserPreferences} from "../../../api/models/user-preferences";
-import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
+import {AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {UserService} from "../../../api/user.service";
 import {Subject} from "rxjs";
 import {debounceTime, takeUntil} from "rxjs/operators";
@@ -14,9 +14,9 @@ import {AppConfigService} from "../../../api/app-config.service";
 })
 export class TreatmentPrefsComponent implements OnInit {
 
-    readonly settingsForm: FormGroup;
-    readonly targetBglRangeMin: FormControl;
-    readonly targetBglRangeMax: FormControl;
+    readonly settingsForm: UntypedFormGroup;
+    readonly targetBglRangeMin: UntypedFormControl;
+    readonly targetBglRangeMax: UntypedFormControl;
 
     // Enum constants
     readonly bglUnit = BglUnit;
@@ -27,7 +27,7 @@ export class TreatmentPrefsComponent implements OnInit {
     constructor(
         private userService: UserService,
         private appConfigService: AppConfigService,
-        fb: FormBuilder
+        fb: UntypedFormBuilder
     ) {
         const defaults = DEFAULTS.userPreferences.treatment!;
 

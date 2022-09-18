@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivityLogQueryParams, ActivityLogService} from "../../activity-log/activity-log.service";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {SortOrder} from "../../api/models/activity-log-entry";
 import {debounceTime, takeUntil} from "rxjs/operators";
 import {BehaviorSubject, Subject} from "rxjs";
@@ -17,7 +17,7 @@ import {PageService} from "../page.service";
 export class ActivityLogPageComponent implements OnInit, OnDestroy {
 
     readonly activityLogOptions$: BehaviorSubject<ActivityLogQueryParams | undefined> = new BehaviorSubject<ActivityLogQueryParams | undefined>(undefined);
-    readonly formGroup: FormGroup;
+    readonly formGroup: UntypedFormGroup;
 
     readonly categories = Array.from(this.activityLogService.activityLogCategories);
     readonly sortOrder = SortOrder;
@@ -28,7 +28,7 @@ export class ActivityLogPageComponent implements OnInit, OnDestroy {
         public activityLogService: ActivityLogService,
         public pageService: PageService,
         private appConfigService: AppConfigService,
-        fb: FormBuilder
+        fb: UntypedFormBuilder
     ) {
         this.formGroup = fb.group({
             category: fb.control(''),

@@ -42,11 +42,11 @@
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[6.0.2, )"
+              "version": "[6.0.9, )"
             },
             "Microsoft.AspNetCore.Authentication.OpenIdConnect": {
               "target": "Package",
-              "version": "[6.0.2, )"
+              "version": "[6.0.9, )"
             },
             "Microsoft.AspNetCore.Mvc.Versioning": {
               "target": "Package",
@@ -58,35 +58,35 @@
             },
             "Microsoft.Identity.Web": {
               "target": "Package",
-              "version": "[1.22.3, )"
+              "version": "[1.25.3, )"
             },
             "Microsoft.Identity.Web.UI": {
               "target": "Package",
-              "version": "[1.22.3, )"
+              "version": "[1.25.3, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
-              "version": "[1.14.0, )"
+              "version": "[1.17.0, )"
             },
             "NEST": {
               "target": "Package",
-              "version": "[7.17.0, )"
+              "version": "[7.17.4, )"
             },
             "Serilog": {
               "target": "Package",
-              "version": "[2.10.0, )"
+              "version": "[2.12.0, )"
             },
             "Serilog.AspNetCore": {
               "target": "Package",
-              "version": "[4.1.0, )"
+              "version": "[6.0.1, )"
             },
             "Serilog.Sinks.Console": {
               "target": "Package",
-              "version": "[4.0.1, )"
+              "version": "[4.1.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.2.3, )"
+              "version": "[6.4.0, )"
             },
             "System.Linq.Async": {
               "target": "Package",
@@ -158,21 +158,21 @@
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
-              "version": "[17.0.0, )"
+              "version": "[17.3.1, )"
             },
             "NUnit": {
               "target": "Package",
-              "version": "[3.13.2, )"
+              "version": "[3.13.3, )"
             },
             "NUnit3TestAdapter": {
               "target": "Package",
-              "version": "[4.1.0, )"
+              "version": "[4.2.1, )"
             },
             "coverlet.collector": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[3.1.0, )"
+              "version": "[3.1.2, )"
             }
           },
           "imports": [

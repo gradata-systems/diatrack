@@ -32,5 +32,6 @@
         public string BglReadings { get; set; }
         public string ActivityLog { get; set; }
         public string AccountState { get; set; }
+        public string UserEntities { get; set; }
     }
 }

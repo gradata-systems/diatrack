@@ -1,9 +1,6 @@
-using Diatrack.Configuration;
-using Diatrack.Services;
-using DiatrackPoller.Configuration;
-using DiatrackPoller.Services;
+using Elastic.Apm.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -20,21 +17,11 @@ namespace DiatrackPoller
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddSingleton<ElasticDataProvider>();
-
-                    services.AddHostedService<DexcomPollerService>();
-
-                    services.AddOptions();
-                    services.Configure<AppConfiguration>(hostContext.Configuration.GetSection("App"));
-                    services.Configure<ElasticConfiguration>(hostContext.Configuration.GetSection("Elastic"));
-                    services.Configure<DexcomConfiguration>(hostContext.Configuration.GetSection("Dexcom"));
-                    services.Configure<DexcomPollerConfiguration>(hostContext.Configuration.GetSection("DexcomPoller"));
-                })
-                .UseSerilog((hostingContext, loggerConfiguration) => ConfigureLogging(hostingContext, loggerConfiguration));
+        public static IHostBuilder CreateHostBuilder(string[] args) => Host
+            .CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+            .UseElasticApm()
+            .UseSerilog((hostingContext, loggerConfiguration) => ConfigureLogging(hostingContext, loggerConfiguration));
 
         private static void ConfigureLogging(HostBuilderContext hostingContext, LoggerConfiguration loggerConfiguration)
         {

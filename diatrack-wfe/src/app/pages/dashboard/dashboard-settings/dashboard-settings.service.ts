@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, Subject} from "rxjs";
 import {DashboardPreferences} from "../../../api/models/user-preferences";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {DEFAULTS} from "../../../defaults";
 import {DateTime} from "luxon";
 import {AppConfigService} from "../../../api/app-config.service";
@@ -15,7 +15,7 @@ export class DashboardSettingsService implements OnDestroy {
 
     tabIndex = 0;
     activityLogOptions: ActivityLogQueryParams | undefined;
-    readonly settingsForm: FormGroup;
+    readonly settingsForm: UntypedFormGroup;
     readonly dashboardSettings$ = new BehaviorSubject<DashboardPreferences | undefined>(undefined);
     readonly histogramIntervals = HISTOGRAM_PROFILES;
 
@@ -24,7 +24,7 @@ export class DashboardSettingsService implements OnDestroy {
     constructor(
         private appConfigService: AppConfigService,
         private userService: UserService,
-        fb: FormBuilder
+        fb: UntypedFormBuilder
     ) {
         const defaults = DEFAULTS.userPreferences.dashboard!;
         const histogramDefaults = defaults.bglStatsHistogram!;

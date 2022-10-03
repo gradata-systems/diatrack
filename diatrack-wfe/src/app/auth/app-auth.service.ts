@@ -103,6 +103,7 @@ export class AppAuthService
 
     logout()
     {
+        this.oAuthService.revokeTokenAndLogout();
         this.oAuthService.logOut();
         this.activeUser$.next(undefined);
     }

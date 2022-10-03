@@ -24,7 +24,7 @@ export class AppUpdateService implements OnDestroy {
 
     registerForUpdateCheck() {
         // If an update is found, prompt the user to reload the window, thereby updating the app
-        this.updateService.available.pipe(
+        this.updateService.versionUpdates.pipe(
             takeUntil(this.destroying$)
         ).subscribe(event => {
             this.snackBar.open('An app update is available', 'Reload to Update', {

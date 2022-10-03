@@ -34,11 +34,11 @@
             <div class="info">
               <div class="name">{{user.name}}</div>
               <div class="email">{{user.emailAddress}}</div>
-              <a href="#" (click)="authService.logOut()">Sign out</a>
+              <a href="#" (click)="authService.logout()">Sign out</a>
             </div>
           </ng-container>
           <ng-template #signin>
-            <button mat-raised-button color="primary" (click)="authService.logIn()">Sign In</button>
+            <button mat-raised-button color="primary" (click)="authService.login()">Sign In</button>
           </ng-template>
         </div>
       </mat-menu>

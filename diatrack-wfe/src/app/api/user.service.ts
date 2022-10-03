@@ -31,7 +31,7 @@ export class UserService {
         private authService: AppAuthService,
         private router: Router
     ) {
-        this.activeUser$ = this.authService.activeAccount$.pipe(
+        this.activeUser$ = this.authService.activeUser$.pipe(
             distinct(),
             mergeMap(account => {
                 if (account) {

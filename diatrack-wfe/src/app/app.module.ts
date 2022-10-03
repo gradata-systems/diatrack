@@ -19,7 +19,6 @@ import {RouterModule} from "@angular/router";
 import {ActivityLogModule} from "./activity-log/activity-log.module";
 import {ActivityLogPageComponent} from './pages/activity-log/activity-log.component';
 import {ServiceWorkerModule} from '@angular/service-worker';
-import {MsalRedirectComponent} from "@azure/msal-angular";
 import {LoginComponent} from "./pages/login/login.component";
 import {GettingStartedComponent} from "./pages/getting-started/getting-started.component";
 import {TermsPageComponent} from "./pages/terms/terms.component";
@@ -60,7 +59,7 @@ import {PrivacyPageComponent} from "./pages/privacy/privacy.component";
         PrivacyPageComponent,
         ActivityLogPageComponent
     ],
-    bootstrap: [AppComponent, MsalRedirectComponent]
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 }

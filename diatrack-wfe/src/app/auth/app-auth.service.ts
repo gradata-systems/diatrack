@@ -1,75 +1,109 @@
 import {Inject, Injectable} from '@angular/core';
-import {ReplaySubject} from "rxjs";
-import {MSAL_GUARD_CONFIG, MsalBroadcastService, MsalGuardConfiguration, MsalService} from "@azure/msal-angular";
-import {AccountInfo, AuthenticationResult, EventMessage, EventType, InteractionStatus, RedirectRequest} from "@azure/msal-browser";
-import {filter} from "rxjs/operators";
+import {BehaviorSubject, from, Observable, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {IIdentity} from './app-auth.service.definitions';
+import {AuthConfig, OAuthService} from 'angular-oauth2-oidc';
+import {environment} from "../../environments/environment";
 import {APP_CONFIG} from "../api/variables";
 import {AppConfig} from "../api/models/app-config";
 
 @Injectable({
     providedIn: 'root'
 })
-export class AppAuthService {
-    // Fired when the user's account changes
-    activeAccount$ = new ReplaySubject<AccountInfo | null>(1);
+export class AppAuthService
+{
+    tokenReceived$ = new Subject<void>();
+    tokenRefreshed$ = new Subject<void>();
+    sessionTerminated$ = new Subject<void>();
+
+    /**
+     * Identity of the currently authenticated user
+     */
+    activeUser$ = new BehaviorSubject<IIdentity | undefined>(undefined);
 
     constructor(
-        @Inject(MSAL_GUARD_CONFIG) private msalGuardConfig: MsalGuardConfiguration,
         @Inject(APP_CONFIG) private appConfig: AppConfig,
-        private msalService: MsalService,
-        private msalBroadcastService: MsalBroadcastService
+        public oAuthService: OAuthService
     ) { }
 
-    configure() {
-        this.msalBroadcastService.msalSubject$.pipe(
-            filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS)
-        ).subscribe((result) => {
-            const payload = result.payload as AuthenticationResult;
-            console.debug(`Login success: ${payload.account?.username}`)
-            this.notifyActiveAccountChanged(payload.account);
-        });
+    /**
+     * Configure OpenID authentication and try to retrieve a stored auth token
+     * @returns Whether we have a valid auth token
+     */
+    configure(): Observable<boolean>
+    {
+        const oAuthConfig: AuthConfig = {
+            issuer: this.appConfig.openId.authorityUrl,
+            clientId: this.appConfig.openId.clientId,
+            redirectUri: window.location.origin,
+            responseType: 'code',   // Use PKCE
+            scope: this.appConfig.openId.scopes.join(' '),
+            disableAtHashCheck: true,   // Keycloak does not provide at_hash in JWT
+            requireHttps: environment.production ? true : 'remoteOnly',
+            showDebugInformation: !environment.production
+        };
 
-        this.msalBroadcastService.inProgress$.pipe(
-            filter((status: InteractionStatus) => status === InteractionStatus.None)
-        ).subscribe(() => {
-            this.checkAndSetActiveAccount();
-        });
-    }
+        this.oAuthService.events.subscribe((event) => {
+            if (!environment.production)
+                console.log(`Auth event: ${event.type}`);
 
-    checkAndSetActiveAccount() {
-        /**
-         * If no active account set but there are accounts signed in, sets first account to active account
-         * To use active account set here, subscribe to inProgress$ first in your component
-         * Note: Basic usage demonstrated. Your app may require more complicated account selection logic
-         */
-        let activeAccount = this.msalService.instance.getActiveAccount();
-
-        if (!activeAccount) {
-            if (this.msalService.instance.getAllAccounts().length > 0) {
-                let accounts = this.msalService.instance.getAllAccounts();
-                this.msalService.instance.setActiveAccount(accounts[0]);
-                this.notifyActiveAccountChanged(accounts[0]);
-            } else {
-                this.notifyActiveAccountChanged(null);
+            switch (event.type)
+            {
+                case 'token_received':
+                    this.tokenReceived$.next();
+                    this.activeUser$.next(this.getIdentityFromClaims());
+                    break;
+                case 'session_terminated':
+                    this.sessionTerminated$.next();
+                    this.logout();
+                    break;
+                case 'token_refreshed':
+                    this.tokenRefreshed$.next();
+                    break;
             }
-        } else {
-            this.notifyActiveAccountChanged(activeAccount);
-        }
+        });
+
+        this.oAuthService.configure(oAuthConfig);
+        this.oAuthService.setupAutomaticSilentRefresh();
+
+        // Attempt login and return whether a valid token is obtained
+        return from(this.oAuthService.loadDiscoveryDocumentAndTryLogin()).pipe(map((result) => {
+            if (result)
+                this.activeUser$.next(this.getIdentityFromClaims());
+
+            return this.oAuthService.hasValidAccessToken();
+        }));
     }
 
-    private notifyActiveAccountChanged(account: AccountInfo | null) {
-        this.activeAccount$.next(account);
+    /**
+     * Query the user's identity claims from the access token, if it exists and return an
+     * `IIdentity` object containing well-known properties
+     */
+    private getIdentityFromClaims(): IIdentity | undefined
+    {
+        const claims: any = this.oAuthService.getIdentityClaims();
+        if (!claims)
+            return undefined;
+
+        return {
+            id: claims.sub,
+            name: claims.name,
+            givenName: claims.given_name,
+            familyName: claims.family_name,
+            email: claims.email
+        };
     }
 
-    logIn(): void {
-        if (this.msalGuardConfig.authRequest) {
-            this.msalService.loginRedirect({...this.msalGuardConfig.authRequest} as RedirectRequest);
-        } else {
-            this.msalService.loginRedirect();
-        }
+    login()
+    {
+        this.oAuthService.initCodeFlow(window.location.href, {
+            audience: this.appConfig.openId.audience
+        });
     }
 
-    logOut(): void {
-        this.msalService.logoutRedirect();
+    logout()
+    {
+        this.oAuthService.logOut();
+        this.activeUser$.next(undefined);
     }
 }

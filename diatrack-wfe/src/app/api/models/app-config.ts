@@ -1,9 +1,9 @@
 export interface AppConfig {
     apiBasePath: string;
-    clientId: string;
-    authority: string;
-    knownAuthorities: string[];
-    redirectUri: string;
-    protectedResourceUris: string[];
-    scopes: string[];
+    openId: {
+        authorityUrl: string;
+        audience: string;
+        clientId: string;
+        scopes: string[];
+    }
 }

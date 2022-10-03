@@ -41,21 +41,23 @@ namespace Diatrack.Logging
 
             string userAgent = httpContext.Request.Headers["User-Agent"];
             if (!string.IsNullOrEmpty(userAgent))
-                logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("UserAgent", userAgent));
+                logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("Client.UserAgent", userAgent));
 
             var userIdentity = httpContext.User?.Identity;
             if (userIdentity != null)
             {
-                logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("UserAuthenticated", userIdentity.IsAuthenticated));
+                logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("User.Authenticated", userIdentity.IsAuthenticated));
 
                 if (userIdentity.IsAuthenticated)
                 {
                     var claimsIdentity = new ClaimsIdentity(httpContext.User);
 
-                    logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("UserId", claimsIdentity.Id));
+                    logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("User.Id", claimsIdentity.Id));
 
                     if (!string.IsNullOrEmpty(claimsIdentity.Name))
-                        logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("UserName", claimsIdentity.Name));
+                        logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("User.Name", claimsIdentity.Name));
+                    if (!string.IsNullOrEmpty(claimsIdentity.Email))
+                        logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("User.EmailAddress", claimsIdentity.Email));
                 }
             }
         }

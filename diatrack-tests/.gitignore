@@ -362,5 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-diatrack-tests/bin/
-diatrack-tests/obj/
+**/obj/
+**/bin/
+.git/
+.vs/

@@ -33,17 +33,17 @@ namespace Diatrack.Services
     public class UserService : IUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
         private readonly ElasticClient _elasticClient;
         private readonly AppConfiguration _appConfig;
         private readonly DexcomConfiguration _dexConfig;
 
         private static readonly Regex _quotedPattern = new(@"^""(.*)""$", RegexOptions.Compiled);
 
-        public UserService(IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, ElasticDataProvider elasticProvider, IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig)
+        public UserService(IHttpContextAccessor httpContextAccessor, HttpClient httpClient, ElasticDataProvider elasticProvider, IOptions<AppConfiguration> appConfig, IOptions<DexcomConfiguration> dexConfig)
         {
             _httpContextAccessor = httpContextAccessor;
-            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClient;
             _elasticClient = elasticProvider.NestClient;
             _appConfig = appConfig.Value;
             _dexConfig = dexConfig.Value;
@@ -59,7 +59,7 @@ namespace Diatrack.Services
 
             if (identity.IsAuthenticated)
             {
-                var principalClaims = identity.Claims.ToDictionary(c => c.Type);
+                var principalClaims = identity.Claims.DistinctBy(k => k.Type).ToDictionary(c => c.Type);
                 UserClaims userClaims = new();
 
                 // Unique ID of the principal
@@ -72,11 +72,11 @@ namespace Diatrack.Services
                     Log.Error("Principal id not found in claims token");
                 }
 
-                if (principalClaims.TryGetValue("name", out Claim nameClaim))
+                if (principalClaims.TryGetValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", out Claim nameClaim))
                 {
                     userClaims.Name = nameClaim.Value;
                 }
-                if (principalClaims.TryGetValue("emails", out Claim emailClaim))
+                if (principalClaims.TryGetValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", out Claim emailClaim))
                 {
                     userClaims.EmailAddress = emailClaim.Value;
                 }
@@ -90,18 +90,70 @@ namespace Diatrack.Services
         }
 
         /// <summary>
-        /// Retrieves a user record from Elasticsearch based on the claims principal (ID).
+        /// Retrieves a user record from Elasticsearch by the email address in the claim.
         /// If not found, a record is created.
         /// </summary>
         public async Task<UserProfile> GetUser()
         {
             UserClaims userClaims = GetUserClaims();
-            GetResponse<UserProfile> userResponse = (await _elasticClient.GetAsync<UserProfile>(userClaims.Id));
-            UserProfile user;
 
-            if (userResponse.Found)
+            if (userClaims == null)
             {
-                user = userResponse.Source;
+                throw new ArgumentNullException("No user claim specified");
+            }
+            else if (string.IsNullOrEmpty(userClaims.EmailAddress))
+            {
+                throw new ArgumentNullException($"Missing email address claim for user ID: {userClaims.Id}");
+            }
+
+            ISearchResponse<UserProfile> userResponse = await _elasticClient.SearchAsync<UserProfile>(s => s
+                .Query(q => q
+                    .Term(f => f.EmailAddress, userClaims.EmailAddress)
+                )
+                .Sort(f => f.Descending(f => f.Created))
+            );
+
+            if (userResponse.IsValid && userResponse.Hits.Count > 0)
+            {
+                IHit<UserProfile> firstHit = userResponse.Hits.First();
+                if (firstHit.Id != userClaims.Id)
+                {
+                    // Doc ID differs to claims ID, so user record has changed. Reinsert it as a new document.
+                    string originalId = firstHit.Source.Id;
+                    firstHit.Source.Id = userClaims.Id;
+                    firstHit.Source.Name = userClaims.Name;
+
+                    IndexResponse indexResponse = await _elasticClient.IndexDocumentAsync(firstHit.Source);
+                    if (indexResponse.IsValid)
+                    {
+                        Log.Information("Migrated user profile {EmailAddress} from id {OriginalId} to {NewId}", userClaims.EmailAddress, originalId, userClaims.Id);
+
+                        // Delete all documents matching the email by not the ID, as they are obsolete
+                        DeleteByQueryResponse deleteResponse = await _elasticClient.DeleteByQueryAsync<UserProfile>(d => d
+                            .Query(q => q
+                                .Bool(b => b
+                                    .Must(must => must
+                                        .Term(t => t.EmailAddress, userClaims.EmailAddress)
+                                    )
+                                    .MustNot(mustNot => mustNot
+                                        .Ids(i => i.Values(userClaims.Id))
+                                    )
+                                )
+                            )
+                        );
+
+                        if (deleteResponse.Deleted > 0)
+                        {
+                            Log.Information("Deleted {DeletedItems} obsolete user profile entries", deleteResponse.Deleted);
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to insert user record", indexResponse.OriginalException);
+                    }
+                }
+
+                return firstHit.Source;
             }
             else
             {
@@ -112,14 +164,13 @@ namespace Diatrack.Services
                     Name = userClaims.Name,
                     EmailAddress = userClaims.EmailAddress,
                     Created = DateTime.Now,
+                    LastActive = DateTime.Now,
                     IsNew = true
                 };
 
                 await _elasticClient.IndexDocumentAsync(newUser);
-                user = newUser;
+                return newUser;
             }
-
-            return user;
         }
 
         /// <summary>
@@ -221,31 +272,28 @@ namespace Diatrack.Services
                 Password = plainTextPassword
             });
 
-            using (HttpClient httpClient = _httpClientFactory.CreateClient())
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                HttpResponseMessage response = await httpClient.SendAsync(request);
+                string rawAccountId = await response.Content.ReadAsStringAsync();
+                Match accountIdMatch = _quotedPattern.Match(rawAccountId);
 
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (accountIdMatch.Success)
                 {
-                    string rawAccountId = await response.Content.ReadAsStringAsync();
-                    Match accountIdMatch = _quotedPattern.Match(rawAccountId);
-
-                    if (accountIdMatch.Success)
+                    string accountId = accountIdMatch.Groups[1].Value;
+                    if (accountId != "00000000-0000-0000-0000-000000000000")
                     {
-                        string accountId = accountIdMatch.Groups[1].Value;
-                        if (accountId != "00000000-0000-0000-0000-000000000000")
-                        {
-                            account.Id = accountIdMatch.Groups[1].Value;
-                            return account.Id;
-                        }
+                        account.Id = accountIdMatch.Groups[1].Value;
+                        return account.Id;
                     }
+                }
 
-                    throw new Exception($"Unexpected account ID {rawAccountId} returned");
-                }
-                else
-                {
-                    throw new Exception($"Failed to query the account ID for {account.LoginId} in region {account.RegionId}");
-                }
+                throw new Exception($"Unexpected account ID {rawAccountId} returned");
+            }
+            else
+            {
+                throw new Exception($"Failed to query the account ID for {account.LoginId} in region {account.RegionId}");
             }
         }
 

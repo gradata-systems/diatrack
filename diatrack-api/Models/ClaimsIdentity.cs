@@ -23,21 +23,19 @@ namespace Diatrack.Models
             {
                 switch (claim.Type)
                 {
-                    case "sub":
                     case "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier":
                         Id = claim.Value;
                         break;
-                    case "name":
-                    case "http://schemas.microsoft.com/ws/2008/06/identity/claims/name":
+                    case "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name":
                         Name = claim.Value;
                         break;
-                    case "given_name":
+                    case "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname":
                         GivenName = claim.Value;
                         break;
-                    case "family_name":
+                    case "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname":
                         FamilyName = claim.Value;
                         break;
-                    case "email":
+                    case "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress":
                         Email = claim.Value;
                         break;
                 }

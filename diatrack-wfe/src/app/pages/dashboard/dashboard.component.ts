@@ -4,13 +4,13 @@ import {UserService} from "../../api/user.service";
 import {BehaviorSubject, merge, Observable, Subject} from "rxjs";
 import {filter, map, mergeMap, takeUntil, throttleTime} from "rxjs/operators";
 import {DashboardService} from "./dashboard.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
 import {AppConfigService} from "../../api/app-config.service";
 import {ActivityLogService} from "../../activity-log/activity-log.service";
 import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
 import {DashboardSettingsService} from "./dashboard-settings/dashboard-settings.service";
 import {PageService} from "../page.service";
+import {AppCoreService} from "../../app-core.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -33,11 +33,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private authService: AppAuthService,
         private appConfigService: AppConfigService,
+        private appCoreService: AppCoreService,
         public userService: UserService,
         public dashboardService: DashboardService,
         public dashboardSettingsService: DashboardSettingsService,
-        private activityLogService: ActivityLogService,
-        private snackBar: MatSnackBar
+        private activityLogService: ActivityLogService
     ) { }
 
     ngOnInit() {
@@ -45,7 +45,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         merge(
             this.dashboardService.refresh$,
             this.dashboardSettingsService.dashboardSettings$,
-            this.activityLogService.changed$
+            this.activityLogService.changed$,
+            this.appCoreService.autoRefresh$
         ).pipe(
             filter(() => this.userService.loggedIn),
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),
@@ -63,8 +64,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             if (chartData !== undefined) {
                 // Only update chart options if they were obtained successfully. Else keep the existing options.
                 this.bglHistogramChartOptions$.next(chartData);
-            } else {
-                this.snackBar.open('Error getting the latest chart data');
             }
         }));
     }

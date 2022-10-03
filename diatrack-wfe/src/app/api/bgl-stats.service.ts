@@ -51,11 +51,15 @@ export class BglStatsService {
     }
 
     updateBglStatus(size: number) {
-        this.httpClient.get<LatestReadings>(`${this.basePath}/bgl`, {
+        this.httpClient.get<LatestReadings | undefined>(`${this.basePath}/bgl`, {
             params: {
                 size: size
             }
         }).subscribe(response => {
+            if (!response) {
+                return;
+            }
+
             const firstAccountId = Object.keys(response)[0];
             const readings = response[firstAccountId];
 

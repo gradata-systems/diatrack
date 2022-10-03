@@ -11,7 +11,7 @@ export class AppConfigService {
     readonly autoRefreshEnabled = true;
     readonly refreshInterval = 10000;
     readonly formDebounceInterval = 500;
-    readonly queryDebounceInterval = 1000;
+    readonly queryDebounceInterval = 500;
     readonly maxNoteLength = 1000;
     readonly initialLogEntryQuerySize = 100;
 

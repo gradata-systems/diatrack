@@ -17,6 +17,7 @@ import {HISTOGRAM_PROFILES} from "./dashboard-settings/histogram-profiles";
 import {HistogramProfile} from "./histogram-profile";
 import {MovingAverageModelType} from "../../api/models/moving-average-params";
 import {AppCoreService} from "../../app-core.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
     providedIn: 'root'
@@ -40,6 +41,7 @@ export class DashboardService implements OnDestroy {
         private bglStatsService: BglStatsService,
         private activityLogService: ActivityLogService,
         private appIconService: AppIconService,
+        private snackBar: MatSnackBar,
         private ngZone: NgZone
     ) {
         // Refresh when a user logs on
@@ -51,9 +53,9 @@ export class DashboardService implements OnDestroy {
             this.dashboardSettings = prefs?.dashboard;
         });
 
-        this.appCoreService.autoRefresh$.subscribe(() => {
-            this.triggerRefresh();
-        });
+        // this.appCoreService.autoRefresh$.subscribe(() => {
+        //     this.triggerRefresh();
+        // });
     }
 
     triggerRefresh() {
@@ -74,7 +76,10 @@ export class DashboardService implements OnDestroy {
                     return this.generateBglHistogramChart(userPrefs, logEntries);
                 }));
             }),
-            catchError(error => of(undefined))
+            catchError(error => {
+                this.snackBar.open('Error getting the latest chart data');
+                return of(undefined);
+            })
         );
     }
 
@@ -114,6 +119,10 @@ export class DashboardService implements OnDestroy {
                 predictionCount: histogramSettings.movingAverage!.predictionCount
             }
         }).pipe(map(bglStatsResponse => {
+            if (!bglStatsResponse) {
+                return;
+            }
+
             const accountId = Object.keys(bglStatsResponse)[0];
             let previousStat: BglDataPoint | undefined = undefined;
             let maxBgl = 0;

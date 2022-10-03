@@ -9,7 +9,7 @@ export const DEFAULTS = {
                 plotColour: PlotColour.ScaledByBgl,
                 plotHeight: 16,
                 movingAverage: {
-                    enabled: true,
+                    enabled: false,
                     modelType: MovingAverageModelType.Linear,
                     window: 15,
                     period: 1,

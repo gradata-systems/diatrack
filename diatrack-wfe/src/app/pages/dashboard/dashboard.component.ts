@@ -10,6 +10,7 @@ import {ActivityLogService} from "../../activity-log/activity-log.service";
 import {HighchartsChartComponent} from "../../highcharts-chart/highcharts-chart.component";
 import {DashboardSettingsService} from "./dashboard-settings/dashboard-settings.service";
 import {PageService} from "../page.service";
+import {AppCoreService} from "../../app-core.service";
 
 @Component({
     selector: 'app-dashboard',
@@ -32,6 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private authService: AppAuthService,
         private appConfigService: AppConfigService,
+        private appCoreService: AppCoreService,
         public userService: UserService,
         public dashboardService: DashboardService,
         public dashboardSettingsService: DashboardSettingsService,
@@ -43,7 +45,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         merge(
             this.dashboardService.refresh$,
             this.dashboardSettingsService.dashboardSettings$,
-            this.activityLogService.changed$
+            this.activityLogService.changed$,
+            this.appCoreService.autoRefresh$
         ).pipe(
             filter(() => this.userService.loggedIn),
             throttleTime(this.appConfigService.queryDebounceInterval, undefined, {leading: true, trailing: true}),

@@ -53,9 +53,9 @@ export class DashboardService implements OnDestroy {
             this.dashboardSettings = prefs?.dashboard;
         });
 
-        this.appCoreService.autoRefresh$.subscribe(() => {
-            this.triggerRefresh();
-        });
+        // this.appCoreService.autoRefresh$.subscribe(() => {
+        //     this.triggerRefresh();
+        // });
     }
 
     triggerRefresh() {

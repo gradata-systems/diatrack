@@ -4,7 +4,6 @@ import {UserService} from "../../api/user.service";
 import {BehaviorSubject, merge, Observable, Subject} from "rxjs";
 import {filter, map, mergeMap, takeUntil, throttleTime} from "rxjs/operators";
 import {DashboardService} from "./dashboard.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {Options} from "highcharts";
 import {AppConfigService} from "../../api/app-config.service";
 import {ActivityLogService} from "../../activity-log/activity-log.service";
@@ -36,8 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         public userService: UserService,
         public dashboardService: DashboardService,
         public dashboardSettingsService: DashboardSettingsService,
-        private activityLogService: ActivityLogService,
-        private snackBar: MatSnackBar
+        private activityLogService: ActivityLogService
     ) { }
 
     ngOnInit() {
@@ -63,8 +61,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             if (chartData !== undefined) {
                 // Only update chart options if they were obtained successfully. Else keep the existing options.
                 this.bglHistogramChartOptions$.next(chartData);
-            } else {
-                this.snackBar.open('Error getting the latest chart data');
             }
         }));
     }

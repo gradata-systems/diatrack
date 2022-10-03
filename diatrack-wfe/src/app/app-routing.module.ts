@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {MsalGuard} from "@azure/msal-angular";
 import {DashboardComponent} from "./pages/dashboard/dashboard.component";
 import {PreferencesComponent} from "./pages/preferences/preferences.component";
 import {FailedLoginComponent} from "./auth/failed-login/failed-login.component";
@@ -34,12 +33,12 @@ const routes: Routes = [
     {
         path: 'activity',
         component: ActivityLogPageComponent,
-        canActivate: [LoggedInGuard, MsalGuard]
+        canActivate: [LoggedInGuard]
     },
     {
         path: 'preferences',
         component: PreferencesComponent,
-        canActivate: [LoggedInGuard, MsalGuard]
+        canActivate: [LoggedInGuard]
     },
     {
         path: 'about',
@@ -60,7 +59,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
+    imports: [RouterModule.forRoot(routes, {
+        initialNavigation: 'disabled'
+    })],
     exports: [RouterModule]
 })
 export class AppRoutingModule {

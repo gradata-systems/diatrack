@@ -14,6 +14,7 @@ export const DEFAULTS = {
                     window: 15,
                     period: 1,
                     alpha: 0.8,
+                    beta: 1.0,
                     predictionCount: 10
                 },
                 activityLog: true,

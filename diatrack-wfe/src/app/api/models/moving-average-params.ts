@@ -5,6 +5,7 @@ export interface MovingAverageParams
     window?: number;
     minimize?: boolean;
     alpha?: number;
+    beta?: number;
     period?: number;
     predictionCount?: number;
 }

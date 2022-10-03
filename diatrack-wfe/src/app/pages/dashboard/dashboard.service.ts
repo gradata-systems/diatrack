@@ -113,6 +113,7 @@ export class DashboardService implements OnDestroy {
                 enabled: movingAverageEnabled,
                 modelType: movingAverageEnabled ? histogramSettings.movingAverage!.modelType : MovingAverageModelType.Simple, // If not enabled, just use simple type for efficiency
                 alpha: histogramSettings.movingAverage!.alpha,
+                beta: histogramSettings.movingAverage!.beta,
                 window: Math.max(histogramSettings.movingAverage!.window ?? 0, histogramProfile.movingAveragePeriod * 2), // Must be at least twice the period, otherwise an error is thrown
                 minimize: movingAverageModelType === MovingAverageModelType.HoltLinear || movingAverageModelType === MovingAverageModelType.HoltWinters,
                 period: histogramProfile.movingAveragePeriod,

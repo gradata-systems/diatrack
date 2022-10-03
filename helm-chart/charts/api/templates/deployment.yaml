@@ -33,14 +33,14 @@ spec:
           env:
             - name: App__EncryptionKeyFile
               value: "/app/secrets/aes.key"
-            - name: AzureAdB2C__Instance
-              value: {{ .Values.global.azureAdB2C.instance | quote }}
-            - name: AzureAdB2C__Domain
-              value: {{ .Values.global.azureAdB2C.domain | quote }}
-            - name: AzureAdB2C__ClientId
-              value: {{ .Values.global.azureAdB2C.clientId | quote }}
-            - name: AzureAdB2C__SignUpSignInPolicyId
-              value: {{ .Values.global.azureAdB2C.signUpSignInPolicyId | quote }}
+            - name: OpenId__AuthorityUrl
+              value: {{ .Values.global.openId.authorityUrl | quote }}
+            - name: OpenId__Audience
+              value: {{ .Values.global.openId.audience | quote }}
+            - name: OpenId__ClientId
+              value: {{ .Values.global.openId.clientId | quote }}
+            - name: OpenId__Scopes
+              value: {{ .Values.global.openId.scopes | join "," | quote }}
             - name: Elastic__ConnectionUri
               value: {{ .Values.global.elastic.connectionUri | quote }}
             - name: Elastic__ApiKeyId

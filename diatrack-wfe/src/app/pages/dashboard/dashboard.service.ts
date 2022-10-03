@@ -74,7 +74,7 @@ export class DashboardService implements OnDestroy {
                     return this.generateBglHistogramChart(userPrefs, logEntries);
                 }));
             }),
-            catchError(() => of(undefined))
+            catchError(error => of(undefined))
         );
     }
 

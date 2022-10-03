@@ -19,3 +19,4 @@ export class AppConfigService {
         @Inject(BASE_PATH) private basePath: string
     ) { }
 }
+

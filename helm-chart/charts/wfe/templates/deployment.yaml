@@ -33,16 +33,14 @@ spec:
           env:
             - name: APP_API_BASE_PATH
               value: "/api"
-            - name: APP_CLIENT_ID
-              value: {{ .Values.global.azureAdB2C.clientId | quote }}
-            - name: APP_AUTHORITY
-              value: {{ printf "%s/%s/%s" .Values.global.azureAdB2C.instance .Values.global.azureAdB2C.domain .Values.global.azureAdB2C.signUpSignInPolicyId | quote }}
-            - name: APP_KNOWN_AUTHORITY
-              value: {{ .Values.global.azureAdB2C.knownAuthority | quote }}
-            - name: APP_BASE_URI
-              value: {{ print "https://" .Values.global.hostName | quote }}
-            - name: APP_SCOPES
-              value: {{ join "," .Values.global.azureAdB2C.scopes | quote }}
+            - name: APP_OPENID_AUTHORITY_URL
+              value: {{ .Values.global.openId.authorityUrl | quote }}
+            - name: APP_OPENID_AUDIENCE
+              value: {{ .Values.global.openId.audience | quote }}
+            - name: APP_OPENID_CLIENT_ID
+              value: {{ .Values.global.openId.clientId | quote }}
+            - name: APP_OPENID_SCOPES
+              value: {{ .Values.global.openId.scopes | join "," | quote }}
           ports:
             - name: http
               containerPort: 8080

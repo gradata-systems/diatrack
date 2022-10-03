@@ -4,7 +4,7 @@ import {AppAuthService} from "./auth/app-auth.service";
 import {of, Subject} from "rxjs";
 import {Title} from "@angular/platform-browser";
 import {BglStatsService} from "./api/bgl-stats.service";
-import {filter, mergeMap, takeUntil, tap} from "rxjs/operators";
+import {distinctUntilChanged, filter, map, mergeMap, takeUntil, tap} from "rxjs/operators";
 import {UserService} from "./api/user.service";
 import {DEFAULTS} from "./defaults";
 import {Router} from "@angular/router";
@@ -38,8 +38,18 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.appIconService.registerIcons();
 
-        this.authService.configure();
-        this.authService.checkAndSetActiveAccount();
+        this.authService.configure().pipe(takeUntil(this.destroying$)).subscribe((loggedIn) => {
+            if (loggedIn)
+            {
+                // If user is logged in, perform initial navigation
+                this.router.initialNavigation();
+            }
+            else
+            {
+                // Otherwise redirect to the login page
+                this.authService.login();
+            }
+        });
 
         // Update the browser title when the BGL status updates
         this.bglStatsService.bglStatus$.pipe(

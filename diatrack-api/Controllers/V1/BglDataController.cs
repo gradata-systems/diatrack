@@ -40,7 +40,7 @@ namespace Diatrack.Controllers.V1
                 string[] accountIds = await _userService.GetLinkedAccountIds();
                 if (accountIds.Length == 0)
                 {
-                    return Problem("No accounts registered");
+                    return Ok(null);
                 }
 
                 ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(r => r
@@ -102,7 +102,7 @@ namespace Diatrack.Controllers.V1
 
                 if (accountIds.Length == 0)
                 {
-                    return BadRequest();
+                    return Ok(null);
                 }
 
                 ISearchResponse<BglReading> response = await _elasticClient.SearchAsync<BglReading>(r => r

@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
             else
             {
                 // Otherwise redirect to the login page
-                this.router.navigate(['/login']);
+                this.authService.login();
             }
         });
 

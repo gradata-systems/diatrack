@@ -78,6 +78,7 @@ export class DashboardService implements OnDestroy {
             }),
             catchError(error => {
                 this.snackBar.open('Error getting the latest chart data');
+                console.error(error);
                 return of(undefined);
             })
         );

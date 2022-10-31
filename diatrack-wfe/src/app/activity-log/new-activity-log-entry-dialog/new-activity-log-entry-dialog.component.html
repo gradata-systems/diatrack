@@ -17,18 +17,18 @@
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Insulin">
         <mat-form-field class="numeric">
           <mat-label>Units</mat-label>
-          <input matInput formControlName="insulinUnits" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="insulinUnits" type="number" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
       </ng-container>
 
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.BasalRateChange">
         <mat-form-field class="numeric">
           <mat-label>Percent</mat-label>
-          <input matInput formControlName="basalRatePercent" inputmode="numeric" min="0" max="250" placeholder="100" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="basalRatePercent" type="number" inputmode="numeric" min="0" max="250" placeholder="100" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
         <mat-form-field class="numeric">
           <mat-label>Duration</mat-label>
-          <input matInput formControlName="basalRateDuration" inputmode="decimal" min="0" placeholder="0" autocomplete="off" required>
+          <input matInput formControlName="basalRateDuration" type="number" inputmode="decimal" min="0" placeholder="0" autocomplete="off" required>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Time units</mat-label>
@@ -42,18 +42,18 @@
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Food">
         <mat-form-field class="numeric">
           <mat-label>Grams</mat-label>
-          <input matInput formControlName="foodGrams" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="foodGrams" type="number" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Type of food</mat-label>
-          <input matInput formControlName="foodType" inputmode="text" maxlength="50" placeholder="Glucose powder">
+          <input matInput formControlName="foodType" type="text" inputmode="text" maxlength="50" placeholder="Glucose powder">
         </mat-form-field>
       </ng-container>
 
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.BglReading">
         <mat-form-field>
           <mat-label>Blood glucose reading</mat-label>
-          <input matInput formControlName="bglReading" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="bglReading" type="number" inputmode="decimal" min="0" placeholder="0.0" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Units</mat-label>
@@ -67,7 +67,7 @@
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.Exercise">
         <mat-form-field>
           <mat-label>Duration (minutes)</mat-label>
-          <input matInput formControlName="exerciseDuration" inputmode="decimal" min="1" placeholder="0" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="exerciseDuration" type="number" inputmode="decimal" min="1" placeholder="0" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Intensity</mat-label>

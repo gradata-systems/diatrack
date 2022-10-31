@@ -66,7 +66,7 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
                 };
             case ActivityLogEntryCategory.BasalRateChange:
                 return {
-                    basalRatePercent: this.fb.control(100, Validators.required),
+                    basalRatePercent: this.fb.control(0, Validators.required),
                     basalRateDuration: this.fb.control('', Validators.required),
                     basalRateTimeUnit: this.fb.control(TimeUnit.Minute, Validators.required)
                 };

@@ -21,7 +21,7 @@
                 <mat-icon class="context-help" matTooltip="The preferred height of the chart. BGL values greater than this value will cause the height to be expanded.">help_outline</mat-icon>
               </div>
               <mat-form-field class="numeric">
-                <input matInput type="number" formControlName="plotHeight" [min]="1" />
+                <input matInput inputmode="decimal" formControlName="plotHeight" [min]="1" />
               </mat-form-field>
             </div>
             <div class="field">

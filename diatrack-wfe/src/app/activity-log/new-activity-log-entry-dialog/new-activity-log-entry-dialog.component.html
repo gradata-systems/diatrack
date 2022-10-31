@@ -24,7 +24,7 @@
       <ng-container *ngIf="dialogData.entryType === activityLogEntryType.BasalRateChange">
         <mat-form-field class="numeric">
           <mat-label>Percent</mat-label>
-          <input matInput formControlName="basalRatePercent" inputmode="decimal" min="0" max="250" placeholder="100" autocomplete="off" required cdkFocusInitial>
+          <input matInput formControlName="basalRatePercent" inputmode="numeric" min="0" max="250" placeholder="100" autocomplete="off" required cdkFocusInitial>
         </mat-form-field>
         <mat-form-field class="numeric">
           <mat-label>Duration</mat-label>

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/co
 import {UserService} from "../api/user.service";
 import {UserProfile} from "../api/models/user";
 import {BglStatsService, BglStatus} from "../api/bgl-stats.service";
-import {Observable, Subject} from "rxjs";
+import {merge, Observable, Subject} from "rxjs";
 import {filter, map, takeUntil} from "rxjs/operators";
 import {DEFAULTS} from "../defaults";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -40,7 +40,10 @@ export class MainHeaderComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.bglStatsService.refresh$.pipe(
+        merge(
+            this.userService.activeUser$,
+            this.bglStatsService.refresh$
+        ).pipe(
             filter(() => this.userService.loggedIn),
             takeUntil(this.destroying$)
         ).subscribe(() => {

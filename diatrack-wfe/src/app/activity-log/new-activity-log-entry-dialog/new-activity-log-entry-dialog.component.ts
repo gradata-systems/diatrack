@@ -62,27 +62,27 @@ export class NewActivityLogEntryDialogComponent implements OnInit {
         switch (this.dialogData.entryType) {
             case ActivityLogEntryCategory.Insulin:
                 return {
-                    insulinUnits: this.fb.control('', Validators.min(0.1))
+                    insulinUnits: this.fb.control(null, Validators.min(0.1))
                 };
             case ActivityLogEntryCategory.BasalRateChange:
                 return {
-                    basalRatePercent: this.fb.control(100, Validators.required),
+                    basalRatePercent: this.fb.control(null, Validators.required),
                     basalRateDuration: this.fb.control('', Validators.required),
                     basalRateTimeUnit: this.fb.control(TimeUnit.Minute, Validators.required)
                 };
             case ActivityLogEntryCategory.Food:
                 return {
-                    foodGrams: this.fb.control('', Validators.min(0.1)),
+                    foodGrams: this.fb.control(null, Validators.min(0.1)),
                     foodType: this.fb.control('')
                 };
             case ActivityLogEntryCategory.BglReading:
                 return {
-                    bglReading: this.fb.control('', Validators.min(0.1)),
+                    bglReading: this.fb.control(null, Validators.min(0.1)),
                     bglUnits: this.fb.control('', Validators.required)
                 };
             case ActivityLogEntryCategory.Exercise:
                 return {
-                    exerciseDuration: this.fb.control('', Validators.min(0.1)),
+                    exerciseDuration: this.fb.control(null, Validators.min(0.1)),
                     exerciseIntensity: this.fb.control('', Validators.required)
                 };
             default:

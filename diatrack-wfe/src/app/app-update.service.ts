@@ -3,7 +3,7 @@ import {SwUpdate} from "@angular/service-worker";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {concat, from, interval, Subject} from "rxjs";
 import {AppConfigService} from "./api/app-config.service";
-import {takeUntil} from "rxjs/operators";
+import {filter, takeUntil} from "rxjs/operators";
 import {AppCoreService} from "./app-core.service";
 import {environment} from "../environments/environment";
 
@@ -25,11 +25,11 @@ export class AppUpdateService implements OnDestroy {
     registerForUpdateCheck() {
         // If an update is found, prompt the user to reload the window, thereby updating the app
         this.updateService.versionUpdates.pipe(
-            takeUntil(this.destroying$)
+            takeUntil(this.destroying$),
+            filter(e => e.type === 'VERSION_READY')
         ).subscribe(event => {
             this.snackBar.open('An app update is available', 'Reload to Update', {
-                duration: undefined,
-
+                duration: undefined
             }).onAction().subscribe(() => {
                 // Reload the page if the user chooses to update
                 window.location.reload();

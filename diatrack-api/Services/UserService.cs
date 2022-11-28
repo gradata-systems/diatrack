@@ -221,7 +221,7 @@ namespace Diatrack.Services
             }
 
             // Replace the user's Elasticsearch record
-            UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync<UserProfile>(user.Id, u => u.DocAsUpsert().Doc(user));
+            UpdateResponse<UserProfile> response = await _elasticClient.UpdateAsync<UserProfile>(user.Id, u => u.Doc(user).DocAsUpsert().Refresh(Refresh.WaitFor));
             if (response.IsValid)
             {
                 return account.Id;
@@ -248,7 +248,7 @@ namespace Diatrack.Services
             ).ToArray();
 
             // Replace the user's Elasticsearch record
-            var result = await _elasticClient.UpdateAsync<UserProfile>(user.Id, u => u.DocAsUpsert().Doc(user));
+            var result = await _elasticClient.UpdateAsync<UserProfile>(user.Id, u => u.Doc(user).DocAsUpsert().Refresh(Refresh.WaitFor));
             if (result.Result == Result.Error)
             {
                 throw new Exception($"Error occurred when updating the user record");
@@ -306,7 +306,7 @@ namespace Diatrack.Services
 
             user.Preferences = prefs;
 
-            var result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u.DocAsUpsert().Doc(user));
+            var result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u.Doc(user).DocAsUpsert().Refresh(Refresh.WaitFor));
             if (result.Result == Result.Error)
             {
                 throw new Exception($"Error occurred when updating user preferences for user {user.Id}");
@@ -351,8 +351,8 @@ namespace Diatrack.Services
             dataSource.ShareToken = hashedToken;
 
             UpdateResponse<UserProfile> result = await _elasticClient.UpdateAsync(new DocumentPath<UserProfile>(user.Id), u => u
-                .DocAsUpsert()
                 .Doc(user)
+                .DocAsUpsert()
                 .Refresh(Refresh.WaitFor)
             );
 
